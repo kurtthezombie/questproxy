@@ -23,7 +23,10 @@ return new class extends Migration
             $table->char('status');
             $table->char('role');
             $table->rememberToken();    
+<<<<<<< HEAD
             
+=======
+>>>>>>> origin/feature/user-register
             $table->timestamps();
         });
 
