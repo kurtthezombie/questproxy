@@ -2,18 +2,13 @@
 
 namespace App\Http\Controllers;
 
-<<<<<<< HEAD
-=======
 use App\Models\User;
 use Hash;
->>>>>>> origin/feature/user-register
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
     //
-<<<<<<< HEAD
-=======
     public function create(Request $request)
     {
         //validate inputs
@@ -46,5 +41,4 @@ class UserController extends Controller
             'user' => $user
         ],201);
     }
->>>>>>> origin/feature/user-register
 }
