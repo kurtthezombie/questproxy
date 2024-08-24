@@ -20,7 +20,7 @@ class LoginController extends Controller
         ]);
         //check if credentials match
         $user = User::where('username', $request->username)->first();
-
+        
         if (!$user || !Hash::check($request->password,$user->password))
         {
             return response()->json([
@@ -35,6 +35,13 @@ class LoginController extends Controller
             'message' => 'Login successful',
             'token_type' => 'Bearer',
             'token' => $token
+        ],200);
+    }
+
+    public function test()
+    {
+        return response()->json([
+            'message' => 'your sanctum worked, it just needs a route to go loginnnn'
         ],200);
     }
 

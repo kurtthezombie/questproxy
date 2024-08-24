@@ -15,5 +15,5 @@ Route::get('/user', function (Request $request) {
 //login
 Route::post('login', [LoginController::class,'login']);
 //logout
-Route::post('logout',[LoginController::class,'logout']);
+Route::post('logout',[LoginController::class,'logout'])->middleware('auth:sanctum');
 Route::post('signup', [UserController::class,'create']);
