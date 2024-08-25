@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Gamer;
 use App\Models\User;
 use Hash;
 use Illuminate\Http\Request;
@@ -22,7 +23,6 @@ class UserController extends Controller
             'status' => 'required|string',
             'role' => 'required|string',    
         ]);
-
         //create user object
         $user = User::create([
             'username' => $request->username,
@@ -35,10 +35,22 @@ class UserController extends Controller
             'role' => $request->role,
         ]);
 
-
+      
         return response()->json([
             'message' => 'User created successfully',
             'user' => $user
         ],201);
+       
+       
+    }
+
+    private function createGamer(int $id)
+    {
+        
+    }
+
+    private function createPilot(int $id)
+    {
+
     }
 }
