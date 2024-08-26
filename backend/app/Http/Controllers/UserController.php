@@ -38,13 +38,14 @@ class UserController extends Controller
         ]);
 
         //should admin be made through registration ? sounds dumb
-        $addGamerOrPilot = ($request->role == 'g') ? $this->createGamer($request->id) : $this->createPilot($request->id);
+        $addGamerOrPilot = ($request->role == 'g') ? $this->createGamer($user->id) : $this->createPilot($user->id);
 
         if ($addGamerOrPilot)
         {
             return response()->json([
                 'message' => 'User created successfully',
-                'user' => $user
+                'user' => $user,
+                'role_created' => $addGamerOrPilot
             ],201);
         }
         else
@@ -61,6 +62,8 @@ class UserController extends Controller
     private function createGamer(int $id)
     {
         Gamer::create(['user_id' => $id]);
+
+        return true;
     }
 
     private function createPilot(int $id)
@@ -72,8 +75,10 @@ class UserController extends Controller
         ]);
         //set id 
         Pilot::create([
-            'user_id' => $id,
-            'rank_id' => $rank_id,
+            'user_id' => $id, //derived from parameter
+            'rank_id' => $rank_id, //derived from db query above this
         ]);
+        
+        return true;
     }
 }

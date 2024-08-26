@@ -15,6 +15,12 @@ class Gamer extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'gamer_preference'
+        'gamer_preference',
+        'user_id'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

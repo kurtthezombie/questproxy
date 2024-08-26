@@ -29,6 +29,7 @@ return new class extends Migration
         Schema::create('gamers', function (Blueprint $table) {
             $table->id();
             $table->string('gamer_preference')->nullable();
+            $table->timestamps();
             //fk user_id
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
@@ -45,6 +46,7 @@ return new class extends Migration
             $table->id();
             $table->string('skills')->nullable()->default("N/A");
             $table->string('bio')->nullable()->default("N/A");
+            $table->timestamps();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('rank_id');
             $table->foreign('user_id')->references('id')->on('users');
