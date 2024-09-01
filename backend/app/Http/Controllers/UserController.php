@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Gamer;
 use App\Models\Pilot;
 use App\Models\User;
+use Auth;
 use DB;
 use Hash;
 use Illuminate\Http\Request;
@@ -53,10 +54,7 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'Error occurred while trying to create gamer/pilot record',
             ],500);
-        }
-        
-       
-       
+        }   
     }
 
     private function createGamer(int $id)
@@ -80,5 +78,41 @@ class UserController extends Controller
         ]);
         
         return true;
+    }
+
+    public function destroy(int $id)
+    {
+        $user = User::find($id);
+        $pilot_id = null;
+        //determine if pilot or gamer 
+        if ($user->role == 'p') 
+        {
+            $pilot = Pilot::where('user_id', $id)->first();
+            $pilot_id = $pilot->rank_id;
+        }
+        //delete user and cascading records
+        $user->delete();
+        //delete ranking
+        $deleteUserRankDB = DB::table('ranking')
+                ->where('id',$pilot_id)
+                ->delete();
+
+        //return responses
+        if ($user){
+            return response()->json([
+                'message' => 'User deleted successfully.'
+            ],200);
+        } else {
+            return response()->json([
+                'message' => 'An error occured during deletion'
+            ],500);
+        }
+    }
+
+    public function checklogin()
+    {
+        return response([
+            "message" => 'im logged in.'
+        ]);
     }
 }

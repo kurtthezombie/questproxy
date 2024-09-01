@@ -32,7 +32,7 @@ return new class extends Migration
             $table->timestamps();
             //fk user_id
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
 
@@ -49,10 +49,11 @@ return new class extends Migration
             $table->timestamps();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('rank_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('rank_id')->references('id')->on('ranking');
-        });
 
+            $table->unique('rank_id');
+        });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
