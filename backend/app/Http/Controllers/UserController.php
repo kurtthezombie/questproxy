@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Gamer;
+use App\Models\Pilot;
 use App\Models\User;
+use Auth;
+use DB;
 use Hash;
 use Illuminate\Http\Request;
 
@@ -22,7 +26,6 @@ class UserController extends Controller
             'status' => 'required|string',
             'role' => 'required|string',    
         ]);
-
         //create user object
         $user = User::create([
             'username' => $request->username,
@@ -35,10 +38,81 @@ class UserController extends Controller
             'role' => $request->role,
         ]);
 
+        //should admin be made through registration ? sounds dumb
+        $addGamerOrPilot = ($request->role == 'g') ? $this->createGamer($user->id) : $this->createPilot($user->id);
 
-        return response()->json([
-            'message' => 'User created successfully',
-            'user' => $user
-        ],201);
+        if ($addGamerOrPilot)
+        {
+            return response()->json([
+                'message' => 'User created successfully',
+                'user' => $user,
+                'role_created' => $addGamerOrPilot
+            ],201);
+        }
+        else
+        {
+            return response()->json([
+                'message' => 'Error occurred while trying to create gamer/pilot record',
+            ],500);
+        }   
+    }
+
+    private function createGamer(int $id)
+    {
+        Gamer::create(['user_id' => $id]);
+
+        return true;
+    }
+
+    private function createPilot(int $id)
+    {
+        //create ranking
+        $rank_id = DB::table('ranking')->insertGetId([
+            'pilot_rank' => null,
+            'points' => 0,
+        ]);
+        //set id 
+        Pilot::create([
+            'user_id' => $id, //derived from parameter
+            'rank_id' => $rank_id, //derived from db query above this
+        ]);
+        
+        return true;
+    }
+
+    public function destroy(int $id)
+    {
+        $user = User::find($id);
+        $pilot_id = null;
+        //determine if pilot or gamer 
+        if ($user->role == 'p') 
+        {
+            $pilot = Pilot::where('user_id', $id)->first();
+            $pilot_id = $pilot->rank_id;
+        }
+        //delete user and cascading records
+        $user->delete();
+        //delete ranking
+        $deleteUserRankDB = DB::table('ranking')
+                ->where('id',$pilot_id)
+                ->delete();
+
+        //return responses
+        if ($user){
+            return response()->json([
+                'message' => 'User deleted successfully.'
+            ],200);
+        } else {
+            return response()->json([
+                'message' => 'An error occured during deletion'
+            ],500);
+        }
+    }
+
+    public function checklogin()
+    {
+        return response([
+            "message" => 'im logged in.'
+        ]);
     }
 }
