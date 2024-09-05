@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pilot;
+use DB;
 use Illuminate\Http\Request;
 
 class PilotController extends Controller
@@ -53,5 +54,78 @@ class PilotController extends Controller
                 'message' => 'Pilot record cannot be retrieved'
             ],404);
         }
-    }   
+    }
+
+    public function createPortfolio(Request $request, int $id)
+    {
+        $request->validate([
+            'content' => 'required|string',
+        ]);
+
+        $portfolio = DB::table('portfolios')->insert([
+            'p_content' => $request->p_content,
+            'pilot_id' => $id,
+        ]);
+
+        if ($portfolio)
+        {
+            return response()->json([
+                'message' => 'Portfolio successfully added',
+            ],200);
+        }
+        else
+        {
+            return response()->json([
+                'message' => 'Error occurred during portfolio record insertion.'
+            ],500);
+        }
+    }
+    public function showPortfolio($id)
+    {
+        $portfolios = DB::table('portfolios')
+            ->where('id', $id)
+            ->get();
+
+        return response()->json($portfolios,200);
+    }
+    
+    public function editPortfolio(Request $request, int $id)
+    {
+        //$id is for the portfolio item id
+        $request->validate([
+            'p_content' => 'required|string'
+        ]);
+
+        $updated = DB::table('portfolios')
+            ->where('id', $id)
+            ->update([
+                'p_content' => $request->p_content
+            ]);
+        if ($updated) {
+            return response()->json([
+                'message' => 'Portfolio successfully edited',
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Error occurred during portfolio record editing.'
+            ], 500);
+        }
+    }
+
+    public function destroyPortfolio(int $id)
+    {
+        $portfolio_item = DB::table('portfolios')->where('id',$id)->delete();
+
+        if ($portfolio_item)
+        {
+            return response()->json([
+                'message' => 'Portfolio item deleted.'
+            ],200);
+        }
+        else {
+            return response()->json([
+                'message' => 'Portfolio item deletion unsuccessful.'
+            ],500);
+        }
+    }
 }

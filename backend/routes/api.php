@@ -31,3 +31,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::post('login', [LoginController::class,'login']);
 //register
 Route::post('signup', [UserController::class,'create']);
+
+//should be middleware or not?
+Route::get('user/{id}', [UserController::class,'show']);
+Route::get('users', [UserController::class,'index']);
