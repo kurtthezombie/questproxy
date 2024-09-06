@@ -56,6 +56,7 @@ class PilotController extends Controller
         }
     }
 
+    #portfolio functions
     public function createPortfolio(Request $request, int $id)
     {
         $request->validate([
@@ -83,7 +84,7 @@ class PilotController extends Controller
     public function showPortfolio($id)
     {
         $portfolios = DB::table('portfolios')
-            ->where('id', $id)
+            ->where('pilot_id', $id)
             ->get();
 
         return response()->json($portfolios,200);
@@ -126,6 +127,23 @@ class PilotController extends Controller
             return response()->json([
                 'message' => 'Portfolio item deletion unsuccessful.'
             ],500);
+        }
+    }
+    public function destroyAllPortfolio(int $id)
+    {
+        $portfolios = DB::table('portfolios')->where('pilot_id',$id)->delete();
+
+        if ($portfolios) 
+        {
+            return response()->json([
+                'message' => 'Portfolios associated with user {$id} has been deleted.',
+            ],200);
+        }
+        else
+        {
+            return response()->json([
+                'message' => "Portfolios deletion unsuccessful",
+            ],400);
         }
     }
 }

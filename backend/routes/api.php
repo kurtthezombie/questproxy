@@ -35,3 +35,14 @@ Route::post('signup', [UserController::class,'create']);
 //should be middleware or not?
 Route::get('user/{id}', [UserController::class,'show']);
 Route::get('users', [UserController::class,'index']);
+
+//portfolio routes
+Route::post('portfolio/create',[PilotController::class,'createPortfolio']);
+//take pilot_id
+Route::post('portfolio/show/{id}',[PilotController::class,'showPortfolio']);
+//take portfolio id
+Route::patch('portfolio/edit/{id}',[PilotController::class,'editPortfolio']);
+//take user id 
+Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyPortfolio']);
+//take pilot id
+Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
