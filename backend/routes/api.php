@@ -1,6 +1,7 @@
 <?php
 //controllers
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PilotController;
 use App\Http\Controllers\UserController;
 
 
@@ -11,9 +12,22 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+//grouped routes that use middleware laravel sanctum
+Route::middleware(['auth:sanctum'])->group(function () {
+    //logout
+    Route::post('logout',[LoginController::class,'logout']);
+    //delete user
+    Route::delete('/delete/user/{id}', [UserController::class, 'destroy']);
+    Route::get('check_login', [UserController::class,'checklogin']);
+    //Add more routes that need to use the login authentication
+
+    Route::get('edit/pilot/{id}',[PilotController::class, 'edit']);
+    //patch because we're only updating some columns, not the whole record
+    Route::patch('edit/pilot/{id}',[PilotController::class, 'update']);
+    
+});
 
 //login
 Route::post('login', [LoginController::class,'login']);
-//logout
-Route::post('logout',[LoginController::class,'logout'])->middleware('auth:sanctum');
+//register
 Route::post('signup', [UserController::class,'create']);
