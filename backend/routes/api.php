@@ -26,12 +26,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/delete/user/{id}', 'destroy');
         Route::get('check_login', 'checklogin');
     });
-    
+
     Route::controller(PilotController::class)->group(function () {
         //Add more routes that need to use the login authentication
-        Route::get('edit/pilot/{id}',[PilotController::class, 'edit']);
+        Route::get('edit/pilot/{id}', [PilotController::class, 'edit']);
         //patch because we're only updating some columns, not the whole record
-        Route::patch('edit/pilot/{id}',[PilotController::class, 'update']);
+        Route::patch('edit/pilot/{id}', [PilotController::class, 'update']);
+        //portfolio routes
+
+        Route::post('portfolio/create', [PilotController::class, 'createPortfolio']);
     });
     
 });
@@ -47,8 +50,7 @@ Route::post('signup', [UserController::class,'create']);
 Route::get('user/{id}', [UserController::class,'show']);
 Route::get('users', [UserController::class,'index']);
 
-//portfolio routes
-Route::post('portfolio/create',[PilotController::class,'createPortfolio']);
+
 //take pilot_id
 Route::post('portfolio/show/{id}',[PilotController::class,'showPortfolio']);
 //take portfolio id

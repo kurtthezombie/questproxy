@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pilot;
+use Auth;
 use DB;
+use Exception;
 use Illuminate\Http\Request;
 
 class PilotController extends Controller
@@ -57,28 +59,30 @@ class PilotController extends Controller
     }
 
     #portfolio functions
-    public function createPortfolio(Request $request, int $id)
+    public function createPortfolio(Request $request)
     {
+        $user_id = Auth::user()->id;
+
+        $pilot = Pilot::where('user_id', $user_id)->first();
+
         $request->validate([
-            'content' => 'required|string',
+            'p_content' => 'required|string',
         ]);
 
         $portfolio = DB::table('portfolios')->insert([
             'p_content' => $request->p_content,
-            'pilot_id' => $id,
+            'pilot_id' => $pilot->id,
         ]);
 
-        if ($portfolio)
-        {
+        if ($portfolio) {
             return response()->json([
                 'message' => 'Portfolio successfully added',
-            ],200);
-        }
-        else
-        {
+                'portfolio' => $portfolio,
+            ], 201);
+        } else {
             return response()->json([
                 'message' => 'Error occurred during portfolio record insertion.'
-            ],500);
+            ], 500);
         }
     }
     public function showPortfolio($id)

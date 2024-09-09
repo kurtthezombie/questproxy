@@ -61,7 +61,7 @@ class LoginController extends Controller
     }
     public function testAuth()
     {
-        $user = Auth::user();
+        $user = Auth::user()->id;
         return response()->json([
             'user' => $user,
             'message' => "Auth user works!",
