@@ -36,9 +36,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::post('portfolio/create', 'createPortfolio');
         //u cant take pilot id without user id
-        //if u view profile, it should base everything on the user_id
+        //if u view profile, it should be based on the user_id
         //so this route needs drafting for now
         Route::get('portfolio/show/{id}', 'showPortfolio');
+        //take portfolio id
+        Route::patch('portfolio/edit/{id}', 'editPortfolio');
+        //take portfolio id 
+        Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyPortfolio']);
     });
     
 });
@@ -54,13 +58,8 @@ Route::get('user/{id}', [UserController::class,'show']);
 Route::get('users', [UserController::class,'index']);
 
 
-
-//take portfolio id
-Route::patch('portfolio/edit/{id}',[PilotController::class,'editPortfolio']);
-//take user id 
-Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyPortfolio']);
 //take pilot id
-Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
+//Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
 
 
 

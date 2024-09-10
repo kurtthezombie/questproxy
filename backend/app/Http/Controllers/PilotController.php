@@ -113,38 +113,56 @@ class PilotController extends Controller
         $request->validate([
             'p_content' => 'required|string'
         ]);
-
-        $updated = DB::table('portfolios')
-            ->where('id', $id)
-            ->update([
-                'p_content' => $request->p_content
-            ]);
-        if ($updated) {
+        try {
+            $updated = DB::table('portfolios')
+                ->where('id', $id)
+                ->update([
+                    'p_content' => $request->p_content
+                ]);
+            if ($updated) {
+                return response()->json([
+                    'message' => 'Portfolio successfully edited',
+                    'p_content' => $request->p_content,
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'Error occurred during portfolio record editing.'
+                ], 500);
+            }
+        } catch (Exception $e) {
             return response()->json([
-                'message' => 'Portfolio successfully edited',
-            ], 200);
-        } else {
-            return response()->json([
-                'message' => 'Error occurred during portfolio record editing.'
-            ], 500);
+                'message' => $e->getMessage()
+            ],500);
         }
+        
     }
 
     public function destroyPortfolio(int $id)
     {
-        $portfolio_item = DB::table('portfolios')->where('id',$id)->delete();
+        try 
+        {
+            $portfolio_item = DB::table('portfolios')->where('id', $id)->first();
 
-        if ($portfolio_item)
+            if (!$portfolio_item) {
+                return response()->json([
+                    'message' => "Portfolio item {$id} not found."
+                ], 404);
+            }
+            
+            DB::table('portfolios')->where('id',$id)->delete();
+
+            return response()->json([
+                'message' => "Portfolio item with ID {$id} has been deleted",
+            ],200);
+        } 
+        catch (Exception $e) 
         {
             return response()->json([
-                'message' => 'Portfolio item deleted.'
-            ],200);
+                'message' => "An error occurred while deleting the portfolio item.",
+                'error' => $e->getMessage(),
+            ], 500);
         }
-        else {
-            return response()->json([
-                'message' => 'Portfolio item deletion unsuccessful.'
-            ],500);
-        }
+
     }
     public function destroyAllPortfolio(int $id)
     {
