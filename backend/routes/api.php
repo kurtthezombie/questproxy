@@ -29,16 +29,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::controller(PilotController::class)->group(function () {
         //Add more routes that need to use the login authentication
-        Route::get('edit/pilot/{id}', [PilotController::class, 'edit']);
+        Route::get('edit/pilot/{id}', 'edit');
         //patch because we're only updating some columns, not the whole record
-        Route::patch('edit/pilot/{id}', [PilotController::class, 'update']);
+        Route::patch('edit/pilot/{id}', 'update');
         //portfolio routes
 
-        Route::post('portfolio/create', [PilotController::class, 'createPortfolio']);
+        Route::post('portfolio/create', 'createPortfolio');
+        //u cant take pilot id without user id
+        //if u view profile, it should base everything on the user_id
+        //so this route needs drafting for now
+        Route::get('portfolio/show/{id}', 'showPortfolio');
     });
     
 });
-
 
 
 //login
@@ -51,8 +54,7 @@ Route::get('user/{id}', [UserController::class,'show']);
 Route::get('users', [UserController::class,'index']);
 
 
-//take pilot_id
-Route::post('portfolio/show/{id}',[PilotController::class,'showPortfolio']);
+
 //take portfolio id
 Route::patch('portfolio/edit/{id}',[PilotController::class,'editPortfolio']);
 //take user id 

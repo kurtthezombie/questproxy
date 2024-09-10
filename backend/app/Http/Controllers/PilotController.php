@@ -87,11 +87,24 @@ class PilotController extends Controller
     }
     public function showPortfolio($id)
     {
-        $portfolios = DB::table('portfolios')
-            ->where('pilot_id', $id)
+        $pilot = Pilot::where('user_id',$id)->first();
+
+        if ($pilot) 
+        {
+            $portfolios = DB::table('portfolios')
+            ->where('pilot_id', $pilot->id)
             ->get();
 
-        return response()->json($portfolios,200);
+            return response()->json($portfolios,200);
+        }
+        else
+        {
+            return response()->json([
+                'pilot' => $pilot,
+                'message' => 'Pilot record was not found'
+            ],404);
+        }
+        
     }
     
     public function editPortfolio(Request $request, int $id)
