@@ -13,6 +13,27 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     //
+    public function show($id)
+    {
+        $user = User::find($id);
+
+        if ($user)
+        {
+            return response()->json($user,200);
+        }
+        else {
+            return response()->json([
+                'message' => 'User not found',
+            ],404);
+        }
+    }
+
+    public function index()
+    {
+        $users = User::all();
+        return response()->json($users);
+    }
+
     public function create(Request $request)
     {
         //validate inputs
