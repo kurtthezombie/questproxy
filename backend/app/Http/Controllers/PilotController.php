@@ -11,10 +11,20 @@ use Illuminate\Http\Request;
 class PilotController extends Controller
 {
     //
+    public function getPilot(int $id, string $type)
+    {
+        if ($type === "pilot_id"){
+            return Pilot::find($id);   
+        }
+        else {
+            return Pilot::where('user_id',$id)->first();
+        }
+    }
+
     public function edit($id)
     {
         //get pilot record
-        $pilot = Pilot::find($id);
+        $pilot = $this->getPilot($id,"pilot_id");
 
         if ($pilot)
         {
@@ -37,7 +47,7 @@ class PilotController extends Controller
             'bio' => 'required|string',
         ]);
         //retrieve pilot
-        $pilot = Pilot::find($id);
+        $pilot = $this->getPilot($id,"pilot_id");
 
         if ($pilot)
         {
@@ -63,7 +73,7 @@ class PilotController extends Controller
     {
         $user_id = Auth::user()->id;
 
-        $pilot = Pilot::where('user_id', $user_id)->first();
+        $pilot = $this->getPilot($user_id,"user_id");
 
         $request->validate([
             'p_content' => 'required|string',
@@ -85,9 +95,10 @@ class PilotController extends Controller
             ], 500);
         }
     }
+    //takes user_id to get pilot_id to get portfolios
     public function showPortfolio($id)
     {
-        $pilot = Pilot::where('user_id',$id)->first();
+        $pilot = $this->getPilot($id,"user_id");
 
         if ($pilot) 
         {
@@ -181,4 +192,5 @@ class PilotController extends Controller
             ],400);
         }
     }
+
 }
