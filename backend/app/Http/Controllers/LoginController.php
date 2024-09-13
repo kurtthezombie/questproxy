@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User; 
+use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +20,7 @@ class LoginController extends Controller
         ]);
         //check if credentials match
         $user = User::where('username', $request->username)->first();
-        
+
         if (!$user || !Hash::check($request->password,$user->password))
         {
             return response()->json([
@@ -44,7 +44,7 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         $logout = $request->user()->currentAccessToken()->delete();
-        //$request->user()->tokens()->delete(); //use if u wanna delete all tokens hehe
+        $request->user()->tokens()->delete(); //use if u wanna delete all tokens hehe
         //if logout successful
         if ($logout)
         {
@@ -52,7 +52,7 @@ class LoginController extends Controller
                 'message' => 'Successfully logged out.'
             ],200);
         }
-        else 
+        else
         {
             return response()->json([
                 'message' => 'Logout failed. Please try again.'
