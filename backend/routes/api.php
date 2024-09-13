@@ -51,6 +51,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
       Route::get('service/{id}','show');
       Route::post('service/create','store');
       Route::get('service/edit/{id}','edit');
+      Route::post('service/edit/{id}','update');
+      Route::delete('service/destroy/{id}','destroy');
     });
 
 });
