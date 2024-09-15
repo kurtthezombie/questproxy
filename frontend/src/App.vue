@@ -10,19 +10,18 @@ import Registrationform from './components/Register.vue'
 
     <div class="wrapper">
       <HelloWorld msg="QuestProxy" />
-      
+
       <nav>
-        <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/register">Register</RouterLink>
         <RouterLink to="/login">Login</RouterLink>
+        <RouterLink to="/homepage">Homepage</RouterLink>
       </nav>
     </div>
   </header>
 
   <RouterView />
 </template>
-
 <style scoped>
 header {
   line-height: 1.5;
@@ -42,11 +41,11 @@ nav {
 }
 
 nav a.router-link-exact-active {
-  color: var(--color-text);
+  color: blue;
 }
 
 nav a.router-link-exact-active:hover {
-  background-color: transparent;
+  background-color: yellow;
 }
 
 nav a {
