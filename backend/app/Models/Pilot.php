@@ -16,8 +16,14 @@ class Pilot extends Model
         'rank_id',
     ];
 
+    //a pilot should be a user
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    //a pilot has many services
+    public function service()
+    {
+        return $this->hasMany(Service::class);
     }
 }

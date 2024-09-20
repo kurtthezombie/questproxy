@@ -35,26 +35,6 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-
-        Schema::create('ranking', function (Blueprint $table) {
-            $table->id();
-            $table->string('pilot_rank')->nullable();
-            $table->float('points')->default(0); 
-        });
-
-        Schema::create('pilots', function (Blueprint $table) {
-            $table->id();
-            $table->string('skills')->nullable()->default("N/A");
-            $table->string('bio')->nullable()->default("N/A");
-            $table->timestamps();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('rank_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('rank_id')->references('id')->on('ranking');
-
-            $table->unique('rank_id');
-        });
-
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
@@ -77,16 +57,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('gamers', function (Blueprint $table) {
+            //$table->dropForeign('gamers_user_id_foreign');
             $table->dropForeign(['user_id']);
         });
-        Schema::table('pilots', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-            $table->dropForeign(['rank_id']);
+
+        Schema::table('gamers', function (Blueprint $table) {
+            $table->dropColumn('user_id');
         });
-        
+
         Schema::dropIfExists('gamers');
-        Schema::dropIfExists('pilots');
-        Schema::dropIfExists('ranking');
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
