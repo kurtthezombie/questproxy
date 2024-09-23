@@ -24,6 +24,7 @@ class UserController extends Controller
         else {
             return response()->json([
                 'message' => 'User not found',
+                'status' => false,
             ],404);
         }
     }
@@ -45,7 +46,7 @@ class UserController extends Controller
             'l_name' => 'required|string',
             'contact_number' => 'required|string|max:15',
             'status' => 'required|string',
-            'role' => 'required|string',    
+            'role' => 'required|string',
         ]);
         //create user object
         $user = User::create([
@@ -67,15 +68,17 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'User created successfully',
                 'user' => $user,
-                'role_created' => $addGamerOrPilot
+                'role_created' => $addGamerOrPilot,
+                'status' => true,
             ],201);
         }
         else
         {
             return response()->json([
                 'message' => 'Error occurred while trying to create gamer/pilot record',
+                'status' => false,
             ],500);
-        }   
+        }
     }
 
     private function createGamer(int $id)
@@ -92,12 +95,12 @@ class UserController extends Controller
             'pilot_rank' => null,
             'points' => 0,
         ]);
-        //set id 
+        //set id
         Pilot::create([
             'user_id' => $id, //derived from parameter
             'rank_id' => $rank_id, //derived from db query above this
         ]);
-        
+
         return true;
     }
 
@@ -105,8 +108,8 @@ class UserController extends Controller
     {
         $user = User::find($id);
         $pilot_id = null;
-        //determine if pilot or gamer 
-        if ($user->role == 'p') 
+        //determine if pilot or gamer
+        if ($user->role == 'p')
         {
             $pilot = Pilot::where('user_id', $id)->first();
             $pilot_id = $pilot->rank_id;
@@ -121,11 +124,13 @@ class UserController extends Controller
         //return responses
         if ($user){
             return response()->json([
-                'message' => 'User deleted successfully.'
+                'message' => 'User deleted successfully.',
+                'status' => true,
             ],200);
         } else {
             return response()->json([
-                'message' => 'An error occured during deletion'
+                'message' => 'An error occured during deletion',
+                'status' => true,
             ],500);
         }
     }
@@ -133,7 +138,8 @@ class UserController extends Controller
     public function checklogin()
     {
         return response([
-            "message" => 'im logged in.'
+            'message' => 'im logged in.',
+            'status' => true,
         ]);
     }
 }
