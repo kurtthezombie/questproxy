@@ -45,7 +45,6 @@ class UserController extends Controller
             'f_name' => 'required|string',
             'l_name' => 'required|string',
             'contact_number' => 'required|string|max:15',
-            'status' => 'required|string',
             'role' => 'required|string',
         ]);
         //create user object
