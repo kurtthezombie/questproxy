@@ -24,7 +24,8 @@ class LoginController extends Controller
         if (!$user || !Hash::check($request->password,$user->password))
         {
             return response()->json([
-                'message' => 'Incorrect username or password'
+                'message' => 'Incorrect username or password.',
+                'status' => false,
             ],401);
         }
         //create token
@@ -34,37 +35,47 @@ class LoginController extends Controller
         Auth::login($user);
 
         return response()->json([
-            'message' => 'Login successful',
+            'message' => 'Login successful.',
             'token_type' => 'Bearer',
             'token' => $token,
             'authenticated_user' => Auth::user(),
+            'status' => true,
         ],200);
     }
 
     public function logout(Request $request)
     {
-        $logout = $request->user()->currentAccessToken()->delete();
-        $request->user()->tokens()->delete(); //use if u wanna delete all tokens hehe
-        //if logout successful
-        if ($logout)
-        {
+        try {
+            $logout = $request->user()->currentAccessToken()->delete();
+            $request->user()->tokens()->delete(); //use if u wanna delete all tokens hehe
+            //if logout successful
+            if ($logout) {
+                return response()->json([
+                    'message' => 'Successfully logged out.',
+                    'status' => true,
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'Logout failed.',
+                    'status' => false,
+                ], 500);
+            }
+        } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Successfully logged out.'
-            ],200);
-        }
-        else
-        {
-            return response()->json([
-                'message' => 'Logout failed. Please try again.'
+                'message' => $e->getMessage(),
+                'status' => false,
             ],500);
         }
     }
+
+    //to test if auth works, set bearer token in postman
     public function testAuth()
     {
         $user = Auth::user()->id;
         return response()->json([
             'user' => $user,
             'message' => "Auth user works!",
+            'status' => true,
         ],200);
     }
 }

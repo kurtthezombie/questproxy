@@ -13,32 +13,46 @@ class PilotController extends Controller
     //
     public function getPilot(int $id, string $type)
     {
-        if ($type === "pilot_id"){
-            return Pilot::find($id);   
+        try {
+            if ($type === "pilot_id"){
+                return Pilot::find($id);
+            }
+            else {
+                return Pilot::where('user_id',$id)->first();
+            }
+        } catch (Exception $e) {
+            return null;
         }
-        else {
-            return Pilot::where('user_id',$id)->first();
-        }
+
     }
 
     public function edit($id)
     {
-        //get pilot record
-        $pilot = $this->getPilot($id,"pilot_id");
+        try {
+            //get pilot record
+            $pilot = $this->getPilot($id, "pilot_id");
 
-        if ($pilot)
-        {
-            //return data and fill up the forms 
+            if ($pilot) {
+                //return data and fill up the forms
+                return response()->json([
+                    'pilot' => $pilot,
+                    'message' => 'Pilot record retrieved.',
+                    'status' => true,
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'Pilot record not found.',
+                    'status' => false,
+                ], 404);
+            }
+        } catch (Exception $e) {
             return response()->json([
-                'pilot' => $pilot,
-                'message' => 'Pilot record retrieved.'
-            ],200);
-        } else {
-            return response()->json([
-                'message' => 'Failed to retrieved pilot record'
+                'message' => $e->getMessage(),
+                'status' => false,
             ],500);
         }
     }
+
     public function update(Request $request, int $id)
     {
         //validate inputs
@@ -51,19 +65,29 @@ class PilotController extends Controller
 
         if ($pilot)
         {
-            //replace them with the request
-            $pilot->update([
-                'skills' => $request->skills,
-                'bio' => $request->bio
-            ]); 
+            try {
+                //replace them with the request
+                $pilot->update([
+                    'skills' => $request->skills,
+                    'bio' => $request->bio
+                ]);
 
-            return response()->json([
-                'message' => "Pilot has been updated successfully."
-            ],200);
+                return response()->json([
+                    'message' => "Pilot has been updated successfully.",
+                    'status' => true,
+                ], 200);
+            } catch (Exception $e) {
+                return response()->json([
+                    'message'=> $e->getMessage(),
+                    'status'=> false,
+                ]);
+            }
+
         }
         else {
             return response()->json([
-                'message' => 'Pilot record cannot be retrieved'
+                'message' => 'Pilot record cannot be retrieved',
+                'status' => false,
             ],404);
         }
     }
@@ -88,10 +112,12 @@ class PilotController extends Controller
             return response()->json([
                 'message' => 'Portfolio successfully added',
                 'portfolio' => $portfolio,
+                'status' => true,
             ], 201);
         } else {
             return response()->json([
-                'message' => 'Error occurred during portfolio record insertion.'
+                'message' => 'Error occurred during portfolio record insertion.',
+                'status' => false,
             ], 500);
         }
     }
@@ -100,24 +126,34 @@ class PilotController extends Controller
     {
         $pilot = $this->getPilot($id,"user_id");
 
-        if ($pilot) 
+        if ($pilot)
         {
-            $portfolios = DB::table('portfolios')
-            ->where('pilot_id', $pilot->id)
-            ->get();
+            try {
+                $portfolios = DB::table('portfolios')
+                ->where('pilot_id', $pilot->id)
+                ->get();
 
-            return response()->json($portfolios,200);
+                return response()->json([
+                    'portfolios' => $portfolios,
+                    'status' => true,
+                ],200);
+            } catch (Exception $e) {
+                return response()->json([
+                    'message'=> $e->getMessage(),
+                    'status' => false,
+                ]);
+            }
         }
         else
         {
             return response()->json([
                 'pilot' => $pilot,
-                'message' => 'Pilot record was not found'
+                'message' => 'Pilot record was not found',
+                'status' => false,
             ],404);
         }
-        
     }
-    
+
     public function editPortfolio(Request $request, int $id)
     {
         //$id is for the portfolio item id
@@ -134,43 +170,49 @@ class PilotController extends Controller
                 return response()->json([
                     'message' => 'Portfolio successfully edited',
                     'p_content' => $request->p_content,
+                    'status' => true,
                 ], 200);
             } else {
                 return response()->json([
-                    'message' => 'Error occurred during portfolio record editing.'
+                    'message' => 'Error occurred during portfolio record editing.',
+                    'status' => false,
                 ], 500);
             }
         } catch (Exception $e) {
             return response()->json([
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'status' => false,
             ],500);
         }
-        
+
     }
 
     public function destroyPortfolio(int $id)
     {
-        try 
+        try
         {
             $portfolio_item = DB::table('portfolios')->where('id', $id)->first();
 
             if (!$portfolio_item) {
                 return response()->json([
-                    'message' => "Portfolio item {$id} not found."
+                    'message' => "Portfolio item {$id} not found.",
+                    'status' => false,
                 ], 404);
             }
-            
+
             DB::table('portfolios')->where('id',$id)->delete();
 
             return response()->json([
                 'message' => "Portfolio item with ID {$id} has been deleted",
+                'status' => true,
             ],200);
-        } 
-        catch (Exception $e) 
+        }
+        catch (Exception $e)
         {
             return response()->json([
                 'message' => "An error occurred while deleting the portfolio item.",
                 'error' => $e->getMessage(),
+                'status' => false,
             ], 500);
         }
 
@@ -179,16 +221,18 @@ class PilotController extends Controller
     {
         $portfolios = DB::table('portfolios')->where('pilot_id',$id)->delete();
 
-        if ($portfolios) 
+        if ($portfolios)
         {
             return response()->json([
                 'message' => 'Portfolios associated with user {$id} has been deleted.',
+                'status' => true,
             ],200);
         }
         else
         {
             return response()->json([
                 'message' => "Portfolios deletion unsuccessful",
+                'status' => false,
             ],400);
         }
     }
