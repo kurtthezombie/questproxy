@@ -55,7 +55,6 @@ class UserController extends Controller
             'f_name' => $request->f_name,
             'l_name' => $request->l_name,
             'contact_number' => $request->contact_number,
-            'status' => $request->status,
             'role' => $request->role,
         ]);
 
