@@ -67,6 +67,9 @@ Route::post('signup', [UserController::class,'create']);
 Route::get('user/{id}', [UserController::class,'show']);
 Route::get('users', [UserController::class,'index']);
 
+Route::get('testPostman', function() {
+    return response()->json('Postman is works and is running',200);
+});
 
 //take pilot id
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
