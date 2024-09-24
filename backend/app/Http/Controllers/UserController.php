@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Gamer;
 use App\Models\Pilot;
 use App\Models\User;
+use App\Traits\RankOperations;
 use Auth;
 use DB;
 use Hash;
@@ -13,6 +14,8 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     //
+    use RankOperations;
+
     public function show($id)
     {
         $user = User::find($id);
@@ -91,10 +94,7 @@ class UserController extends Controller
     private function createPilot(int $id)
     {
         //create ranking
-        $rank_id = DB::table('ranking')->insertGetId([
-            'pilot_rank' => null,
-            'points' => 0,
-        ]);
+        $rank_id = $this->createRankRecord()->id;
         //set id
         Pilot::create([
             'user_id' => $id, //derived from parameter
@@ -107,22 +107,33 @@ class UserController extends Controller
     public function destroy(int $id)
     {
         $user = User::find($id);
-        $pilot_id = null;
+        //declare out of scope
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found.',
+                'status' => false,
+            ],404);
+        }
+
+        $rank_id = null;
+        
         //determine if pilot or gamer
         if ($user->role == 'p')
         {
             $pilot = Pilot::where('user_id', $id)->first();
-            $pilot_id = $pilot->rank_id;
+            $rank_id = $pilot->rank_id;
         }
+
         //delete user and cascading records
         $user->delete();
-        //delete ranking
-        $deleteUserRankDB = DB::table('ranking')
-                ->where('id',$pilot_id)
-                ->delete();
 
+        if ($rank_id) {
+            //delete ranking
+            $deleted_rank = $this->destroyRankRecord($rank_id);
+        }
         //return responses
-        if ($user){
+        if ($deleted_rank){
             return response()->json([
                 'message' => 'User deleted successfully.',
                 'status' => true,
