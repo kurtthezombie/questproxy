@@ -30,4 +30,29 @@ trait RankOperations
             return null;
         }
     }
+
+    public function addPoints(int $rank_id, int $points) {
+        $rank = Rank::findOrFail($rank_id);
+        //if no rank record found
+        if (!$rank) {
+            throw new Exception('Rank not found.');
+        }
+        //add points
+        $rank->points += $points;
+        $rank->save();
+        //return rank
+        return $rank;
+    }
+    public function minusPoints(int $rank_id, int $points) {
+        $rank = Rank::findOrFail($rank_id);
+        //if no rank record found
+        if (!$rank) {
+            throw new Exception('Rank not found.');
+        }
+        //minus points
+        $rank->points = max(0, $rank->points - $points);
+        $rank->save();
+        //return rank
+        return $rank;
+    }
 }
