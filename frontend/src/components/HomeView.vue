@@ -14,10 +14,10 @@
             </header>
 
             <div>
-                <h4 class="font-bold pb-2 mt-12 border-b border-slate-300">List of users</h4>
+                <h4 class="font-bold pb-2 mt-12 border-b border-slate-300">List of Ganes</h4>
                 <div class="mt-4">
                     <ul>
-                        <li class="h-10 bg-gray-700 rounded mb-3 px-3 flex justify-between items-center text-slate-200" v-for="user in users" :key="user.id">
+                        <!--<li class="h-10 bg-gray-700 rounded mb-3 px-3 flex justify-between items-center text-slate-200" v-for="user in users" :key="user.id">
                             <p v-on:click="onUser(user)" class="tracking-wider cursor-pointer hover:text-xl">{{user.firstName + ' ' + user.lastName}}</p>
                             <div>
                                 <button :disabled="isLoading" v-on:click="onRemove(user)" class="mr-2 rounded-full py-1 px-3 text-xs font-bold text-red-400 border-red-400 border-2 hover:bg-red-400 hover:text-gray-700 transition ease-out duration-500">
@@ -25,7 +25,7 @@
                                     <p v-show="isLoading">loading...</p>
                                 </button>
                             </div>
-                        </li>
+                        </li>-->
                     </ul>
                 </div>
             </div>

@@ -1,9 +1,9 @@
 <template>
     <div id="base-view">
         <div id="home-view" class="bg-slate-200 h-screen w-screen text-gray-700 md:grid md:grid-cols-3">
-            <div id="left" class="md:col-span-1 flex justify-center md:justify-end bg-slate-300 md:pt-1">
+            <div id="left" class="md:col-span-1 flex justify-center md:justify-end bg-slate-100 md:pt-1" style="width: 70%;">
                 <a href="/" class="flex py-3 md:pt-8 md:h-10 items-center mr-4">
-                    <img class="w-10 h-10 mr-2" src="../assets/img/qplogo.png">
+                    <img id="qplogo2" class="w-10 h-10 mr-2" src="../assets/img/qplogo2.png">
                     <p>QuestProxy</p>
                 </a>
             </div>
@@ -13,3 +13,9 @@
         </div>
     </div>
 </template>
+
+<style>
+
+
+
+</style>

@@ -1,6 +1,0 @@
-<template>
-    <div class="container mt-5">
-      <h1>Welcome to the Homepage!</h1>
-      <p>This is the content of your homepage.</p>
-    </div>
-  </template>
