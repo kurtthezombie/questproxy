@@ -44,9 +44,23 @@ class RankController extends Controller
     /**
      * rnk record should not exist wihtout a pilot.
      */
-    public function store(Request $request)
+    public function store()
     {
-        //$this->createRankRecord();
+        try {
+            $created = $this->createRankRecord();
+
+            return response()->json([
+                'status' => true,
+                'message' => "Rank record created",
+            ],201);
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => false,
+                'message' => $error->getMessage(),
+            ],500);
+        }
+
+
     }
 
     /**
@@ -66,7 +80,7 @@ class RankController extends Controller
             return response()->json([
                 'rank_record' => $rank_record,
                 'message' => 'Rank record not found.',
-                'status' => true,
+                'status' => false,
             ],404);
         }
     }
@@ -83,21 +97,28 @@ class RankController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
-        //$this->destroyRankRecord($id)
-    }
-
-    public function createRankRecord(Request $request) {
-        $rank = Rank::create([
-            'pilot_rank' => $request->pilot_rank,
-            'points' => $request->points,
-        ]);
-
-        return response()->json([
-            'status' => true,
-            'rank_record' => $rank,
-            'message' => 'Rank record created',
-        ],201);
+        try {
+            $deleted = $this->destroyRankRecord($id);
+            
+            if ($deleted) {
+                return response()->json([
+                    'status' => true,
+                    'message' => "Rank record deleted.",
+                ],201);
+            } else {
+                return response()->json([
+                    'deleted' => $deleted,
+                    'status' => false,
+                    'message' => "Error occured, Deletion failed.",
+                ],400);
+            }
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => false,
+                'message' => $error->getMessage(),
+            ]);
+        }
     }
 }
