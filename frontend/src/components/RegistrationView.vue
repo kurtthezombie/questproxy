@@ -31,9 +31,7 @@
   
           <label class="mb-1" for="contact_number">Contact Number</label>
           <input class="mb-5 px-2 py-2" v-model="user.contact_number" id="contact_number" type="text" placeholder="Enter your Contact Number" required>
-  
-          <label class="mb-1" for="status">Status</label>
-          <input class="mb-5 px-2 py-2" v-model="user.status" id="status" type="text" placeholder="Statussy" required>
+
   
           <label class="mb-1" for="role">Role</label>
           <select class="mb-5 px-2 py-2" v-model="user.role" id="role" required placeholder="Are you a gamer or a game pilot">
@@ -90,7 +88,6 @@
                 user.f_name = '';
                 user.l_name = '';
                 user.contact_number = '';
-                user.status = '';
                 user.role = '';
 
             } catch (error) {

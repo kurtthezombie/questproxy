@@ -9,6 +9,8 @@ class Rank extends Model
 {
     use HasFactory;
 
+    protected $table = 'ranking';
+
     protected $fillable = [
         'pilot_rank',
         'points'

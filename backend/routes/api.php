@@ -79,3 +79,4 @@ Route::get('testPostman', function() {
 //take pilot id
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
 
+Route::post('create_rank', [RankController::class, 'createRankRecord']);

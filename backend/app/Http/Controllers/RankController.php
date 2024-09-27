@@ -87,4 +87,17 @@ class RankController extends Controller
     {
         //$this->destroyRankRecord($id)
     }
+
+    public function createRankRecord(Request $request) {
+        $rank = Rank::create([
+            'pilot_rank' => $request->pilot_rank,
+            'points' => $request->points,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'rank_record' => $rank,
+            'message' => 'Rank record created',
+        ],201);
+    }
 }
