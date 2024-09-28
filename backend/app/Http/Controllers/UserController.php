@@ -106,7 +106,6 @@ class UserController extends Controller
     public function destroy(int $id)
     {
         $user = User::find($id);
-        //declare out of scope
 
         if (!$user) {
             return response()->json([
@@ -114,14 +113,20 @@ class UserController extends Controller
                 'status' => false,
             ],404);
         }
-
+        //declare to have in scope
         $rank_id = null;
+        $deleted_rank = null;
         
         //determine if pilot or gamer
-        if ($user->role == 'p')
+        if ($user->role == 'game_pilot')
         {
             $pilot = Pilot::where('user_id', $id)->first();
-            $rank_id = $pilot->rank_id;
+
+            if ($pilot) {
+                $rank_id = $pilot->rank_id;
+
+                $pilot->delete();
+            }
         }
 
         //delete user and cascading records
@@ -131,6 +136,7 @@ class UserController extends Controller
             //delete ranking
             $deleted_rank = $this->destroyRankRecord($rank_id);
         }
+        
         //return responses
         if ($deleted_rank){
             return response()->json([
@@ -144,7 +150,7 @@ class UserController extends Controller
             ],500);
         }
     }
-
+    //for testing, not a major function
     public function checklogin()
     {
         return response([

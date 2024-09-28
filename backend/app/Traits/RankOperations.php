@@ -22,9 +22,14 @@ trait RankOperations
 
     public function destroyRankRecord(int $id) {
         try {
-            $rank = Rank::destroy($id);
+            //$deleted = Rank::destroy($id);
 
-            return true;
+            $deleted = Rank::where('id', $id)->delete();
+            if ($deleted) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception $error) {
             \Log::error('Failed to delete record: '. $error->getMessage());
             return null;
