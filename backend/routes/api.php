@@ -1,5 +1,6 @@
 <?php
 //controllers
+use App\Http\Controllers\GamerController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PilotController;
 use App\Http\Controllers\RankController;
@@ -49,6 +50,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyPortfolio']);
     });
 
+    Route::controller(GamerController::class)->group(function() {
+        Route::get('gamers/edit/{id}','edit');
+        Route::patch('gamers/edit/{id}','update');
+    });
+
     Route::controller(ServiceController::class)->group(function () {
       Route::get('service/index','index');
       Route::get('service/{id}','show');
@@ -80,6 +86,5 @@ Route::get('testPostman', function() {
 
 //take pilot id
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
-
 Route::post('rank/create', [RankController::class, 'store']);
 Route::delete('rank/delete/{id}',[RankController::class, 'destroy']);
