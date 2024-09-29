@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Traits\RankOperations;
 use Auth;
 use DB;
+use Exception;
 use Hash;
 use Illuminate\Http\Request;
 
@@ -101,6 +102,61 @@ class UserController extends Controller
         ]);
 
         return true;
+    }
+
+    public function edit(int $id){
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => "User account $id not found",
+            ],404);
+        }
+
+        return response()->json([
+            'user' => $user,
+            'status' => true,
+            'message' => "User account $id found."
+        ]);
+    }
+
+    public function update(Request $request, $id) {
+        $request->validate([
+            'email' => 'required|string|email',
+            'f_name' => 'required|string',
+            'l_name' => 'required|string',
+            'contact_number' => 'required|string|max:15',
+        ]);
+
+        $user = User::find($id);
+        //if user does not exist
+        if(!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not found',
+            ],404);    
+        }
+        
+        try {
+            $user->update([
+                'email' => $request->email,
+                'f_name' => $request->f_name,
+                'l_name' => $request->l_name,
+                'contact_number' => $request->contact_number, 
+            ]);
+
+            return response()->json([
+                'message' => "User account has been updated successfully.",
+                'status' => true,
+            ], 200);
+
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => false,
+                'message' => "Error {$error->getMessage()}",
+            ],500);
+        }
     }
 
     public function destroy(int $id)

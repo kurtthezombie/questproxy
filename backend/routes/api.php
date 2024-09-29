@@ -27,6 +27,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         //delete user
         Route::delete('/delete/user/{id}', 'destroy');
         Route::get('check_login', 'checklogin');
+        Route::get('/users/edit/{id}', 'edit');
+        Route::patch('/users/edit/{id}', 'update');
     });
 
     Route::controller(PilotController::class)->group(function () {
