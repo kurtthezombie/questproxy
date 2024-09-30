@@ -49,13 +49,13 @@ const submitForm = async () => {
 <template>
   <div class="login-form">
     <div class="login-header">
-      <img class="gaming-icon" src="@/assets/img/qplogo2.png" alt="logo" width="80" height="80" />
+      <img class="gaming-icon" src="@/assets/img/qp_logo2.png" alt="logo" width="80" height="80" />
       <h1> Login </h1>
     </div>
     <h4>{{ message }}</h4>
     <form @submit.prevent="submitForm">
       <div class="form-group">
-        <input type="text" id="username" v-model="username" placeholder="User Name or email..." required>
+        <input type="text" id="username" v-model="username" placeholder="Username" required>
       </div>
 
       <div class="form-group">
@@ -69,7 +69,6 @@ const submitForm = async () => {
       Signup now
     </router-link>
 
-    <h5>{{ message }}</h5>
   </div>
 </template>
 

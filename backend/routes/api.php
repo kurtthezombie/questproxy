@@ -34,9 +34,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::controller(PilotController::class)->group(function () {
         //Add more routes that need to use the login authentication
-        Route::get('edit/pilot/{id}', 'edit');
+        Route::get('pilot/edit{id}', 'edit');
         //patch because we're only updating some columns, not the whole record
-        Route::patch('edit/pilot/{id}', 'update');
+        Route::patch('pilot/edit/{id}', 'update');
         //portfolio routes
 
         Route::post('portfolio/create', 'createPortfolio');
