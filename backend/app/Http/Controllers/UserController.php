@@ -41,6 +41,15 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
+        $captcha_validated = $this->validateCaptcha($request->captcha, $request->key);
+        
+        if(!$captcha_validated){
+            return response()->json([
+                'status' => false,
+                'message' => 'Captcha incorrect or invalid.',
+            ]);
+        }
+        
         //validate inputs
         $request->validate([
             'username' => 'required|string|unique:users,username',
@@ -206,6 +215,14 @@ class UserController extends Controller
             ],500);
         }
     }
+
+    private function validateCaptcha(string $captcha, string $key){
+        //
+        $rules = ['captcha' => 'required|captcha_api:'.$key.',math'];
+        $validator = validator()->make(['captcha' => $captcha], $rules);
+        return !($validator->fails());
+    }
+
     //for testing, not a major function
     public function checklogin()
     {
