@@ -19,18 +19,30 @@ const submitForm = async () => {
     const formData = {
         username: username.value,
         password: password.value,
-    };
+    }
     try {
         const response = await loginservice.login(formData);
-        username.value = '';
-        password.value = '';
-        message.value = response.message;
-        router.push({ name: 'dashboard' });
+        if (response.status) {
+            
+            username.value = '';
+            password.value = '';
+
+            
+            const userRole = response.authenticated_user.role;  
+            if (userRole === 'gamer') {
+                router.push({ name: 'gamer' }); 
+            } else if (userRole === 'game pilot') {
+                router.push({ name: 'game-pilot' }); 
+            }
+
+            
+            message.value = response.message;
+        }
     } catch (error) {
         console.log('Login error: ', error);
         message.value = 'Login failed. Please try again.';
     }
-};
+}
 </script>
 
 
