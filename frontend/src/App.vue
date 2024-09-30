@@ -1,85 +1,104 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <div id="app" class="font-mono">
+    <router-view></router-view>
+  </div>
 </template>
 
+<script>
+</script>
+
 <style scoped>
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  z-index: -1;
+}
+
+/* Layout Styles */
+#app {
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    background-image: url('@/assets/img/background2.jpg');
+    background-size: cover; /* Cover the entire container */
+    background-position: center;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+  background-image: url('@/assets/img/background2.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Header and Navigation */
 header {
-  line-height: 1.5;
-  max-height: 100vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 0rem;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 0;
+  box-shadow: 0px 4px 2px -2px gray;
+}
+
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
 }
 
 .logo {
-  display: block;
-  margin: 0 auto 2rem;
+  width: 100px;
 }
 
 nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+  display: flex;
+  gap: 1.5rem;
 }
 
 nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+  font-weight: bold;
+  color: #333;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  transition: 0.3s;
 }
 
-nav a:first-of-type {
-  border: 0;
+nav a:hover {
+  color: #42b983;
+  border-bottom: 2px solid #42b983;
 }
 
+nav a.router-link-exact-active {
+  color: #42b983;
+  border-bottom: 2px solid #42b983;
+}
+
+/* Responsive Layout */
 @media (min-width: 1024px) {
   header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
   }
 
   nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
+    gap: 2rem;
+  }
 
-    padding: 1rem 0;
-    margin-top: 1rem;
+  .logo {
+    margin-right: auto; /* Push the nav to the right */
   }
 }
 </style>

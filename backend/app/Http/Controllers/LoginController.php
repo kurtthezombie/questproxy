@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User; 
+use App\Models\User;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 
 class LoginController extends Controller
 {
+
     public function login(Request $request)
     {
         //validate inputs
@@ -18,47 +20,62 @@ class LoginController extends Controller
         ]);
         //check if credentials match
         $user = User::where('username', $request->username)->first();
-        
+
         if (!$user || !Hash::check($request->password,$user->password))
         {
             return response()->json([
-                'message' => 'Incorrect username or password'
+                'message' => 'Incorrect username or password.',
+                'status' => false,
             ],401);
         }
         //create token
 
-        $token = $user->createToken($user->name.'Auth-Token')->plainTextToken;
-    
-        return response()->json([
-            'message' => 'Login successful',
-            'token_type' => 'Bearer',
-            'token' => $token
-        ],200);
-    }
+        $token = $user->createToken($user->name.'Auth-Token',['*'], now()->addMinutes(30))->plainTextToken;
+        //set auth info
+        Auth::login($user);
 
-    public function test()
-    {
         return response()->json([
-            'message' => 'your sanctum worked, it just needs a route to go loginnnn'
+            'message' => 'Login successful.',
+            'token_type' => 'Bearer',
+            'token' => $token,
+            'authenticated_user' => Auth::user(),
+            'status' => true,
         ],200);
     }
 
     public function logout(Request $request)
     {
-        $logout = $request->user()->currentAccessToken()->delete();
-
-        //if logout successful
-        if ($logout)
-        {
+        try {
+            $logout = $request->user()->currentAccessToken()->delete();
+            $request->user()->tokens()->delete(); //use if u wanna delete all tokens hehe
+            //if logout successful
+            if ($logout) {
+                return response()->json([
+                    'message' => 'Successfully logged out.',
+                    'status' => true,
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'Logout failed.',
+                    'status' => false,
+                ], 500);
+            }
+        } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Successfully logged out.'
-            ],200);
-        }
-        else 
-        {
-            return response()->json([
-                'message' => 'Logout failed. Please try again.'
+                'message' => $e->getMessage(),
+                'status' => false,
             ],500);
         }
+    }
+
+    //to test if auth works, set bearer token in postman
+    public function testAuth()
+    {
+        $user = Auth::user()->id;
+        return response()->json([
+            'user' => $user,
+            'message' => "Auth user works!",
+            'status' => true,
+        ],200);
     }
 }
