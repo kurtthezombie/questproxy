@@ -10,6 +10,7 @@ body, html {
   margin: 0;
   padding: 0;
   height: 100%;
+  z-index: -1;
 }
 
 /* Layout Styles */
@@ -37,11 +38,11 @@ header {
   justify-content: space-between;
   align-items: center;
   background-color: #f8f9fa;
-  padding: 1rem;
+  padding: 0rem;
   position: sticky;
   top: 0;
   width: 100%;
-  z-index: 100;
+  z-index: 0;
   box-shadow: 0px 4px 2px -2px gray;
 }
 

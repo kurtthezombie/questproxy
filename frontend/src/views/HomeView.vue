@@ -27,21 +27,29 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <style scoped>
 /* Header and Navigation */
-header {
-  background-color: rgba(37,3,65,255); /* Semi-transparent light gray */
+.header {
+  background-color: rgba(37,3,65,255); 
   padding: 1rem;
   position: sticky;
   top: 0;
   width: 100%;
-  z-index: 100;
+  z-index: 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .logo {
   width: 120px;
 }
 
-nav a {
+.nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav a {
   margin: 0 1rem;
   font-weight: bold;
   color: #333;
@@ -49,13 +57,13 @@ nav a {
   transition: 0.3s;
 }
 
-nav a:hover {
+.nav a:hover {
   color: #42b983;
 }
 
 /* Main content area */
 #main-content {
-  background-color: rgba(216, 216, 216, 0.8); /* Semi-transparent light gray */
+  background-color: rgba(216, 216, 216, 0.8); 
   padding: 2rem;
   border-radius: 8px;
   margin-top: 2rem;
@@ -63,7 +71,7 @@ nav a:hover {
 
 /* About section */
 .about-section {
-  background-color: rgba(232, 232, 232, 0.8); /* Semi-transparent light gray */
+  background-color: rgba(232, 232, 232, 0.8); 
   padding: 2rem;
   border-radius: 8px;
   margin-top: 2rem;
