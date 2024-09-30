@@ -1,5 +1,6 @@
 <?php
 //controllers
+use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\GamerController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PilotController;
@@ -80,11 +81,21 @@ Route::post('signup', [UserController::class,'create']);
 Route::get('user/{id}', [UserController::class,'show']);
 Route::get('users', [UserController::class,'index']);
 
-Route::get('testPostman', function() {
-    return response()->json('Postman is works and is running',200);
+
+//CAPTCHA:
+Route::controller(CaptchaController::class)->group(function () {
+    //generate captcha
+    //Route::get('load-catpcha','load');
+    //Route::post('post-captcha', 'post'); 
 });
+
 
 //take pilot id
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
 Route::post('rank/create', [RankController::class, 'store']);
 Route::delete('rank/delete/{id}',[RankController::class, 'destroy']);
+
+//testing
+Route::get('testPostman', function() {
+    return response()->json('Postman is works and is running',200);
+});
