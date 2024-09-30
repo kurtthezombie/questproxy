@@ -19,42 +19,31 @@ const submitForm = async () => {
     const formData = {
         username: username.value,
         password: password.value,
-    }
+    };
     try {
         const response = await loginservice.login(formData);
-        if (response.status) {
-            // Clear input fields
-            username.value = '';
-            password.value = '';
-
-            // Redirect based on the user's role
-            const userRole = response.authenticated_user.role;  // Assuming 'role' comes from API
-            if (userRole === 'gamer') {
-                router.push({ name: 'gamer' }); // Route for gamer
-            } else if (userRole === 'game pilot') {
-                router.push({ name: 'game-pilot' }); // Route for game pilot
-            }
-
-            // Optionally, show the message from the response
-            message.value = response.message;
-        }
+        username.value = '';
+        password.value = '';
+        message.value = response.message;
+        router.push({ name: 'dashboard' });
     } catch (error) {
         console.log('Login error: ', error);
         message.value = 'Login failed. Please try again.';
     }
-}
+};
 </script>
+
 
 <template>
   <div class="login-form">
     <div class="login-header">
       <img class="gaming-icon" src="@/assets/img/qplogo2.png" alt="logo" width="80" height="80" />
-      <h1>Login</h1>
+      <h1> Login </h1>
     </div>
-    
+    <h4>{{ message }}</h4>
     <form @submit.prevent="submitForm">
       <div class="form-group">
-        <input type="text" id="username" v-model="username" placeholder="Username" required>
+        <input type="text" id="username" v-model="username" placeholder="User Name or email..." required>
       </div>
 
       <div class="form-group">
