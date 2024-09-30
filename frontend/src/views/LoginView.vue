@@ -4,7 +4,7 @@ import loginservice from '@/services/login-service';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
-const route = useRoute();
+const route = useRoute()
 const username = ref('');
 const password = ref('');
 const message = ref('');
@@ -46,19 +46,29 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <h1>Login</h1>
-  <h4>{{ message }}</h4>
-    <div class="login-form">
-      <div class="flex flex-col items-center">
-        <!--<img id="qplogo" class="w-auto h-auto" src="../assets/img/qplogo2.png" alt="">-->
+  <div class="login-form">
+    <div class="login-header">
+      <img class="gaming-icon" src="@/assets/img/qplogo2.png" alt="logo" width="80" height="80" />
+      <h1>Login</h1>
+    </div>
+    
+    <form @submit.prevent="submitForm">
+      <div class="form-group">
+        <input type="text" id="username" v-model="username" placeholder="Username" required>
+      </div>
+
+      <div class="form-group">
+        <input type="password" id="password" v-model="password" placeholder="Password" required>
       </div>
 
       <button type="submit">Login</button>
     </form>
-    
+
     <router-link class="router-link-custom" to="/signup">
-      Sign up
+      Signup now
     </router-link>
+
+    <h5>{{ message }}</h5>
   </div>
 </template>
 
@@ -91,11 +101,6 @@ h1 {
   letter-spacing: 1px;
 }
 
-h4 {
-  color: #FF69B4;
-  margin-bottom: 20px;
-}
-
 form {
   display: flex;
   flex-direction: column;
@@ -107,7 +112,7 @@ form {
   justify-content: center;
 }
 
-input {
+input, select {
   width: 100%;
   padding: 10px;
   border: none;
@@ -116,7 +121,7 @@ input {
   font-size: 16px;
 }
 
-input::placeholder {
+input::placeholder, select {
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -144,5 +149,10 @@ button:hover {
 
 .router-link-custom:hover {
   text-decoration: underline;
+}
+
+h5 {
+  color: #FF69B4;
+  margin-top: 15px;
 }
 </style>

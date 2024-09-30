@@ -1,11 +1,95 @@
+<template>
+  <div class="game-pilot-view">
+    <div class="pilot-header">
+      <img class="pilot-icon" src="@/assets/img/qplogo2.png" alt="Pilot Icon" width="80" height="80" />
+      <h1>Welcome, Game Pilot!</h1>
+    </div>
+    
+    <p>This is the view for game pilots. Here, you can manage your skills, view missions, and more.</p>
+    
+    <DashboardView />
+
+    <button class="logout-button" @click="callLogout">Logout</button>
+  </div>
+</template>
+
 <script setup>
-    import DashboardView from '@/components/Dashboard.vue';  // Import DashboardView
+import loginService from '@/services/login-service';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const callLogout = () => {
+  console.log('LOGOUT function CALLED from GamePilotView');
+  loginService.logout();
+
+  router.push({ name: 'login' });
+};
 </script>
 
-<template>
-    <div>
-        <h1>Welcome, Game Pilot!</h1>
-        <p>This is the view for game pilots.</p>
-        <DashboardView />
-    </div>
-</template>
+<style scoped>
+/* Main Container */
+.game-pilot-view {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 40px;
+  background-color: rgba(30, 40, 50, 0.9);
+  border-radius: 10px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Header Styling */
+.pilot-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.pilot-icon {
+  margin-right: 15px;
+}
+
+h1 {
+  font-size: 26px;
+  text-transform: uppercase;
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 1.2px;
+  margin: 0;
+}
+
+/* Paragraph Styling */
+p {
+  font-size: 18px;
+  margin: 20px 0;
+  font-family: 'Verdana', sans-serif;
+}
+
+/* Logout Button Styling */
+.logout-button {
+  padding: 12px 25px;
+  background-color: #FF4500;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #FF6347;
+}
+
+/* Dashboard Placeholder */
+.dashboard-body {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: rgba(0, 50, 70, 0.8);
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+}
+</style>
