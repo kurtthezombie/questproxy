@@ -50,7 +50,7 @@ const submitForm = async () => {
         <input type="password" id="password" v-model="password" placeholder="Password" required>
       </div>
 
-      <button type="submit">Submit</button>
+      <button type="submit">Login</button>
     </form>
     
     <router-link class="router-link-custom" to="/signup">
