@@ -52,22 +52,97 @@ const submitForm = async () => {
       <div class="flex flex-col items-center">
         <!--<img id="qplogo" class="w-auto h-auto" src="../assets/img/qplogo2.png" alt="">-->
       </div>
-      <form @submit.prevent="submitForm">
-        <label for="">Username</label> <br>
-        <input type="username" v-model="username"> <br>
-        <label for="">Password</label><br>
-        <input type="password" v-model="password"> <br>
-        <button type="submit">Login</button>
-      </form>
-      <router-link class="mt-5 bg-slate-200 text-slate-900 px-5 py-2 border border-slate-900 rounded text-center hover:shadow-xl" to="/signup">
-                  Signup now
-        </router-link>
-    </div>
-  </template>
+
+      <button type="submit">Login</button>
+    </form>
+    
+    <router-link class="router-link-custom" to="/signup">
+      Sign up
+    </router-link>
+  </div>
+</template>
 
 <style scoped>
-.qplogo {
-  max-width: 100px;
-  max-height: 100px;
+.login-form {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 50px;
+  background-color: rgba(0, 20, 30, 0.8);
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  color: #fff;
+}
+
+.login-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.gaming-icon {
+  margin-right: 10px;
+}
+
+h1 {
+  font-size: 24px;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+h4 {
+  color: #FF69B4;
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: rgba(0, 40, 60, 0.6);
+  color: #fff;
+  font-size: 16px;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+button {
+  padding: 10px;
+  background-color: #FF69B4;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #FF1493;
+}
+
+.router-link-custom {
+  display: inline-block;
+  margin-top: 15px;
+  color: #FF69B4;
+  text-decoration: none;
+}
+
+.router-link-custom:hover {
+  text-decoration: underline;
 }
 </style>
