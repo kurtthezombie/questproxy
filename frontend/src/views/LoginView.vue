@@ -19,27 +19,38 @@ const submitForm = async () => {
     const formData = {
         username: username.value,
         password: password.value,
-    };
+    }
     try {
         const response = await loginservice.login(formData);
-        username.value = '';
-        password.value = '';
-        message.value = response.message;
-        router.push({ name: 'dashboard' });
+        if (response.status) {
+            // Clear input fields
+            username.value = '';
+            password.value = '';
+
+            // Redirect based on the user's role
+            const userRole = response.authenticated_user.role;  // Assuming 'role' comes from API
+            if (userRole === 'gamer') {
+                router.push({ name: 'gamer' }); // Route for gamer
+            } else if (userRole === 'game pilot') {
+                router.push({ name: 'game-pilot' }); // Route for game pilot
+            }
+
+            // Optionally, show the message from the response
+            message.value = response.message;
+        }
     } catch (error) {
         console.log('Login error: ', error);
         message.value = 'Login failed. Please try again.';
     }
-};
+}
 </script>
 
-
 <template>
+  <h1>Login</h1>
   <h4>{{ message }}</h4>
     <div class="login-form">
       <div class="flex flex-col items-center">
         <!--<img id="qplogo" class="w-auto h-auto" src="../assets/img/qplogo2.png" alt="">-->
-        <p class="text-center">Login to your account</p>
       </div>
       <form @submit.prevent="submitForm">
         <label for="">Username</label> <br>

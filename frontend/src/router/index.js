@@ -2,7 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
-import Dashboard from '@/views/Dashboard.vue'
+import Dashboard from '@/components/Dashboard.vue'
+import GamerView from '@/views/GamerView.vue'
+import GamePilotView from '@/views/GamePilotView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,6 +38,18 @@ const router = createRouter({
       component: Dashboard,
       meta: { requiresAuth: true }
     },
+    {
+      path: '/gamer',
+      name: 'gamer',
+      component: GamerView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/game-pilot',
+      name: 'game-pilot',
+      component: GamePilotView,
+      meta: { requiresAuth: true }
+    }
   ]
 })
 
