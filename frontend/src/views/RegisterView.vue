@@ -1,8 +1,9 @@
 <script setup>
 
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import loginservice from '@/services/login-service';
+import { fetchImage } from '@/services/captcha-service';
 
 const username = ref('');
 const email = ref('');
@@ -12,6 +13,10 @@ const password = ref('');
 const contact_number = ref('');
 const role = ref('');
 const message = ref('');
+
+const captcha_input = ref('');
+const captchaImg = ref('')
+const captchaKey = ref('')
 
 const router = useRouter();
 
@@ -23,7 +28,9 @@ const submitForm = async () => {
         l_name: l_name.value,
         password: password.value,
         contact_number: contact_number.value,
-        role: role.value
+        role: role.value,
+        captcha: captcha_input.value,
+        key: captchaKey.value,
     };
     try {
         console.log('calling register')
@@ -38,15 +45,36 @@ const submitForm = async () => {
             password.value = '';
             contact_number.value = '';
             role.value = '';
-
+            
             router.push({ path: '/login', query: { message: 'Registration successful!' } });
+        } else {
+          handleReload();
         }
+
+        captcha_input.value = '';
         message.value = response.message;
     } catch (error) {
         console.log('Error message: ', error);
     }
 
 }
+//fetch captcha image
+const handleReload = async() => {
+  console.log('Fetching captcha..')
+  fetchImage()
+    .then(response => {
+      console.log("handleReload fetched: ", response);
+      captchaImg.value = response.img;
+      captchaKey.value = response.key;
+    })
+    .catch(error => {
+      console.log('Error reloading CAPTCHA', error);
+    })
+}
+
+onMounted(() => {
+  handleReload();
+});
 
 </script>
 
@@ -88,6 +116,12 @@ const submitForm = async () => {
           <option value="gamer">Online Games Enthusiast</option>
           <option value="game pilot">Game Pilot</option>
         </select>
+      </div>
+
+      <div class="form-group">
+        <img :src="captchaImg" alt="captcha">
+        <button type="button" @click="handleReload">&#x21bb;</button><br>
+        <input type="text" placeholder="Enter CAPTCHA" v-model="captcha_input">
       </div>
 
       <button type="submit">Register</button>
