@@ -5,6 +5,7 @@ import LoginView from '@/views/LoginView.vue'
 import Dashboard from '@/components/Dashboard.vue'
 import GamerView from '@/views/GamerView.vue'
 import GamePilotView from '@/views/GamePilotView.vue'
+import LeaderboardsView from '@/views/LeaderboardsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,7 +50,12 @@ const router = createRouter({
       name: 'game-pilot',
       component: GamePilotView,
       meta: { requiresAuth: true }
-    }
+    },
+    {
+      path: '/leaderboards',
+      name: 'leaderboards',
+      component: LeaderboardsView,
+    },
   ]
 })
 
