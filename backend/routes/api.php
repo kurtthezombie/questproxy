@@ -65,10 +65,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
       Route::delete('service/destroy/{id}','destroy');
     });
 
-    Route::controller(RankController::class)->group(function () {
-      Route::get('leaderboards', 'index');
-      Route::get('leaderboard/{id}','show');
-    });
+    //rank controllers here
 });
 
 
@@ -92,6 +89,10 @@ Route::controller(CaptchaController::class)->group(function () {
 
 //take pilot id
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
+Route::controller(RankController::class)->group(function () {
+    Route::get('leaderboards', 'index');
+    Route::get('leaderboard/{id}','show');
+  });
 Route::post('rank/create', [RankController::class, 'store']);
 Route::delete('rank/delete/{id}',[RankController::class, 'destroy']);
 
