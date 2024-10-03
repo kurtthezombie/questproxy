@@ -26,4 +26,8 @@ class Pilot extends Model
     {
         return $this->hasMany(Service::class);
     }
+
+    public function portfolios() {
+        return $this->hasMany(Portfolio::class, 'pilot_id');
+    }
 }

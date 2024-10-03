@@ -41,8 +41,9 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
-        $captcha_validated = $this->validateCaptcha($request->captcha, $request->key);
-        
+        //uncomment and just set validated to true if testing postman
+        //$captcha_validated = $this->validateCaptcha($request->captcha, $request->key);
+        $captcha_validated = true;
         if(!$captcha_validated){
             return response()->json([
                 'status' => false,

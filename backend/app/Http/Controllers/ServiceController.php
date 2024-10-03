@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pilot;
 use App\Models\Service;
 use Auth;
+use Exception;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
@@ -16,9 +17,10 @@ class ServiceController extends Controller
             $services = Service::all();
             return response()->json([
                 'services' => $services,
+                'message' => 'All services retrieved.',
                 'status' => true,
             ],200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
                 'status' => false,
@@ -48,7 +50,7 @@ class ServiceController extends Controller
                 ],404);
             }
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             return response()->json([
                 'message' => $e->getMessage(),
