@@ -4,28 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Pilot;
 use App\Models\Portfolio;
+use App\Traits\ApiResponseTrait;
 use Auth;
 use Exception;
 use Illuminate\Http\Request;
 
 class PortfolioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //wont display all portfolios, need to be portfolios for specific users only
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        
-    }
-
+    use ApiResponseTrait;
     /**
      * Store a newly created resource in storage.
      */
@@ -39,10 +25,7 @@ class PortfolioController extends Controller
         $pilot = Pilot::where('user_id',$user_id)->first();
 
         if(!$pilot) {
-            return response()->json([
-                'message' => 'Pilot not found.',
-                'status' => false,
-            ],404);
+            return $this->failedResponse('Pilot not found.',404);
         }
         try {
             //create portfolio
@@ -50,39 +33,27 @@ class PortfolioController extends Controller
                 'p_content' => $request->p_content,
                 'pilot_id' => $pilot->id,
             ]);
-
-            return response()->json([
-                'message' => "Portfolio successfully created.",
-                'status' => true,
-            ], 201);
+            
+            return $this->successResponse(
+                'Portfolio successfully created.',
+                201,
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-                'status' => false,
-            ],500);
+            return $this->failedResponse($e->getMessage(),500);
         }   
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified portfolios of pilot
      * Takes pilot_id of the page
      */
     public function show($pilot_id)
     {
         $portfolios = Portfolio::where('pilot_id', $pilot_id)->get();
         
-        if(!$portfolios) {
-            return response()->json([
-                'message' => 'Portfolios not found.',
-                'status' => false,
-            ],404);
-        }
-
-        return response()->json([
-            'portfolios' => $portfolios,
-            'message' => 'Portfolios successfully retrieved.',
-            'status' => true,
-        ],200);
+        return (!$portfolios) 
+        ? $this->failedResponse('Portfolios not found.', 404) 
+        : $this->successResponse('Portfolios successfully retrieved.',200,['portfolios' => $portfolios]);
     }
 
     /**
@@ -92,17 +63,9 @@ class PortfolioController extends Controller
     {
         $portfolio = Portfolio::find($id);
 
-        if (!$portfolio) {
-            return response()->json([
-                'message' => "Portfolio {$id} not found.",
-                'status' => false,
-            ],404);
-        }
-        return response()->json([
-            'portfolio' => $portfolio,
-            'message' => 'Portfolio successfully found.',
-            'status' => true,
-        ],200);
+        return !$portfolio
+        ? $this->failedResponse("Portfolio {$id} not found.",404)
+        : $this->successResponse('Portfolio successfully found.',200,['portfolio' => $portfolio]);
     }
 
     /**
@@ -115,19 +78,14 @@ class PortfolioController extends Controller
         $portfolio = Portfolio::find($id);
 
         if (!$portfolio) {
-            return response()->json([
-                'message' => "Portfolio {$id} not found.",
-                'status' => false,
-            ],404);
+            return $this->failedResponse("Portfolio {$id} not found.",404);
         }
+        //update p_content
         $portfolio->p_content = $request->p_content;
-
+        //save changes
         $portfolio->save();
 
-        return response()->json([
-            'message' => 'Portfolio record successfully updated.',
-            'status' => true,
-        ],200);
+        return $this->successResponse('Portfolio record successfully updated.',200);
     }
 
     /**
@@ -136,18 +94,10 @@ class PortfolioController extends Controller
     public function destroy($id)
     {
         $deleted = Portfolio::destroy($id);
-
-        if (!$deleted) {
-            return response()->json([
-                'message' => 'Portfolio deletion unsuccesful.',
-                'status' => false,
-            ],500);
-        }
-
-        return response()->json([
-            'message' => "Portfolio {$id} successfully deleted.",
-            'status' => true,
-        ],200);
+        
+        return (!$deleted)
+        ? $this->failedResponse('Portfolio deletion unsuccesful.',500)
+        : $this->successResponse("Portfolio {$id} successfully deleted.",200);
     }
 
     public function destroyAll() {
@@ -157,16 +107,8 @@ class PortfolioController extends Controller
         //delete portfolios with pilot id
         $deleted = Portfolio::where('pilot_id', $pilot->id)->delete();
 
-        if(!$deleted) {
-            return response()->json([
-                'message' => "Failed to delete portfolios of pilot {$pilot->id}.",
-                'status' => false, 
-            ]);
-        }
-
-        return response()->json([
-            'message' => "Portfolios successfully deleted.",
-            'status' => true,
-        ]);
+        return (!$deleted)
+        ? $this->failedResponse("Failed to delete portfolios of pilot {$pilot->id}.",500)
+        : $this->successResponse("Portfolios successfully deleted.",200);
     }
 }

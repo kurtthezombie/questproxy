@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rank;
+use App\Traits\ApiResponseTrait;
 use Exception;
 use Illuminate\Http\Request;
 use App\Traits\RankOperations;
 
 class RankController extends Controller
 {
-    use RankOperations;
+    use RankOperations, ApiResponseTrait;
     /**
      * Display a listing of the resource.
      */
@@ -27,17 +28,9 @@ class RankController extends Controller
             ];
         });
         if ($rankings) {
-            return response()->json([
-                'rankings' => $rankings,
-                'message' => 'Leaderboard data has been successfully retrieved.',
-                'status' => true,
-            ],200);
+            return $this->successResponse('Leaderboard data has been successfully retrieved.',200,['rankings' => $rankings]);
         } else {
-            return response()->json([
-                'rankings' => $rankings,
-                'message' => 'The leaderboard is currently empty.',
-                'status' => true,
-            ],200);
+            return $this->successResponse('The leaderboard is currently empty.',200,['rankings'=>$rankings]);
         }
     }
 
@@ -49,20 +42,11 @@ class RankController extends Controller
         try {
             $created = $this->createRankRecord();
 
-            return response()->json([
-                'status' => true,
-                'message' => "Rank record created",
-            ],201);
+            return $this->successResponse("Rank record created",201);
         } catch (Exception $error) {
-            return response()->json([
-                'status' => false,
-                'message' => $error->getMessage(),
-            ],500);
+            return $this->failedResponse($error->getMessage(),500);
         }
-
-
     }
-
     /**
      * Display the specified resource.
      */
@@ -70,18 +54,9 @@ class RankController extends Controller
     {
         try {
             $rank_record = Rank::findOrFail($id);
-
-            return response()->json([
-                'rank_record' => $rank_record,
-                'message' => 'Rank record successfully retrieved.',
-                'status' => true,
-            ],200);
+            return $this->successResponse('Rank record successfully retrieved.',200,['rank_record' => $rank_record]);
         } catch (Exception $error) {
-            return response()->json([
-                'rank_record' => $rank_record,
-                'message' => 'Rank record not found.',
-                'status' => false,
-            ],404);
+            return $this->failedResponse('Rank record not found.',404,['rank_record' => $rank_record]);
         }
     }
 
@@ -101,24 +76,13 @@ class RankController extends Controller
     {
         try {
             $deleted = $this->destroyRankRecord($id);
-            
-            if ($deleted) {
-                return response()->json([
-                    'status' => true,
-                    'message' => "Rank record deleted.",
-                ],201);
-            } else {
-                return response()->json([
-                    'deleted' => $deleted,
-                    'status' => false,
-                    'message' => "Error occured, Deletion failed.",
-                ],400);
+            if (!$deleted) {
+                return $this->failedResponse("Error occured, Deletion failed.", 400);
             }
+
+            return $this->successResponse("Rank record deleted.",201);
         } catch (Exception $error) {
-            return response()->json([
-                'status' => false,
-                'message' => $error->getMessage(),
-            ]);
+            return $this->failedResponse($error->getMessage(),500);
         }
     }
 }
