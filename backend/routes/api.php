@@ -60,11 +60,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::controller(ServiceController::class)->group(function () {
-      Route::get('services/index','index');
+      Route::get('services','index');
       Route::get('services/{id}','show');
       Route::post('services/create','store');
       Route::get('services/edit/{id}','edit');
-      Route::post('services/edit/{id}','update');
+      Route::patch('services/edit/{id}','update');
       Route::delete('services/destroy/{id}','destroy');
     });
 

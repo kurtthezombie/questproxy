@@ -75,7 +75,7 @@ class ServiceController extends Controller
             ]);
             //return response
             if ($service) {
-                return $this->successResponse("Listing {id} has been created.", 201);
+                return $this->successResponse("Listing {$service->id} has been created.", 201);
             }
         } catch (Exception $e) {
             //throw $th;
