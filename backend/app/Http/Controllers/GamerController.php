@@ -3,26 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gamer;
+use App\Traits\ApiResponseTrait;
 use Exception;
 use Illuminate\Http\Request;
 
 class GamerController extends Controller
 {
+    use ApiResponseTrait;
     public function edit($id){
         $gamer = Gamer::find($id);
 
         if (!$gamer) {
-            return response()->json([
-                'status' => false,
-                'message' => "Gamer account $id not found",
-            ],404);
+            return $this->failedResponse("Gamer account {$id} not found",404);
         }
 
-        return response()->json([
-            'gamer' => $gamer,
-            'status' => true,
-            'message' => "Gamer account $id found."
-        ]);
+        return $this->successResponse("Gamer account {$id} found.",200,['gamer' => $gamer]);
     }
 
     public function update(Request $request, $id) {
@@ -33,10 +28,7 @@ class GamerController extends Controller
         $gamer = Gamer::find($id);
         //if gamer does not exist
         if(!$gamer) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Gamer not found',
-            ],404);    
+            return $this->failedResponse('Gamer not found.',404);    
         }
         
         try {
@@ -44,16 +36,10 @@ class GamerController extends Controller
                 'gamer_preference' => $request->gamer_preference,
             ]);
 
-            return response()->json([
-                'message' => "Gamer account has been updated successfully.",
-                'status' => true,
-            ], 200);
+            return $this->successResponse("Gamer account has been updated successfully.",200);
 
         } catch (Exception $error) {
-            return response()->json([
-                'status' => false,
-                'message' => "Error {$error->getMessage()}",
-            ],500);
+            return $this->failedResponse("Error {$error->getMessage()}",500);
         }
     }
 }

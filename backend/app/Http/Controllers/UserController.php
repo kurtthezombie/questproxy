@@ -6,6 +6,7 @@ use App\Models\Gamer;
 use App\Models\Pilot;
 use App\Models\User;
 use App\Traits\RankOperations;
+use App\Traits\ApiResponseTrait;
 use Auth;
 use DB;
 use Exception;
@@ -15,28 +16,22 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     //
-    use RankOperations;
+    use RankOperations, ApiResponseTrait;
 
     public function show($id)
     {
         $user = User::find($id);
 
-        if ($user)
-        {
-            return response()->json($user,200);
-        }
-        else {
-            return response()->json([
-                'message' => 'User not found',
-                'status' => false,
-            ],404);
-        }
+        return (!$user)
+        ?  $this->failedResponse("User {$id} not found.",404)
+        :  $this->successResponse("User {$id} is found.",200,['user' => $user]);
     }
 
     public function index()
     {
         $users = User::all();
-        return response()->json($users);
+        
+        return $this->successResponse('User records retrieved successfully.', 200, ['users' => $users]); 
     }
 
     public function create(Request $request)
@@ -45,10 +40,7 @@ class UserController extends Controller
         //$captcha_validated = $this->validateCaptcha($request->captcha, $request->key);
         $captcha_validated = true;
         if(!$captcha_validated){
-            return response()->json([
-                'status' => false,
-                'message' => 'Captcha incorrect or invalid.',
-            ]);
+            return $this->failedResponse('Captcha incorrect or invalid.', 400);
         }
         
         //validate inputs
@@ -77,19 +69,18 @@ class UserController extends Controller
 
         if ($addGamerOrPilot)
         {
-            return response()->json([
-                'message' => 'User created successfully',
-                'user' => $user,
-                'role_created' => $addGamerOrPilot,
-                'status' => true,
-            ],201);
+            return $this->successResponse(
+                'User created successfully',
+                201,
+                [
+                    'user' => $user,
+                    'role_created' => $addGamerOrPilot
+                ],
+            );
         }
         else
         {
-            return response()->json([
-                'message' => 'Error occurred while trying to create gamer/pilot record',
-                'status' => false,
-            ],500);
+            return $this->failedResponse("Error occurred while trying to create gamer/pilot record",500);
         }
     }
 
@@ -118,22 +109,15 @@ class UserController extends Controller
         $user = User::find($id);
 
         if (!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => "User account $id not found",
-            ],404);
+            return $this->failedResponse("User account {$id} not found.", 404);
         }
 
-        return response()->json([
-            'user' => $user,
-            'status' => true,
-            'message' => "User account $id found."
-        ]);
+        return $this->successResponse("User account {$id} found.", 200, ['user' => $user]);
     }
 
     public function update(Request $request, $id) {
         $request->validate([
-            'email' => 'required|string|email',
+            'email' => 'required|email',
             'f_name' => 'required|string',
             'l_name' => 'required|string',
             'contact_number' => 'required|string|max:15',
@@ -142,10 +126,7 @@ class UserController extends Controller
         $user = User::find($id);
         //if user does not exist
         if(!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'User not found',
-            ],404);    
+            return $this->failedResponse('User not found.', 404);    
         }
         
         try {
@@ -156,16 +137,10 @@ class UserController extends Controller
                 'contact_number' => $request->contact_number, 
             ]);
 
-            return response()->json([
-                'message' => "User account has been updated successfully.",
-                'status' => true,
-            ], 200);
+            return $this->successResponse("User account has been updated successfully.",200);
 
         } catch (Exception $error) {
-            return response()->json([
-                'status' => false,
-                'message' => "Error {$error->getMessage()}",
-            ],500);
+            return $this->failedResponse("Error {$error->getMessage()}", 500);
         }
     }
 
@@ -204,17 +179,12 @@ class UserController extends Controller
         }
         
         //return responses
-        if ($deleted_rank){
-            return response()->json([
-                'message' => 'User deleted successfully.',
-                'status' => true,
-            ],200);
-        } else {
-            return response()->json([
-                'message' => 'An error occured during deletion',
-                'status' => true,
-            ],500);
+        if (!$deleted_rank) {
+            return $this->failedResponse('An error occurred during user deletion.',500);
         }
+        //if deletion is successful
+        return $this->successResponse('User deleted successfully.',200);
+        
     }
 
     private function validateCaptcha(string $captcha, string $key){
@@ -227,9 +197,6 @@ class UserController extends Controller
     //for testing, not a major function
     public function checklogin()
     {
-        return response([
-            'message' => 'im logged in.',
-            'status' => true,
-        ]);
+        return $this->successResponse("I'm logged in.", 200);
     }
 }

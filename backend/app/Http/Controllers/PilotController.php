@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pilot;
+use App\Traits\ApiResponseTrait;
 use Auth;
 use DB;
 use Exception;
@@ -11,6 +12,8 @@ use Illuminate\Http\Request;
 class PilotController extends Controller
 {
     //
+    use ApiResponseTrait;
+
     public function getPilot(int $id, string $type)
     {
         try {
@@ -23,24 +26,15 @@ class PilotController extends Controller
         } catch (Exception $e) {
             return null;
         }
-
     }
 
     public function index() {
         $pilots = Pilot::all();
 
         if (!$pilots) {
-            return response()->json([
-                'message' => 'Failed to retrieve pilots.',
-                'status' => false,
-            ],404);
+            return $this->failedResponse('Failed to retrieve pilots.',404);
         }
-
-        return response()->json([
-            'pilots' => $pilots,
-            'message' => 'All pilots retrieved.',
-            'status' => true
-        ],200);
+        return $this->successResponse('All pilots retrieved.',200,['pilots' => $pilots]);
     }
 
     public function show($id) {
@@ -48,22 +42,11 @@ class PilotController extends Controller
             $pilot = $this->getPilot($id,"pilot_id");
 
             if (!$pilot) {
-                return response()->json([
-                    'message' => "Pilot record not found.",
-                    'status' => false,
-                ],404);
+                return $this->failedResponse("Pilot record not found.",404);
             } 
-
-            return response()->json([
-                'pilot' => $pilot,
-                'message' => "Pilot record retrieved.",
-                'status' => true,
-            ],200); 
+            return $this->successResponse("Pilot record retrieved.", 200, ['pilot' => $pilot]);
         } catch (Exception $error) {
-            return response()->json([
-                'message' => $error->getMessage(),
-                'status' => false,
-            ],500);
+            return $this->failedResponse($error->getMessage(),500);
         }
     }
     public function edit($id)
@@ -72,24 +55,14 @@ class PilotController extends Controller
             //get pilot record
             $pilot = $this->getPilot($id, "pilot_id");
 
-            if ($pilot) {
-                //return data and fill up the forms
-                return response()->json([
-                    'pilot' => $pilot,
-                    'message' => 'Pilot record retrieved.',
-                    'status' => true,
-                ], 200);
-            } else {
-                return response()->json([
-                    'message' => 'Pilot record not found.',
-                    'status' => false,
-                ], 404);
+            if (!$pilot) {
+                return $this->failedResponse('Pilot record not found.',404);
             }
+            //return data and fill up the forms
+            return $this->successResponse('Pilot record retrieved.',200,['pilot' => $pilot]);
+
         } catch (Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-                'status' => false,
-            ],500);
+            return $this->failedResponse($e->getMessage(),500);
         }
     }
 
@@ -102,64 +75,23 @@ class PilotController extends Controller
         ]);
         //retrieve pilot
         $pilot = $this->getPilot($id,"pilot_id");
-
-        if ($pilot)
-        {
-            try {
-                //replace them with the request
-                $pilot->update([
-                    'skills' => $request->skills,
-                    'bio' => $request->bio
-                ]);
-
-                return response()->json([
-                    'message' => "Pilot has been updated successfully.",
-                    'status' => true,
-                ], 200);
-            } catch (Exception $e) {
-                return response()->json([
-                    'message'=> $e->getMessage(),
-                    'status'=> false,
-                ]);
-            }
-
+        
+        if (!$pilot) {
+            return $this->failedResponse('Pilot record cannot be retrieved',404);
         }
-        else {
-            return response()->json([
-                'message' => 'Pilot record cannot be retrieved',
-                'status' => false,
-            ],404);
+
+        try {
+            //replace them with the request
+            $pilot->update([
+                'skills' => $request->skills,
+                'bio' => $request->bio
+            ]);
+
+            return $this->successResponse("Pilot has been updated successfully.",200);
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(),500);
         }
-    }
 
-    #portfolio functions
-    public function createPortfolio(Request $request)
-    {
-        $user_id = Auth::user()->id;
-
-        $pilot = $this->getPilot($user_id,"user_id");
-
-        $request->validate([
-            'p_content' => 'required|string',
-        ]);
-
-        $portfolio = DB::table('portfolios')->insert([
-            'p_content' => $request->p_content,
-            'pilot_id' => $pilot->id,
-        ]);
-
-        if ($portfolio) {
-            return response()->json([
-                'message' => 'Portfolio successfully added',
-                'portfolio' => $portfolio,
-                'status' => true,
-            ], 201);
-        } else {
-            return response()->json([
-                'message' => 'Error occurred during portfolio record insertion.',
-                'status' => false,
-            ], 500);
-        }
     }
 
 }
