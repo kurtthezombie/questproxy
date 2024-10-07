@@ -13,6 +13,20 @@ class ServiceController extends Controller
 {
     //
     use ApiResponseTrait;
+
+    public function search(Request $request) {
+        try {
+            $services = Service::search($request->search)->paginate();
+            if (!$services) {
+                return $this->successResponse('Services are empty', 200);
+            }
+            //return success
+            return $this->successResponse('Here are the search results...',200,['services' => $services]);
+        } catch (Exception $error) {
+            return $this->failedResponse("Error {$error->getMessage()}",400);
+        }
+    }
+
     public function index()
     {
         try {
