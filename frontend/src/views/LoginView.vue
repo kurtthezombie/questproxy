@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import loginservice from '@/services/login-service';
 import { useRouter, useRoute } from 'vue-router';
+import { useLoading } from 'vue-loading-overlay';
 
 const router = useRouter();
 const route = useRoute()
@@ -15,32 +16,43 @@ onMounted(() => {
     }
 });
 
+const $loading = useLoading({
+    isFullPage: true,          // Makes the loader cover the full page
+    color: "#58E246",          // Set the color of the loader
+    height: 128,               // Set the height of the loader
+    width: 128,                // Set the width of the loader
+    loader: 'spinner',         // Specify the type of loader
+    backgroundColor: "#454545",// Set the background color
+    enforceFocus: true 
+});
+
+const fullPage = ref(false);
+
 const submitForm = async () => {
     const formData = {
         username: username.value,
         password: password.value,
     }
+    const loader = $loading.show();
     try {
         const response = await loginservice.login(formData);
-        if (response.status) {
-            
+        if (response.status) {           
             username.value = '';
             password.value = '';
 
-            
             const userRole = response.authenticated_user.role;  
             if (userRole === 'gamer') {
                 router.push({ name: 'gamer' }); 
             } else if (userRole === 'game pilot') {
                 router.push({ name: 'game-pilot' }); 
             }
-
-            
-            message.value = response.message;
         }
+        message.value = response.message;
     } catch (error) {
-        console.log('Login error: ', error);
-        message.value = 'Login failed. Please try again.';
+        console.log('LoginView error: ', error);
+        //message.value = 'Login failed. Please try again.';
+    } finally {
+      loader.hide(); 
     }
 }
 </script>
