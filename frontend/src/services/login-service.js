@@ -1,12 +1,23 @@
 import axios from 'axios';
 
 const register = async(user) => {
-    const response = await axios.post('http://127.0.0.1:8000/api/signup',user);
-    console.log(response);
-    return response.data;
+    console.log("Inside register function");
+    console.log(user);
+    
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/signup',user);
+      return response.data;
+    } catch (error) {
+      return {
+        status: error.response.data.status,
+        message: error.response.data.message
+      }
+    } 
+    
 }
 
 const login = async(credentials) => {
+  try {
     const response = await axios.post('http://127.0.0.1:8000/api/login',credentials);
     console.log(response);
     
@@ -16,6 +27,14 @@ const login = async(credentials) => {
     console.log('Login successful!', response.data);
 
     return response.data;
+  } catch (error) {
+    console.log("Loginservice error: ",error.response.data);
+    return {
+      status: error.response.data.status,
+      message: error.response.data.message,
+    }
+  }
+    
 }
 
 const editGamer = async (id) => {

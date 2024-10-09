@@ -25,7 +25,7 @@ class LoginController extends Controller
 
         if (!$user || !Hash::check($request->password,$user->password))
         {
-            return $this->failedResponse('Incorrect username or password.', 401);
+            return $this->failedResponse('Incorrect username or password.', 400);
         }
         //create token
 

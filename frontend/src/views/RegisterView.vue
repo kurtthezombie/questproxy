@@ -4,6 +4,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import loginservice from '@/services/login-service';
 import { fetchImage } from '@/services/captcha-service';
+import { useLoading } from 'vue-loading-overlay';
 
 const username = ref('');
 const email = ref('');
@@ -20,50 +21,67 @@ const captchaKey = ref('')
 
 const router = useRouter();
 
-const submitForm = async () => {
-    const formData = {
-        username: username.value,
-        email: email.value,
-        f_name: f_name.value,
-        l_name: l_name.value,
-        password: password.value,
-        contact_number: contact_number.value,
-        role: role.value,
-        captcha: captcha_input.value,
-        key: captchaKey.value,
-    };
-    try {
-        console.log('calling register')
-        const response = await loginservice.register(formData);
-        console.log('after register')
-        if(response.status) {
-            console.log('inside status true')
-            username.value = '';
-            email.value = '';
-            f_name.value ='';
-            l_name.value = '';
-            password.value = '';
-            contact_number.value = '';
-            role.value = '';
-            
-            router.push({ path: '/login', query: { message: 'Registration successful!' } });
-        } else {
-          handleReload();
-        }
+const $loading = useLoading({
+    isFullPage: true,          // Makes the loader cover the full page
+    color: "#58E246",          // Set the color of the loader
+    height: 128,               // Set the height of the loader
+    width: 128,                // Set the width of the loader
+    loader: 'spinner',         // Specify the type of loader
+    backgroundColor: "#454545",// Set the background color
+    enforceFocus: true 
+});
 
-        captcha_input.value = '';
-        message.value = response.message;
-    } catch (error) {
-        console.log('Error message: ', error);
+const fullPage = ref(false);
+
+const submitForm = async () => {
+  const loader = $loading.show();
+  
+  const formData = {
+    username: username.value,
+    email: email.value,
+    f_name: f_name.value,
+    l_name: l_name.value,
+    password: password.value,
+    contact_number: contact_number.value,
+    role: role.value,
+    captcha: captcha_input.value,
+    key: captchaKey.value,
+  };
+
+  console.log("The form: ", formData);
+
+  try {
+    const response = await loginservice.register(formData);
+    console.log('after register')
+    if (response.status) {
+      console.log('inside status true')
+      username.value = '';
+      email.value = '';
+      f_name.value = '';
+      l_name.value = '';
+      password.value = '';
+      contact_number.value = '';
+      role.value = '';
+
+      router.push({ path: '/login', query: { message: 'Registration successful!' } });
+    } else {
+      handleReload();
     }
+    captcha_input.value = '';
+    message.value = response.message;
+  } catch (error) {
+    console.log('Error message: ', error);
+  } finally {
+    loader.hide();
+  }
 
 }
 //fetch captcha image
-const handleReload = async() => {
+const handleReload = async () => {
   console.log('Fetching captcha..')
   fetchImage()
     .then(response => {
-      console.log("handleReload fetched: ", response);
+      console.log("handleReload fetched: true");
       captchaImg.value = response.img;
       captchaKey.value = response.key;
     })
@@ -131,7 +149,7 @@ onMounted(() => {
       Login now
     </router-link>
 
-    <h5>{{ message }}</h5>
+    <h5 style="color:red;">{{ message }}</h5>
   </div>
 </template>
 
