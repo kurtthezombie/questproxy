@@ -23,6 +23,7 @@
         <!-- Search Bar porn included-->
         <div class="relative w-64">
           <input
+            v-model="searchQuery"
             type="text"
             placeholder="Find games NIG"
             class="bg-white text-black rounded-full px-4 py-2 pl-10 shadow-lg w-full"
@@ -40,25 +41,13 @@
         <h2 class="text-2xl font-semibold mb-4">Trending Games</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
           <!-- Game Card Types Template -->
-          <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-green-500 transition-colors duration-300">
-            <img src="@/assets/img/WOW.webp" alt="World of Warcraft" class="mb-4 rounded-md object-cover w-36 h-36">
-            <h3 class="text-xl font-semibold">World of Warcraft</h3>
-          </div>
-
-          <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-green-500 transition-colors duration-300">
-            <img src="@/assets/img/Dota2.webp" alt="Dota 2" class="mb-4 rounded-md object-cover w-36 h-36">
-            <h3 class="text-xl font-semibold">Dota 2</h3>
-          </div>
-
-          <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-green-500 transition-colors duration-300">
-            <img src="@/assets/img/gta5.webp" alt="GTA 5 Online" class="mb-4 rounded-md object-cover w-36 h-36">
-            <h3 class="text-xl font-semibold">GTA 5 Online</h3>
-          </div>
-
-          <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-green-500 transition-colors duration-300">
-            <img src="https://via.placeholder.com/150" alt="Diablo 4" class="mb-4 rounded-md object-cover w-36 h-36">
-            <h3 class="text-xl font-semibold">Diablo 4</h3>
-          </div>
+          <div 
+          v-for="game in filteredGames" 
+          :key="game.name"
+          class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-green-500 transition-colors duration-300">
+          <img :src="game.image" :alt="game.name" class="mb-4 rounded-md object-cover w-36 h-36">
+          <h3 class="text-xl font-semibold">{{ game.name }}</h3>
+        </div>
         </div>
       </section>
     </div>
@@ -66,16 +55,36 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue';
 import loginService from '@/services/login-service';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const searchQuery = ref('');
+
+import WOWImage from '@/assets/img/WOW.webp'
+import Dota2Image from '@/assets/img/Dota2.webp'
+import GTA5Image from '@/assets/img/gta5.webp'
+import Diablo4Image from '@/assets/img/diablo4.webp'
+
+const games = ref([
+  { name: 'World of Warcraft', image: WOWImage },
+  { name: 'Dota 2', image: Dota2Image },
+  { name: 'GTA 5 Online', image: GTA5Image },
+  { name: 'Diablo 4', image: Diablo4Image },
+]);
+
+const filteredGames = computed(() => {
+  return games.value.filter(game => 
+    game.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
 
 const callLogout = () => {
   console.log('LOGOUT function CALLED from GamePilotView');
   loginService.logout();
-
   router.push({ name: 'login' });
+
 };
 </script>
 
