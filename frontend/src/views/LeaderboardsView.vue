@@ -17,11 +17,14 @@ onMounted(async () => {
 </script>
 
 <template>
-    <h2 style="color: white;">Leaderboards</h2>
-    <ol>
-        list apears here dapat:
-        <li v-for="record in records">
-            {{ record.pilot_username }} - {{ record.points }}
-        </li>
-    </ol>
+    <div class="h-screen flex flex-col justify-center items-center">
+        <h2 class="text-2xl text-white">Leaderboards</h2>
+        <ol>
+            list apears here dapat:
+            <li v-for="record in records">
+                {{ record.pilot_username }} - {{ record.points }}
+            </li>
+        </ol>
+    </div>
+
 </template>
