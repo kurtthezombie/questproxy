@@ -7,25 +7,45 @@
         <span class="text-2xl font-bold text-white-500">QuestProxy</span>
       </div>
       <nav class="flex space-x-6">
-        <a href="#" class="text-white hover:text-green-500 transition-colors duration-300">Ned Bayot</a>
-        <a href="#" class="text-white hover:text-green-500 transition-colors duration-300">Canoy Pisot</a>
-        <a href="#" class="text-white hover:text-green-500 transition-colors duration-300">Edging</a>
-        <button @click="callLogout" class=" text-white hover:bg-red-500 hover:text-red-900 font-semibold py-2 px-4 rounded transition-colors duration-300">
-          Logout
-        </button>
+      <a href="#" class="text-white hover:text-green-500 transition-colors duration-300">Service</a>
+        <!-- Avatar Dropdown -->
+        <div class="relative inline-block text-left">
+          <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+            <img id="avatarButton" @click="toggleDropdown" type="button" data-dropdown-toggle="userDropdown" data-dropdown-placement="bottom-start" 
+              class="w-10 h-10 rounded-full cursor-pointer" 
+              src="@/assets/img/qp_logo2.png" alt="User dropdown">
+          </div>
+          <!-- Dropdown menu -->
+          <div v-if="isDropdownOpen" id="userDropdown" class="z-10 absolute right-0 mt-2 w-44 bg-white text-gray-900 divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-100 dark:text-gray-800 dark:divide-gray-200">
+            <ul class="py-2 text-sm" aria-labelledby="avatarButton">
+              <li>
+                <a href="#" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Account</a>
+              </li>
+              <li>
+                <a href="#" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Settings</a>
+              </li>
+              <li>
+                <a href="#" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Racist</a>
+              </li>
+            </ul>
+            <div class="py-1">
+              <button @click="callLogout" class="block w-full px-4 py-2 text-sm text-left hover:bg-gray-200 dark:hover:bg-gray-300">Sign out</button>
+            </div>
+          </div>
+        </div>
       </nav>
     </header>
 
     <!-- Main Dashboard -->
     <div class="container mx-auto py-10">
       <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">Welcome, BAYOT!</h1>
-        <!-- Search Bar porn included-->
+        <h1 class="text-3xl font-bold">Welcome, Pilot</h1>
+        <!-- Search Bar -->
         <div class="relative w-64">
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Find games NIG"
+            placeholder="Find games"
             class="bg-white text-black rounded-full px-4 py-2 pl-10 shadow-lg w-full"
           />
           <div class="absolute left-3 top-2 text-gray-400">
@@ -40,14 +60,14 @@
       <section>
         <h2 class="text-2xl font-semibold mb-4">Trending Games</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <!-- Game Card Types Template -->
+          <!-- Game Cards -->
           <div 
-          v-for="game in filteredGames" 
-          :key="game.name"
-          class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-green-500 transition-colors duration-300">
-          <img :src="game.image" :alt="game.name" class="mb-4 rounded-md object-cover w-36 h-36">
-          <h3 class="text-xl font-semibold">{{ game.name }}</h3>
-        </div>
+            v-for="game in filteredGames" 
+            :key="game.name"
+            class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-green-500 transition-colors duration-300">
+            <img :src="game.image" :alt="game.name" class="mb-4 rounded-md object-cover w-36 h-36">
+            <h3 class="text-xl font-semibold">{{ game.name }}</h3>
+          </div>
         </div>
       </section>
     </div>
@@ -59,13 +79,14 @@ import { ref, computed } from 'vue';
 import loginService from '@/services/login-service';
 import { useRouter } from 'vue-router';
 
+
 const router = useRouter();
 const searchQuery = ref('');
 
-import WOWImage from '@/assets/img/WOW.webp'
-import Dota2Image from '@/assets/img/Dota2.webp'
-import GTA5Image from '@/assets/img/gta5.webp'
-import Diablo4Image from '@/assets/img/diablo4.webp'
+import WOWImage from '@/assets/img/WOW.webp';
+import Dota2Image from '@/assets/img/Dota2.webp';
+import GTA5Image from '@/assets/img/gta5.webp';
+import Diablo4Image from '@/assets/img/diablo4.webp';
 
 const games = ref([
   { name: 'World of Warcraft', image: WOWImage },
@@ -80,12 +101,20 @@ const filteredGames = computed(() => {
   );
 });
 
+
+const isDropdownOpen = ref(false);
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
+
+
+
 const callLogout = () => {
   console.log('LOGOUT function CALLED from GamePilotView');
   loginService.logout();
   router.push({ name: 'login' });
-
 };
+
 </script>
 
 <style scoped>
