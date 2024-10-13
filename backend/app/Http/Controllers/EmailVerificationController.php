@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MyEmailVerificationRequest;
 use App\Models\User;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 class EmailVerificationController extends Controller
@@ -24,7 +24,7 @@ class EmailVerificationController extends Controller
         }
     }
 
-    public function verify (EmailVerificationRequest $request) {
+    public function verify (MyEmailVerificationRequest $request) {
         //fulfill the email verification
         $request->fulfill();
 
