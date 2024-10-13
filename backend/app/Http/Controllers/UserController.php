@@ -12,6 +12,8 @@ use DB;
 use Exception;
 use Hash;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Registered;
+
 
 class UserController extends Controller
 {
@@ -30,19 +32,19 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        
-        return $this->successResponse('User records retrieved successfully.', 200, ['users' => $users]); 
+
+        return $this->successResponse('User records retrieved successfully.', 200, ['users' => $users]);
     }
 
     public function create(Request $request)
     {
         //uncomment and just set validated to true if testing postman
-        $captcha_validated = $this->validateCaptcha($request->captcha, $request->key);
-        //$captcha_validated = true;
+        //$captcha_validated = $this->validateCaptcha($request->captcha, $request->key);
+        $captcha_validated = true;
         if(!$captcha_validated){
             return $this->failedResponse('Captcha incorrect or invalid.', 400);
         }
-        
+
         //validate inputs
         $request->validate([
             'username' => 'required|string|unique:users,username',
@@ -63,7 +65,8 @@ class UserController extends Controller
             'contact_number' => $request->contact_number,
             'role' => $request->role,
         ]);
-
+        //
+        event(new Registered($user));
         //should admin be made through registration ? sounds dumb
         $addGamerOrPilot = ($request->role == 'gamer') ? $this->createGamer($user->id) : $this->createPilot($user->id);
 
@@ -126,15 +129,15 @@ class UserController extends Controller
         $user = User::find($id);
         //if user does not exist
         if(!$user) {
-            return $this->failedResponse('User not found.', 404);    
+            return $this->failedResponse('User not found.', 404);
         }
-        
+
         try {
             $user->update([
                 'email' => $request->email,
                 'f_name' => $request->f_name,
                 'l_name' => $request->l_name,
-                'contact_number' => $request->contact_number, 
+                'contact_number' => $request->contact_number,
             ]);
 
             return $this->successResponse("User account has been updated successfully.",200);
@@ -157,7 +160,7 @@ class UserController extends Controller
         //declare to have in scope
         $rank_id = null;
         $deleted_rank = null;
-        
+
         //determine if pilot or gamer
         if ($user->role == 'game_pilot')
         {
@@ -177,14 +180,14 @@ class UserController extends Controller
             //delete ranking
             $deleted_rank = $this->destroyRankRecord($rank_id);
         }
-        
+
         //return responses
         if (!$deleted_rank) {
             return $this->failedResponse('An error occurred during user deletion.',500);
         }
         //if deletion is successful
         return $this->successResponse('User deleted successfully.',200);
-        
+
     }
 
     private function validateCaptcha(string $captcha, string $key){

@@ -31,8 +31,8 @@ class LoginController extends Controller
 
         $token = $user->createToken($user->name.'Auth-Token',['*'], now()->addMinutes(30))->plainTextToken;
         //set auth info
-        Auth::login($user);
-        
+        Auth::login($user, true);
+
         return response()->json([
             'message' => 'Login successful.',
             'token_type' => 'Bearer',

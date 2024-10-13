@@ -1,6 +1,7 @@
 <?php
 //controllers
 use App\Http\Controllers\CaptchaController;
+use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\GamerController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PilotController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 
 
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,8 +19,24 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+
+//verify-email
+Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class,'verify'])
+    ->middleware('signed')
+    ->name('verification.verify');
+
 //grouped routes that use middleware laravel sanctum
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum','auth'])->group(function () {
+
+    //email verification
+    Route::controller(EmailVerificationController::class)->group(function () {
+        //notice
+        Route::get('/email/verify', 'notice')->name('verification.notice');
+        //resend email
+        Route::get('/email/verification-notification', 'send')
+            ->middleware('throttle:6,1')
+            ->name('verification.send');
+    });
 
     Route::controller(LoginController::class)->group(function () {
         //logout
@@ -31,7 +49,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('users', 'index');
         Route::get('users/{id}','show');
         Route::delete('users/delete/{id}', 'destroy');
-        Route::get('check_login', 'checklogin'); //just for checking 
+        Route::get('check_login', 'checklogin'); //just for checking
         Route::get('users/edit/{id}', 'edit');
         Route::patch('users/edit/{id}', 'update');
     });
@@ -42,7 +60,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('pilots/edit/{id}', 'edit');
         //patch because we're only updating some columns, not the whole record
         Route::patch('pilots/edit/{id}', 'update');
-        
+
     });
 
     Route::controller(PortfolioController::class)->group(function() {
@@ -84,7 +102,7 @@ Route::post('signup', [UserController::class,'create']);
 Route::controller(CaptchaController::class)->group(function () {
     //generate captcha
     //Route::get('load-catpcha','load');
-    //Route::post('post-captcha', 'post'); 
+    //Route::post('post-captcha', 'post');
 });
 
 
