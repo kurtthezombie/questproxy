@@ -20,28 +20,23 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-/*verify
-Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class,'verify'])
+//verify-email
+Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class,'verify'])
     ->middleware('signed')
-    ->name('verification.verify');*/
+    ->name('verification.verify');
 
 //grouped routes that use middleware laravel sanctum
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum','auth'])->group(function () {
 
     //email verification
     Route::controller(EmailVerificationController::class)->group(function () {
         //notice
         Route::get('/email/verify', 'notice')->name('verification.notice');
-        //verify
-        Route::get('/email/verify/{id}/{hash}', 'verify')
-            ->middleware('signed')
-            ->name('verification.verify');
         //resend email
         Route::get('/email/verification-notification', 'send')
             ->middleware('throttle:6,1')
             ->name('verification.send');
     });
-
 
     Route::controller(LoginController::class)->group(function () {
         //logout
