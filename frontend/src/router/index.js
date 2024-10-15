@@ -7,6 +7,7 @@ import GamerView from '@/views/GamerView.vue'
 import GamePilotView from '@/views/GamePilotView.vue'
 import LeaderboardsView from '@/views/LeaderboardsView.vue'
 
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

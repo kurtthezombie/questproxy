@@ -23,7 +23,7 @@ const login = async(credentials) => {
     
     localStorage.setItem('authToken', response.data.token);
     localStorage.setItem('tokenType', response.data.token_type);
-
+    
     console.log('Login successful!', response.data);
 
     return response.data;

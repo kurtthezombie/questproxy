@@ -5,166 +5,130 @@ import { useRouter, useRoute } from 'vue-router';
 import { useLoading } from 'vue-loading-overlay';
 
 const router = useRouter();
-const route = useRoute()
+const route = useRoute();
 const username = ref('');
 const password = ref('');
-const message = ref('');
+const message = ref(''); // For success message
+const errorMessage = ref(''); // For error message
 
 onMounted(() => {
     if (route.query.message) {
         message.value = route.query.message;
+        // Clear the success message after 2 seconds
+        setTimeout(() => {
+            message.value = '';
+        }, 2000);
     }
 });
 
 const $loading = useLoading({
-    isFullPage: true,          // Makes the loader cover the full page
-    color: "#58E246",          // Set the color of the loader
-    height: 128,               // Set the height of the loader
-    width: 128,                // Set the width of the loader
-    loader: 'spinner',         // Specify the type of loader
-    backgroundColor: "#454545",// Set the background color
+    isFullPage: true,
+    color: "#58E246",
+    height: 128,
+    width: 128,
+    loader: 'spinner',
+    backgroundColor: "#454545",
     enforceFocus: true 
 });
 
 const fullPage = ref(false);
 
 const submitForm = async () => {
+    errorMessage.value = ''; 
+    message.value = ''; 
+
     const formData = {
         username: username.value,
         password: password.value,
-    }
+    };
     const loader = $loading.show();
     try {
         const response = await loginservice.login(formData);
-        if (response.status) {           
+        if (response.status) {
+            // Login success, navigate based on user role
             username.value = '';
             password.value = '';
 
-            const userRole = response.authenticated_user.role;  
+            const userRole = response.authenticated_user.role;
             if (userRole === 'gamer') {
-                router.push({ name: 'gamer' }); 
+                router.push({ name: 'gamer' });
             } else if (userRole === 'game pilot') {
-                router.push({ name: 'game-pilot' }); 
+                router.push({ name: 'game-pilot' });
             }
+            message.value = response.message; 
+
+            // Clear success message after 2 seconds
+            setTimeout(() => {
+                message.value = '';
+            }, 2000);
+        } else {
+            errorMessage.value = response.message;
+
+            setTimeout(() => {
+                errorMessage.value = '';
+            }, 3000);
         }
-        message.value = response.message;
     } catch (error) {
         console.log('LoginView error: ', error);
-        //message.value = 'Login failed. Please try again.';
+        errorMessage.value = 'Login failed. Please try again.';
+
+        // Clear error message after 3 seconds
+        setTimeout(() => {
+            errorMessage.value = '';
+        }, 3000);
     } finally {
-      loader.hide(); 
+        loader.hide();
     }
 }
 </script>
 
-
 <template>
-  <div class="login-form">
-    <div class="login-header">
-      <img class="gaming-icon" src="@/assets/img/qp_logo2.png" alt="logo" width="80" height="80" />
-      <h1> Login </h1>
+  <div class="min-h-screen flex items-center justify-center bg-gray-200">
+    <div class="bg-gray-100 p-8 rounded-lg shadow-lg max-w-md w-full">
+      <div class="text-center mb-6">
+        <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
+        <h1 class="text-2xl font-bold text-gray-800 mt-4">Welcome</h1>
+        
+        <!-- Success message -->
+        <div v-if="message" class="flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-300 dark:border-green-800" role="alert">
+          <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+          </svg>
+          <span class="sr-only">Info</span>
+          <div>
+            <span class="font-medium">Success!</span> {{ message }}
+          </div>
+        </div>
+
+        <!-- Error message -->
+        <div v-if="errorMessage" class="flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+          <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+          </svg>
+          <span class="sr-only">Error</span>
+          <div>
+            <span class="font-medium">BOGO!</span> {{ errorMessage }}
+          </div>
+        </div>
+      </div>
+
+      <form @submit.prevent="submitForm" class="space-y-4">
+        <div class="form-group">
+          <input type="text" v-model="username" placeholder="Username" required
+            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+        </div>
+        <div class="form-group">
+          <input type="password" v-model="password" placeholder="Password" required
+            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+        </div>
+        <button type="submit" class="w-full p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">
+          Login
+        </button>
+      </form>
+
+      <router-link class="block text-center text-green-500 mt-4 hover:underline" to="/signup">
+        Signup now
+      </router-link>
     </div>
-    <h4>{{ message }}</h4>
-    <form @submit.prevent="submitForm">
-      <div class="form-group">
-        <input type="text" id="username" v-model="username" placeholder="Username" required>
-      </div>
-
-      <div class="form-group">
-        <input type="password" id="password" v-model="password" placeholder="Password" required>
-      </div>
-
-      <button type="submit">Login</button>
-    </form>
-
-    <router-link class="router-link-custom" to="/signup">
-      Signup now
-    </router-link>
-
   </div>
 </template>
-
-<style scoped>
-.login-form {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 50px;
-  background-color: rgba(0, 20, 30, 0.8);
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  color: #fff;
-}
-
-.login-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.gaming-icon {
-  margin-right: 10px;
-}
-
-h1 {
-  font-size: 24px;
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group {
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: center;
-}
-
-input, select {
-  width: 100%;
-  padding: 10px;
-  border: none;
-  background-color: rgba(0, 40, 60, 0.6);
-  color: #fff;
-  font-size: 16px;
-}
-
-input::placeholder, select {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-button {
-  padding: 10px;
-  background-color: #FF69B4;
-  border: none;
-  border-radius: 5px;
-  color: #fff;
-  font-size: 18px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #FF1493;
-}
-
-.router-link-custom {
-  display: inline-block;
-  margin-top: 15px;
-  color: #FF69B4;
-  text-decoration: none;
-}
-
-.router-link-custom:hover {
-  text-decoration: underline;
-}
-
-h5 {
-  color: #FF69B4;
-  margin-top: 15px;
-}
-</style>

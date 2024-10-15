@@ -7,13 +7,13 @@
         <span class="text-2xl font-bold text-white-500">QuestProxy</span>
       </div>
       <nav class="flex space-x-6">
-      <a href="#" class="text-white hover:text-green-500 transition-colors duration-300">Service</a>
+      <router-link to="/create-service" class="text-white hover:text-green-500 transition-colors duration-300">Service</router-link>
         <!-- Avatar Dropdown -->
         <div class="relative inline-block text-left">
           <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
             <img id="avatarButton" @click="toggleDropdown" type="button" data-dropdown-toggle="userDropdown" data-dropdown-placement="bottom-start" 
               class="w-10 h-10 rounded-full cursor-pointer" 
-              src="@/assets/img/qp_logo2.png" alt="User dropdown">
+              src="@/assets/img/qplogo3.png" alt="User dropdown">
           </div>
           <!-- Dropdown menu -->
           <div v-if="isDropdownOpen" id="userDropdown" class="z-10 absolute right-0 mt-2 w-44 bg-white text-gray-900 divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-100 dark:text-gray-800 dark:divide-gray-200">
