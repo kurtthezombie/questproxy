@@ -1,19 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-100 text-white">
     <!-- Header -->
-    <header class="bg-gray-800 sticky top-0 z-50 p-4 flex justify-between items-center shadow-lg border-b-4 border-green-500">
-      <div class="flex items-center">
-        <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
-        <span class="text-2xl font-bold text-green-500">QuestProxy</span>
-      </div>
-      <nav class="space-x-6">
-        <RouterLink to="/" class="hover:text-green-400">Home</RouterLink>
-        <a href="#about" class="scroll-link hover:text-green-400">About</a>
-        <RouterLink to="/signup" class="hover:text-green-400">Register</RouterLink>
-        <RouterLink to="/login" class="hover:text-green-400">Login</RouterLink>
-      </nav>
-    </header>
-
+    <NavMenu></NavMenu>
     <!-- Comparison Slider -->
     <ComparisonSlider 
       :leftImage="gamerImage"
@@ -61,10 +49,12 @@ import { ref } from 'vue';
 import ComparisonSlider from '@/components/ComparisonSlider.vue';
 import gamerImage from '@/assets/img/gamer.gif';
 import chadImage from '@/assets/img/chad.gif';
+import NavMenu from '@/components/NavMenu.vue';
 
 export default {
   components: {
-    ComparisonSlider
+    ComparisonSlider,
+    NavMenu
   },
   setup() {
     const gamerImageSrc = ref(gamerImage);
