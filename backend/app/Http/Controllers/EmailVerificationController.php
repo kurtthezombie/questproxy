@@ -28,10 +28,11 @@ class EmailVerificationController extends Controller
         //fulfill the email verification
         $request->fulfill();
 
-        return response()->json([
+        return redirect()->away('http://localhost:5173');
+        /*return response()->json([
             'verified' => true,
             'message' => 'Email is successfully verified.'
-        ]);
+        ]);*/
     }
 
     public function send (Request $request) {
