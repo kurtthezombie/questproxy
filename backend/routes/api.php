@@ -110,8 +110,9 @@ Route::controller(CaptchaController::class)->group(function () {
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
 Route::controller(RankController::class)->group(function () {
     Route::get('leaderboards', 'index');
-    Route::get('leaderboard/{id}','show');
+    Route::get('leaderboards/{id}','show');
 });
+
 Route::post('rank/create', [RankController::class, 'store']);
 Route::delete('rank/delete/{id}',[RankController::class, 'destroy']);
 

@@ -16,11 +16,11 @@ class RankController extends Controller
      */
     public function index()
     {
-        $rank_records = Rank::with(['pilots.user'])->get();
+        $rank_records = Rank::with(['pilot.user'])->get();
 
         // Prepare the response data
         $rankings = $rank_records->map(function ($rank) {
-            $pilot = $rank->pilots->first();
+            $pilot = $rank->pilot;
 
             return [
                 'pilot_username' => $pilot->user->username,
@@ -53,13 +53,22 @@ class RankController extends Controller
     public function show(string $id)
     {
         try {
-            $rank_record = Rank::findOrFail($id);
-            return $this->successResponse('Rank record successfully retrieved.',200,['rank_record' => $rank_record]);
+            $rank_record = Rank::with('pilot.user')->findOrFail($id);
+            $username = $rank_record->pilot->user->username;
+            //continue here?
+            return $this->successResponse('Rank record successfully retrieved.',200,[
+                'rank_record' => [
+                    'id' => $rank_record->id,
+                    'rank' => $rank_record->pilot_rank,
+                    'points' => $rank_record->points,
+                    'username' => $username,
+                ]
+            ]);
+
         } catch (Exception $error) {
             return $this->failedResponse('Rank record not found.',404,['rank_record' => $rank_record]);
         }
     }
-
 
     /**
      * Update the specified resource in storage.
