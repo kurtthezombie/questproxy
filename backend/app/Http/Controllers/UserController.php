@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AccountDeletionMail;
 use App\Models\Gamer;
 use App\Models\Pilot;
 use App\Models\User;
 use App\Traits\RankOperations;
 use App\Traits\ApiResponseTrait;
-use Auth;
-use DB;
 use Exception;
 use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Registered;
+use Mail;
 
 
 class UserController extends Controller
@@ -162,7 +162,7 @@ class UserController extends Controller
         $deleted_rank = null;
 
         //determine if pilot or gamer
-        if ($user->role == 'game_pilot')
+        if ($user->role == 'game_pilot' || $user->role == 'game pilot')
         {
             $pilot = Pilot::where('user_id', $id)->first();
 
@@ -195,6 +195,20 @@ class UserController extends Controller
         $rules = ['captcha' => 'required|captcha_api:'.$key.',math'];
         $validator = validator()->make(['captcha' => $captcha], $rules);
         return !($validator->fails());
+    }
+
+    public function requestAccountDeletion(Request $request )
+    {
+        try {
+            $user = $request->user();
+            
+            Mail::to($user->email)->send(new AccountDeletionMail($user));
+
+            return $this->successResponse("Deletion email sent. Please check your inbox.",200);
+        } catch (Exception $error) {
+            return $this->failedResponse($error,500);
+        }
+        
     }
 
     //for testing, not a major function

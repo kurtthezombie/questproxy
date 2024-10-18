@@ -6,6 +6,7 @@ import Dashboard from '@/components/Dashboard.vue'
 import GamerView from '@/views/GamerView.vue'
 import GamePilotView from '@/views/GamePilotView.vue'
 import LeaderboardsView from '@/views/LeaderboardsView.vue'
+import ConfirmDeleteUser from '@/views/ConfirmDeleteUser.vue'
 
 
 const router = createRouter({
@@ -56,6 +57,11 @@ const router = createRouter({
       path: '/leaderboards',
       name: 'leaderboards',
       component: LeaderboardsView,
+    },
+    {
+      path: '/confirm-delete',
+      name: 'confirm-delete-user',
+      component: ConfirmDeleteUser,
     },
   ]
 })
