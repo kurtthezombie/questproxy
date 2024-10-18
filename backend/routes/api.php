@@ -48,6 +48,7 @@ Route::middleware(['auth:sanctum','auth'])->group(function () {
         //delete user
         Route::get('users', 'index');
         Route::get('users/{id}','show');
+        Route::post('users/delete-email','requestAccountDeletion');
         Route::delete('users/delete/{id}', 'destroy');
         Route::get('check_login', 'checklogin'); //just for checking
         Route::get('users/edit/{id}', 'edit');
@@ -96,7 +97,6 @@ Route::post('login', [LoginController::class,'login']);
 //register
 Route::post('signup', [UserController::class,'create']);
 
-//should be middleware or not?
 
 //CAPTCHA:
 Route::controller(CaptchaController::class)->group(function () {
@@ -106,7 +106,6 @@ Route::controller(CaptchaController::class)->group(function () {
 });
 
 
-//take pilot id
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
 Route::controller(RankController::class)->group(function () {
     Route::get('leaderboards', 'index');
@@ -120,3 +119,5 @@ Route::delete('rank/delete/{id}',[RankController::class, 'destroy']);
 Route::get('testPostman', function() {
     return response()->json('Postman is works and is running',200);
 });
+
+
