@@ -116,6 +116,7 @@ const editGamer = async (id) => {
       return null;
     }
   };
+
   
   
   const fetchUserData = async () => {
@@ -123,15 +124,17 @@ const editGamer = async (id) => {
     try {
       const response = await axios.get('http://127.0.0.1:8000/api/user', {
         headers: {
-          Authorization: `Bearer ${token}`, // Include the token for authentication
+          Authorization: `Bearer ${token}`, 
         },
       });
-      return response.data; // This will return the user data from /api/user
+      return response.data; 
     } catch (error) {
       console.error('Error fetching user data:', error);
-      throw error;
+      throw error; 
     }
   };
+  
+
   
 
 const logout = async () => {

@@ -3,10 +3,10 @@ import HomeView from '../views/HomeView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
 import Dashboard from '@/components/Dashboard.vue'
-import GamerView from '@/views/GamerView.vue'
-import GamePilotView from '@/views/GamePilotView.vue'
+import HomepageView from '@/views/HomepageView.vue';
 import LeaderboardsView from '@/views/LeaderboardsView.vue'
 import ConfirmDeleteUser from '@/views/ConfirmDeleteUser.vue'
+import AccountSettingview from '@/views/AccountSettingView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,15 +41,9 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/gamer',
-      name: 'gamer',
-      component: GamerView,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/game-pilot',
-      name: 'game-pilot',
-      component: GamePilotView,
+      path: '/home',
+      name: 'homepage',  
+      component: HomepageView,  
       meta: { requiresAuth: true }
     },
     {
@@ -62,21 +56,36 @@ const router = createRouter({
       name: 'confirm-delete-user',
       component: ConfirmDeleteUser,
     },
+    {
+      path: '/account-settings',
+      name: 'account-settings',
+      component: AccountSettingview,
+    },
   ]
 })
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('authToken');
+  const userRole = localStorage.getItem('userRole');
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isAuthenticated) {
-      next({ name: 'login'});
+      next({ name: 'login' });
     } else {
-      next();
+      if (to.name === 'dashboard') {
+        
+        if (userRole === 'gamer' || userRole === 'pilot') {
+          next({ name: 'home' });
+        } else {
+          next();
+        }
+      } else {
+        next();
+      }
     }
   } else {
     next();
   }
-})
+});
 
 export default router

@@ -117,7 +117,7 @@ onMounted(() => {
         </svg>
         <span class="sr-only">Error</span>
         <div>
-          <span class="font-medium">BOGO!</span> {{ errorMessage }}
+          <span class="font-medium">Error!</span> {{ errorMessage }}
         </div>
       </div>
 
