@@ -3,7 +3,7 @@
     <!-- Header -->
     <header class="bg-gray-800 sticky top-0 z-50 p-4 flex justify-between items-center shadow-lg border-b-4 border-green-500">
       <div class="flex items-center">
-        <img src="@/assets/img/qp_logo2.png" alt="Logo" class="w-12 h-12">
+        <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
         <span class="text-2xl font-bold text-white-500">QuestProxy</span>
       </div>
       <nav class="flex space-x-6">
@@ -18,7 +18,7 @@
           <div v-if="isDropdownOpen" id="userDropdown" class="z-10 absolute right-0 mt-2 w-44 bg-white text-gray-900 divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-100 dark:text-gray-800 dark:divide-gray-200">
             <ul class="py-2 text-sm" aria-labelledby="avatarButton">
               <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Account</a>
+               <router-link to="/account-settings" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Account</router-link>
               </li>
               <li>
                 <a href="#" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Settings</a>
