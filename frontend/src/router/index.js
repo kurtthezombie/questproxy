@@ -6,7 +6,7 @@ import Dashboard from '@/components/Dashboard.vue'
 import GamerView from '@/views/GamerView.vue'
 import GamePilotView from '@/views/GamePilotView.vue'
 import LeaderboardsView from '@/views/LeaderboardsView.vue'
-
+import AccountSettings from '@/views/AccountSettings.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
