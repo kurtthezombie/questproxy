@@ -68,7 +68,6 @@ class ServiceController extends Controller
             'price' => 'required|numeric||min:0',
             'duration' => 'required|date',
             'availability' => 'required|date',
-            'service_timestamp' => 'required|date',
         ]);
         //get pilot id by auth::user()->id
         $pilot_id = $this->getPilot();
@@ -84,7 +83,6 @@ class ServiceController extends Controller
                 'price' => $request->price,
                 'duration' => $request->duration,
                 'availability' => $request->availability,
-                'service_timestamp' => $request->service_timestamp,
                 'pilot_id' => $pilot_id,
             ]);
             //return response
@@ -111,7 +109,6 @@ class ServiceController extends Controller
             'price' => 'required|numeric||min:0',
             'duration' => 'required|date',
             'availability' => 'required|date',
-            'service_timestamp' => 'required|date',
         ]);
         //update
         try
@@ -123,7 +120,6 @@ class ServiceController extends Controller
                 'price' => $request->price,
                 'duration' => $request->duration,
                 'availability' => $request->availability,
-                'service_timestamp' => $request->service_timestamp,
             ]);
             //response
             if (!$service)

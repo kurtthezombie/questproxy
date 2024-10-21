@@ -16,7 +16,6 @@ class Service extends Model
         'price',
         'duration',
         'availability',
-        'service_timestamp',
         'pilot_id'
     ];
 
