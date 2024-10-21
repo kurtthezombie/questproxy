@@ -3,42 +3,31 @@
     <!-- Header -->
     <header class="bg-gray-800 sticky top-0 z-50 p-4 flex justify-between items-center shadow-lg border-b-4 border-green-500">
       <div class="flex items-center">
-        <img src="@/assets/img/qp_logo2.png" alt="Logo" class="w-12 h-12">
+        <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
         <span class="text-2xl font-bold text-white-500">QuestProxy</span>
       </div>
       <nav class="flex space-x-6">
-        <!-- Avatar Dropdown -->
-        <div class="relative inline-block text-left">
-          <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-            <img id="avatarButton" @click="toggleDropdown" type="button" data-dropdown-toggle="userDropdown" data-dropdown-placement="bottom-start" 
-              class="w-10 h-10 rounded-full cursor-pointer" 
-              src="@/assets/img/qp_logo2.png" alt="User dropdown">
-          </div>
-          <!-- Dropdown menu -->
-          <div v-if="isDropdownOpen" id="userDropdown" class="z-10 absolute right-0 mt-2 w-44 bg-white text-gray-900 divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-100 dark:text-gray-800 dark:divide-gray-200">
-            <ul class="py-2 text-sm" aria-labelledby="avatarButton">
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Account</a>
-              </li>
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Settings</a>
-              </li>
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Racist</a>
-              </li>
-            </ul>
-            <div class="py-1">
-              <button @click="callLogout" class="block w-full px-4 py-2 text-sm text-left hover:bg-gray-200 dark:hover:bg-gray-300">Sign out</button>
-            </div>
-          </div>
-        </div>
+        <router-link 
+          v-if="role === 'game pilot'" 
+          to="/create-service" 
+          class="text-white hover:text-green-500 transition-colors duration-300">
+          Service
+        </router-link>
+
+        <!-- Avatar Dropdown Component -->
+        <UserDropdown 
+          :username="username" 
+          :email="email" 
+          :role="role" 
+          :callLogout="callLogout"
+        />
       </nav>
     </header>
 
     <!-- Main Dashboard -->
     <div class="container mx-auto py-10">
       <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">Welcome, Gamer Bayot!</h1>
+        <h1 class="text-3xl font-bold">Welcome, {{ role }}</h1>
         <!-- Search Bar -->
         <div class="relative w-64">
           <input
@@ -74,12 +63,17 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import loginService from '@/services/login-service';
 import { useRouter } from 'vue-router';
+import UserDropdown from '@/components/UserDropdown.vue';
+
 
 const router = useRouter();
 const searchQuery = ref('');
+const username = ref('');
+const email = ref('');
+const role = ref('');
 
 import WOWImage from '@/assets/img/WOW.webp';
 import Dota2Image from '@/assets/img/Dota2.webp';
@@ -104,13 +98,23 @@ const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value;
 };
 
+const fetchUserData = async () => {
+  try {
+    const userData = await loginService.fetchUserData(); 
+    username.value = userData.name;   
+    email.value = userData.email;    
+    role.value = userData.role || 'User';  
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+  }
+};
+
+onMounted(() => {
+  fetchUserData();
+});
+
 const callLogout = () => {
-  console.log('LOGOUT function CALLED from GamerView');
   loginService.logout();
   router.push({ name: 'login' });
 };
 </script>
-
-<style scoped>
-/* Custom Styles */
-</style>

@@ -116,6 +116,7 @@ const editGamer = async (id) => {
       return null;
     }
   };
+
   
   const createService = async (serviceData) => {
     try {
@@ -128,7 +129,22 @@ const editGamer = async (id) => {
     }
   }
   
+  const fetchUserData = async () => {
+    const token = localStorage.getItem('authToken');
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/user', {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+      });
+      return response.data; 
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw error; 
+    }
+  };
   
+
   
 
 const logout = async () => {
@@ -148,4 +164,16 @@ const logout = async () => {
     }
 }
 
-export default { register, login, logout, updateGamer, editGamer, editPilot, updatePilot, createPortfolio, editPortfolio, deletePortfolio }; 
+export default { 
+  register, 
+  login, 
+  logout,
+  fetchUserData,
+  updateGamer, 
+  editGamer, 
+  editPilot, 
+  updatePilot, 
+  createPortfolio, 
+  editPortfolio, 
+  deletePortfolio 
+}; 
