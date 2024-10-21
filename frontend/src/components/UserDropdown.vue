@@ -9,7 +9,7 @@
     <div v-if="isDropdownOpen" id="userDropdown" class="z-10 absolute right-0 mt-2 w-64 bg-white text-gray-900 divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-100 dark:text-gray-800 dark:divide-gray-200">
       <div class="px-4 py-3 space-y-1">
         <p class="text-sm font-medium text-gray-900 dark:text-gray-800 break-words">
-          <span class="leftfont-bold text-blue-600 dark:text-blue-500">Email:</span> {{ email }}
+          <span class="font-bold text-blue-600 dark:text-blue-500">Email:</span> {{ email }}
         </p>
         <p class="text-sm font-medium text-gray-900 dark:text-gray-800 break-words">
           <span class="font-bold text-green-600 dark:text-green-500">Username:</span> {{ username }}
@@ -27,34 +27,69 @@
         </li>
       </ul>
       <div class="py-0 ">
-        <button @click="callLogout" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300 w-full px-4 py-2 text-left hover:bg-gray-200 dark:hover:bg-gray-300">Sign out</button>
+        <button @click="callLogout" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300 w-full px-4 py-2 text-left">Sign out</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import loginService from '@/services/login-service';
+import { useRouter } from 'vue-router';
 
+// Initialize variables and router
+const router = useRouter();
+const isDropdownOpen = ref(false);
+const username = ref('');
+const email = ref('');
+const role = ref('');
+
+// Fetch user data when the component is mounted
+const fetchUserData = async () => {
+  try {
+    const userData = await loginService.fetchUserData();  // Fetch from API
+    username.value = userData.username;
+    email.value = userData.email;
+    role.value = userData.role || 'User';
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+  }
+};
+
+// Fetch user data once when the component is mounted
+onMounted(() => {
+  fetchUserData();
+});
+
+// Toggle the visibility of the dropdown
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
+
+// Capitalize the role for display
+const capitalizedRole = computed(() => {
+  if (!role.value) return '';
+  return role.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+});
+
+// Props for avatar and logout function
 const props = defineProps({
   avatar: {
     type: String,
     default: '@/assets/img/qplogo3.png'
   },
-  username: String,
-  email: String,
-  role: String,
   callLogout: Function
 });
 
-const isDropdownOpen = ref(false);
-
-const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
+// Call the logout function
+const callLogout = () => {
+  if (props.callLogout) {
+    props.callLogout();  // Call the logout function passed as prop
+  } else {
+    // Fallback logout logic
+    loginService.logout();
+    router.push({ name: 'login' });
+  }
 };
-
-const capitalizedRole = computed(() => {
-  if (!props.role) return '';
-  return props.role.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-});
 </script>

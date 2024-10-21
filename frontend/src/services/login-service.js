@@ -37,37 +37,37 @@ const login = async(credentials) => {
     
 }
 
-const editGamer = async (id) => {
-    try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/gamers/edit/${id}`);
-      console.log('Gamer edit response:', response);
-      return response.data.gamer; // Return the gamer data
-    } catch (error) {
-      console.error('Error fetching gamer:', error);
-      return null;
-    }
-  };
-  
+const updateUser = async ({ id, firstName, lastName, contactNumber, email }) => {
+  try {
+    const updatedData = {
+      f_name: firstName,         
+      l_name: lastName,          
+      contact_number: contactNumber, 
+      email: email  
+    };
 
-  const updateGamer = async (id, updatedData) => {
-    try {
-      const response = await axios.patch(`http://127.0.0.1:8000/api/gamers/edit/${id}`, updatedData);
-      console.log('Gamer update response:', response);
-      return response.data.message; // Return success message
-    } catch (error) {
-      console.error('Error updating gamer:', error);
-      return null;
-    }
-  };
+    const response = await axios.patch(`http://localhost:8000/api/users/edit/${id}`, updatedData, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+
+    return response.data; 
+  } catch (error) {
+    console.error('Error updating account:', error);
+    alert('Failed to update account.');
+    throw error; 
+  }
+};
   
 
   const editPilot = async (id) => {
     try {
       const response = await axios.get(`http://127.0.0.1:8000/api/edit/pilot/${id}`);
-      console.log('Pilot edit response:', response);
-      return response.data.pilot; // Return the pilot data
+      console.log('User update response:', response);
+      return response.data.pilot; 
     } catch (error) {
-      console.error('Error fetching pilot:', error);
+      console.error('Error Update User:', error);
       return null;
     }
   };
@@ -119,23 +119,21 @@ const editGamer = async (id) => {
 
   
   
-  const fetchUserData = async () => {
+  const fetchUserData = async (id) => {
     const token = localStorage.getItem('authToken');
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/user', {
+      const response = await axios.get(`http://127.0.0.1:8000/api/user`, {
         headers: {
           Authorization: `Bearer ${token}`, 
         },
       });
-      return response.data; 
+      return response.data;
     } catch (error) {
       console.error('Error fetching user data:', error);
-      throw error; 
+      throw error;
     }
   };
-  
 
-  
 
 const logout = async () => {
     const token = localStorage.getItem('authToken');
@@ -158,9 +156,8 @@ export default {
   register, 
   login, 
   logout,
+  updateUser,
   fetchUserData,
-  updateGamer, 
-  editGamer, 
   editPilot, 
   updatePilot, 
   createPortfolio, 

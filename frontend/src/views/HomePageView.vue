@@ -93,16 +93,10 @@ const filteredGames = computed(() => {
   );
 });
 
-const isDropdownOpen = ref(false);
-const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
-};
 
 const fetchUserData = async () => {
   try {
     const userData = await loginService.fetchUserData(); 
-    username.value = userData.name;   
-    email.value = userData.email;    
     role.value = userData.role || 'User';  
   } catch (error) {
     console.error('Error fetching user data:', error);
