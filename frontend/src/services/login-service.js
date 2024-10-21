@@ -117,6 +117,16 @@ const editGamer = async (id) => {
     }
   };
   
+  const createService = async (serviceData) => {
+    try {
+      const response = await axios.patch(`http://127.0.0.1:8000/api/services/create`, serviceData);
+      console.log('Service Created:', response);
+      return response.data.message; 
+    } catch (error) {
+      console.error('Error creating service:', error);
+      return null;
+    }
+  }
   
   
   

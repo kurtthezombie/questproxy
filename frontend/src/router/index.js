@@ -7,6 +7,7 @@ import GamerView from '@/views/GamerView.vue'
 import GamePilotView from '@/views/GamePilotView.vue'
 import LeaderboardsView from '@/views/LeaderboardsView.vue'
 import ConfirmDeleteUser from '@/views/ConfirmDeleteUser.vue'
+import CreateServiceView from '@/views/CreateServiceView.vue'
 
 
 const router = createRouter({
@@ -62,6 +63,11 @@ const router = createRouter({
       path: '/confirm-delete',
       name: 'confirm-delete-user',
       component: ConfirmDeleteUser,
+    },
+    {
+      path: '/create-service',
+      name: 'create-service',
+      component: CreateServiceView,
     },
   ]
 })
