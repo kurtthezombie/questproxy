@@ -12,8 +12,7 @@ const register = async(user) => {
         status: error.response.data.status,
         message: error.response.data.message
       }
-    } 
-    
+    }     
 }
 
 const login = async(credentials) => {
@@ -120,7 +119,7 @@ const editGamer = async (id) => {
   
   const createService = async (serviceData) => {
     try {
-      const response = await axios.patch(`http://127.0.0.1:8000/api/services/create`, serviceData);
+      const response = await axios.post(`http://127.0.0.1:8000/api/services/create`, serviceData);
       console.log('Service Created:', response);
       return response.data.message; 
     } catch (error) {
@@ -175,5 +174,6 @@ export default {
   updatePilot, 
   createPortfolio, 
   editPortfolio, 
-  deletePortfolio 
+  deletePortfolio,
+  createService 
 }; 

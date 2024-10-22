@@ -3,15 +3,11 @@ import HomeView from '../views/HomeView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
 import Dashboard from '@/components/Dashboard.vue'
-import HomepageView from '@/views/HomepageView.vue';
+import HomepageView from '@/views/HomePageView.vue';
 import LeaderboardsView from '@/views/LeaderboardsView.vue'
 import ConfirmDeleteUser from '@/views/ConfirmDeleteUser.vue'
-<<<<<<< HEAD
-import CreateServiceView from '@/views/CreateServiceView.vue'
-
-=======
 import AccountSettingview from '@/views/AccountSettingView.vue'
->>>>>>> ea59b34a27cea058d0c43727fd01a4c2104d36ee
+import CreateServiceView from '@/views/CreateServiceView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -65,6 +61,11 @@ const router = createRouter({
       path: '/account-settings',
       name: 'account-settings',
       component: AccountSettingview,
+    },
+    {
+      path: '/create-service',
+      name: 'create-service',
+      component: CreateServiceView,
     },
   ]
 })
