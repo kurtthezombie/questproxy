@@ -3,10 +3,11 @@ import HomeView from '../views/HomeView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
 import Dashboard from '@/components/Dashboard.vue'
-import HomepageView from '@/views/HomepageView.vue';
+import HomepageView from '@/views/HomePageView.vue';
 import LeaderboardsView from '@/views/LeaderboardsView.vue'
 import ConfirmDeleteUser from '@/views/ConfirmDeleteUser.vue'
 import AccountSettingview from '@/views/AccountSettingView.vue'
+import UserProfileView from '@/views/UserProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,6 +62,12 @@ const router = createRouter({
       name: 'account-settings',
       component: AccountSettingview,
     },
+
+    {
+      path: '/user/:username',
+      name: 'userprofile',
+      component: UserProfileView, 
+    }
   ]
 })
 
