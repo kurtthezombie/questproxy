@@ -1,6 +1,7 @@
 <?php
 //controllers
 use App\Http\Controllers\CaptchaController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\GamerController;
 use App\Http\Controllers\LoginController;
@@ -120,4 +121,7 @@ Route::get('testPostman', function() {
     return response()->json('Postman is works and is running',200);
 });
 
-
+Route::controller(CategoryController::class)->group(function() {
+    Route::get('categories','index');
+    Route::get('categories/{id}','show');
+});
