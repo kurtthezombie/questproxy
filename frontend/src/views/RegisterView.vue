@@ -13,8 +13,7 @@ const password = ref('');
 const contact_number = ref('');
 const role = ref('');
 const message = ref('');
-const errorMessage = ref(''); // Add this to capture error messages
-
+const errorMessage = ref(''); 
 const captcha_input = ref('');
 const captchaImg = ref('')
 const captchaKey = ref('')
@@ -33,7 +32,7 @@ const $loading = useLoading({
 
 const submitForm = async () => {
   const loader = $loading.show();
-  errorMessage.value = ''; // Reset the error message on new submission
+  errorMessage.value = ''; 
   
   const formData = {
     username: username.value,

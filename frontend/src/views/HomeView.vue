@@ -12,7 +12,7 @@
 
     <!-- About Section -->
     <section id="about" class="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32">
-      <img src="@/assets/img/gaming.jpg" alt="" class="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center">
+      <img src="@/assets/img/gaming1.jpg" alt="" class="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center">
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <div class="mx-auto max-w-2xl lg:mx-0">
           <h2 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">About QuestProxy</h2>
@@ -47,8 +47,8 @@
 <script>
 import { ref } from 'vue';
 import ComparisonSlider from '@/components/ComparisonSlider.vue';
-import gamerImage from '@/assets/img/gamer.jpg';
-import chadImage from '@/assets/img/Pilot.jpg';
+import gamerImage from '@/assets/img/Gamers.jpg';
+import chadImage from '@/assets/img/Pilots.jpg';
 import NavMenu from '@/components/NavMenu.vue';
 
 export default {
