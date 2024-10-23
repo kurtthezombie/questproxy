@@ -67,7 +67,7 @@ class ServiceController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric||min:0',
             'duration' => 'required|date',
-            'availability' => 'required|date',
+            'availability' => 'required|boolean',
         ]);
         //get pilot id by auth::user()->id
         $pilot_id = $this->getPilot();
@@ -108,7 +108,7 @@ class ServiceController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric||min:0',
             'duration' => 'required|date',
-            'availability' => 'required|date',
+            'availability' => 'required|boolean',
         ]);
         //update
         try
