@@ -1,9 +1,20 @@
 <script setup>
     import loginService from '@/services/login-service';
     import { useRouter } from 'vue-router';
+    import { ref, onMounted } from 'vue';
+    import axios from 'axios';
     
-    
-    const submitService = async () => {
+    const categories = ref([]);
+
+    onMounted(async () => {
+        try {
+            const response = await axios.get('http://127.0.0.1:8000/api/categories');
+            categories.value = response.data;  
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    });
+    /* const submitService = async () => {
         const formData = {
             games: games.value,
             description: description.value,
@@ -32,7 +43,7 @@
         } catch (error) {
             //errorMessage.value = 'An error occurred during service creation. Please try again.'
         }
-    }
+    } */
 </script>
 
 
@@ -42,11 +53,9 @@
             <div>
                 <label for="games" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Game:</label>
                 <select name="games" id="games" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    <option value="" disabled selected hidden>Select a game</option>
-                    <option value="Cent">Cent</option>
-                    <option value="Tweak">Tweak</option>
-                    <option value="Kurt">Kurt</option>
-                    <option value="Fat">Fat</option>
+                    <option v-for="game in categories" :key="game.id" :value="game.id">
+                        {{ game.title }}
+                    </option>
                 </select>
             </div>
             <div>
