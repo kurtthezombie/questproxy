@@ -15,7 +15,7 @@
 
 <script>
     export default {
-        name: 'NavMenu', //component name
+        name: 'NavMenu',
         data() {
           return {
             isActiveLink: '',

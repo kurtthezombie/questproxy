@@ -12,7 +12,10 @@
           <span class="font-bold text-blue-600 dark:text-blue-500">Email:</span> {{ email }}
         </p>
         <p class="text-sm font-medium text-gray-900 dark:text-gray-800 break-words">
-          <span class="font-bold text-green-600 dark:text-green-500">Username:</span> {{ username }}
+          <span class="font-bold text-green-600 dark:text-green-500">Username:</span> 
+          <router-link :to="{ name: 'userprofile', params: { username: username } }">
+            {{ username }}
+          </router-link>
         </p>
         <p class="text-sm font-medium text-gray-900 dark:text-gray-800 break-words">
           <span class="font-bold text-purple-600 dark:text-purple-500">Role:</span> {{ capitalizedRole }}
@@ -23,7 +26,7 @@
           <router-link to="/account-settings" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Settings</router-link>
         </li>
         <li>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Racist</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">WIP</a>
         </li>
       </ul>
       <div class="py-0 ">

@@ -10,6 +10,11 @@
         <router-link to="/home" class="text-white hover:text-green-500 transition-colors duration-300">
           Home
         </router-link>
+        
+        <router-link to="/leaderboards" class="text-white hover:text-green-500 transition-colors duration-300">
+          Leaderboard
+        </router-link>
+
         <router-link 
           v-if="role === 'game pilot'" 
           to="/create-service" 

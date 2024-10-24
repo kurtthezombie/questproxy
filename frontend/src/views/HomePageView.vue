@@ -7,6 +7,9 @@
         <span class="text-2xl font-bold text-white-500">QuestProxy</span>
       </div>
       <nav class="flex space-x-6">
+        <router-link to="/leaderboards" class="text-white hover:text-green-500 transition-colors duration-300">
+          Leaderboard
+        </router-link>
         <router-link 
           v-if="role === 'game pilot'" 
           to="/create-service" 
