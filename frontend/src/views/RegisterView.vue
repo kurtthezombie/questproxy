@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import loginservice from '@/services/login-service';
 import { fetchImage } from '@/services/captcha-service';
 import { useLoading } from 'vue-loading-overlay';
@@ -10,13 +10,14 @@ const email = ref('');
 const f_name = ref('');
 const l_name = ref('');
 const password = ref('');
+const confirmPassword = ref(''); // New confirm password field
 const contact_number = ref('');
 const role = ref('');
 const message = ref('');
-const errorMessage = ref(''); 
+const errorMessage = ref('');
 const captcha_input = ref('');
-const captchaImg = ref('')
-const captchaKey = ref('')
+const captchaImg = ref('');
+const captchaKey = ref('');
 
 const router = useRouter();
 
@@ -31,9 +32,15 @@ const $loading = useLoading({
 });
 
 const submitForm = async () => {
+  errorMessage.value = '';
+
+  // Confirm password validation
+  if (password.value !== confirmPassword.value) {
+    errorMessage.value = "Passwords do not match!";
+    return;
+  }
+
   const loader = $loading.show();
-  errorMessage.value = ''; 
-  
   const formData = {
     username: username.value,
     email: email.value,
@@ -49,31 +56,28 @@ const submitForm = async () => {
   try {
     const response = await loginservice.register(formData);
     if (response.status) {
-      // Reset the form and redirect to login
       username.value = '';
       email.value = '';
       f_name.value = '';
       l_name.value = '';
       password.value = '';
+      confirmPassword.value = '';
       contact_number.value = '';
       role.value = '';
       message.value = 'Registration successful!';
       router.push({ path: '/login', query: { message: 'Registration successful!' } });
     } else {
-      // If there's an error, handle the error message
       errorMessage.value = response.message;
       handleReload();
     }
     captcha_input.value = '';
   } catch (error) {
-    // Capture any unexpected errors here
     errorMessage.value = 'An error occurred during registration. Please try again.';
   } finally {
     loader.hide();
   }
-}
+};
 
-// Fetch captcha image
 const handleReload = async () => {
   fetchImage()
     .then(response => {
@@ -83,7 +87,7 @@ const handleReload = async () => {
     .catch(error => {
       console.log('Error reloading CAPTCHA', error);
     })
-}
+};
 
 onMounted(() => {
   handleReload();
@@ -136,6 +140,9 @@ onMounted(() => {
         </div>
         <div class="form-group">
           <input type="password" id="password" v-model="password" placeholder="Password" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+        </div>
+        <div class="form-group">
+          <input type="password" id="confirm-password" v-model="confirmPassword" placeholder="Confirm Password" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
         </div>
         <div class="form-group">
           <input type="text" id="contact-number" v-model="contact_number" placeholder="Contact Number" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
