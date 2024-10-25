@@ -65,8 +65,8 @@ onMounted(() => {
 });
 
 
-const callLogout = async () => {
+/* const callLogout = async () => {
   await loginService.logout();
   router.push({ name: 'login' });
-};
+}; */
 </script>
