@@ -9,6 +9,7 @@ import ConfirmDeleteUser from '@/views/ConfirmDeleteUser.vue'
 import AccountSettingview from '@/views/AccountSettingView.vue'
 import CreateServiceView from '@/views/CreateServiceView.vue'
 import UserProfileView from '@/views/UserProfileView.vue'
+import OtpEmailVerification from '@/views/OtpEmailVerification.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -73,7 +74,12 @@ const router = createRouter({
       path: '/users/:username',
       name: 'userprofile',
       component: UserProfileView, 
-    }
+    },
+    {
+      path: '/otp-verification',
+      name: 'otp',
+      component: OtpEmailVerification, 
+    },
   ]
 })
 

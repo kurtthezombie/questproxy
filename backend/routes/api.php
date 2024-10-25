@@ -13,6 +13,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 
 
+use App\Mail\EmailVerification;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,12 +33,15 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
 
     //email verification
     Route::controller(EmailVerificationController::class)->group(function () {
-        //notice
+        Route::post('check-otp','checkOtp');
+
+        /*//notice
         Route::get('/email/verify', 'notice')->name('verification.notice');
         //resend email
         Route::get('/email/verification-notification', 'send')
             ->middleware('throttle:6,1')
             ->name('verification.send');
+        */
     });
 
     Route::controller(LoginController::class)->group(function () {
@@ -128,4 +132,10 @@ Route::get('testPostman', function () {
 Route::controller(CategoryController::class)->group(function () {
     Route::get('categories', 'index');
     Route::get('categories/{id}', 'show');
+});
+
+Route::get('test-email', function () {
+    Mail::to('hello@gmail.com')->send(new EmailVerification('123456'));
+
+    return response()->json(['message'=>'Okay sent'],201);
 });

@@ -56,6 +56,9 @@ const submitForm = async () => {
   try {
     const response = await loginservice.register(formData);
     if (response.status) {
+<<<<<<< HEAD
+      //message
+=======
       username.value = '';
       email.value = '';
       f_name.value = '';
@@ -64,8 +67,16 @@ const submitForm = async () => {
       confirmPassword.value = '';
       contact_number.value = '';
       role.value = '';
+>>>>>>> 727da77c44dd8db5049ccf9939ef8fb0ae55b2e0
       message.value = 'Registration successful!';
-      router.push({ path: '/login', query: { message: 'Registration successful!' } });
+      //login
+      loginservice.login({
+        username: formData.username,
+        password: formData.password
+      });
+      //push to otp
+      router.push({ path: '/otp-verification', query: { email: email.value } });
+      //router.push({ path: '/login', query: { message: 'Registration successful!' } });
     } else {
       errorMessage.value = response.message;
       handleReload();

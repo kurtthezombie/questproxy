@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RegisteredUser;
 use App\Mail\AccountDeletionMail;
 use App\Models\Gamer;
 use App\Models\Pilot;
@@ -66,7 +67,7 @@ class UserController extends Controller
             'role' => $request->role,
         ]);
         //
-        event(new Registered($user));
+        event(new RegisteredUser($user));
         //should admin be made through registration ? sounds dumb
         $addGamerOrPilot = ($request->role == 'gamer') ? $this->createGamer($user->id) : $this->createPilot($user->id);
 
