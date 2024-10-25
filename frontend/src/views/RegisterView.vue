@@ -56,18 +56,7 @@ const submitForm = async () => {
   try {
     const response = await loginservice.register(formData);
     if (response.status) {
-<<<<<<< HEAD
       //message
-=======
-      username.value = '';
-      email.value = '';
-      f_name.value = '';
-      l_name.value = '';
-      password.value = '';
-      confirmPassword.value = '';
-      contact_number.value = '';
-      role.value = '';
->>>>>>> 727da77c44dd8db5049ccf9939ef8fb0ae55b2e0
       message.value = 'Registration successful!';
       //login
       loginservice.login({

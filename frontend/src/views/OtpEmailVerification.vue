@@ -52,8 +52,8 @@ const submitOtp = async () => {
                     <label for="email"
                         class="mb-2 block text-sm  text-center text-lime-700 font-medium bg-lime-100 p-3">A six-digit
                         OTP was sent to your email: {{ email.value }}</label>
-                    <input type="hidden" v-model="email" value="email.value">
-                    <input v-model="otp" type="text" name="email" id="email"
+                    <input type="hidden" v-model="email">
+                    <input v-model="otp" type="text"
                         class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                         placeholder="ex. 123456" required />
                 </div>
