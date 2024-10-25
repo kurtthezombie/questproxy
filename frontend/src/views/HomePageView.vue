@@ -4,7 +4,7 @@
     <header class="bg-gray-800 sticky top-0 z-50 p-4 flex justify-between items-center shadow-lg border-b-4 border-green-500">
       <div class="flex items-center">
         <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
-        <span class="text-2xl font-bold text-white-500">QuestProxy</span>
+        <span class="text-2xl font-bold text-green-500">QuestProxy</span>
       </div>
       <nav class="flex space-x-6">
         <router-link to="/leaderboards" class="text-white hover:text-green-500 transition-colors duration-300">
@@ -30,7 +30,7 @@
     <!-- Main Dashboard -->
     <div class="container mx-auto py-10">
       <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">Welcome, {{ role }}</h1>
+        <h1 class="text-3xl font-bold">Welcome, {{ username }}</h1>
         <!-- Search Bar -->
         <div class="relative w-64">
           <input
@@ -100,6 +100,7 @@ const filteredGames = computed(() => {
 const fetchUserData = async () => {
   try {
     const userData = await loginService.fetchUserData(); 
+    username.value = userData.username;
     role.value = userData.role || 'User';  
   } catch (error) {
     console.error('Error fetching user data:', error);
