@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import loginservice from '@/services/login-service';
 import { useRouter, useRoute } from 'vue-router';
-import { useLoading } from 'vue-loading-overlay';
+import { useLoader } from '@/services/loader-service';
 
 const router = useRouter();
 const route = useRoute();
@@ -20,15 +20,7 @@ onMounted(() => {
   }
 });
 
-const $loading = useLoading({
-  isFullPage: true,
-  color: "#58E246",
-  height: 128,
-  width: 128,
-  loader: 'spinner',
-  backgroundColor: "#454545",
-  enforceFocus: true
-});
+const { loadShow, loadHide } = useLoader();
 
 const submitForm = async () => {
   errorMessage.value = '';
@@ -39,7 +31,7 @@ const submitForm = async () => {
     password: password.value,
   };
 
-  const loader = $loading.show();
+  const loader = loadShow();
   try {
     const response = await loginservice.login(formData);
     if (response.status) {
@@ -69,7 +61,7 @@ const submitForm = async () => {
       errorMessage.value = '';
     }, 3000);
   } finally {
-    loader.hide();
+    loadHide(loader);
   }
 };
 </script>

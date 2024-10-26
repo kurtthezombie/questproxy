@@ -32,12 +32,13 @@ import loginService from '@/services/login-service';
 import UserProfile from '@/components/UserProfile.vue';
 import UserDropdown from '@/components/UserDropdown.vue'; 
 import axios from 'axios';
-
+import { useLoader } from '@/services/loader-service';
 
 const username = ref(''); 
 const email = ref(''); 
 const role = ref(''); 
 
+const { loadShow, loadHide } = useLoader();
 
 const profileData = ref({});
 const description = ref('');
@@ -46,11 +47,15 @@ const description = ref('');
 const route = useRoute();
 
 const fetchUserData = async () => {
+  const loader = loadShow();
+
   try {
     const userData = await loginService.fetchUserData(); 
     username.value = userData.username; 
   } catch (error) {
     console.error('Error fetching user data:', error);
+  } finally {
+    loadHide(loader);
   }
 };
 

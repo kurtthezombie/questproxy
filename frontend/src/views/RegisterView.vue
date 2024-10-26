@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import loginservice from '@/services/login-service';
 import { fetchImage } from '@/services/captcha-service';
-import { useLoading } from 'vue-loading-overlay';
+import { useLoader } from '@/services/loader-service';
 
 const username = ref('');
 const email = ref('');
@@ -18,18 +18,8 @@ const errorMessage = ref('');
 const captcha_input = ref('');
 const captchaImg = ref('');
 const captchaKey = ref('');
-
+const { loadShow, loadHide } = useLoader();
 const router = useRouter();
-
-const $loading = useLoading({
-    isFullPage: true, 
-    color: "#58E246", 
-    height: 128, 
-    width: 128, 
-    loader: 'spinner', 
-    backgroundColor: "#454545", 
-    enforceFocus: true 
-});
 
 const submitForm = async () => {
   errorMessage.value = '';
@@ -40,7 +30,7 @@ const submitForm = async () => {
     return;
   }
 
-  const loader = $loading.show();
+  const loader = loadShow();
   const formData = {
     username: username.value,
     email: email.value,
@@ -74,7 +64,7 @@ const submitForm = async () => {
   } catch (error) {
     errorMessage.value = 'An error occurred during registration. Please try again.';
   } finally {
-    loader.hide();
+    loadHide(loader);
   }
 };
 
