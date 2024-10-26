@@ -121,6 +121,7 @@ import Sidebar from '@/components/Sidebar.vue';
 import loginService from '@/services/login-service'; 
 import { useRouter } from 'vue-router';
 import UserDropdown from '@/components/UserDropdown.vue';
+import { useLoading } from 'vue-loading-overlay';
 
 const router = useRouter();
 
@@ -133,8 +134,12 @@ const contactNumber = ref('');
 const userId = ref('');
 const message = ref(''); 
 
+const $loading = useLoading();
+
 // Fetch user data and populate form fields
+
 const fetchUserData = async () => {
+  const loader = $loading.show();
   try {
     const user = await loginService.fetchUserData();
     if (user) {
@@ -151,11 +156,14 @@ const fetchUserData = async () => {
   } catch (error) {
     console.error('Error fetching user details:', error);
     router.push({ name: 'login' });
+  } finally {
+    loader.hide();
   }
 };
 onMounted(fetchUserData);
 
 const UpdateForm = async () => {
+  const loader = $loading.show();
   try {
     await loginService.updateUser({ 
       id: userId.value,            
@@ -173,6 +181,8 @@ const UpdateForm = async () => {
     }, 3000);
   } catch (error) {
     console.error('Failed to update user data:', error);
+  } finally {
+    loader.hide();
   }
 };
 
