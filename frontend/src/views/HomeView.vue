@@ -1,83 +1,73 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-</script>
-
 <template>
-<div id="app">
-  <header>
-    <img alt="questproxy" class="logo" src="@/assets/img/qplogo2.png" width="125" height="125" />
+  <div class="min-h-screen bg-gray-100 text-white">
+    <!-- Header -->
+    <NavMenu></NavMenu>
+    <!-- Comparison Slider -->
+    <ComparisonSlider 
+      :leftImage="gamerImage"
+      :rightImage="chadImage"
+      :leftText="gamerText"
+      :rightText="chadText"
+    />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <!-- About Section -->
+    <section id="about" class="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32">
+      <img src="@/assets/img/gaming1.jpg" alt="" class="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:mx-0">
+          <h2 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">About QuestProxy</h2>
+        </div>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <a href="#about" class="scroll-link">About</a>
-        <RouterLink to="/signup">Register</RouterLink>
-        <RouterLink to="/login">Login</RouterLink>
-      </nav>
+        <div class="mt-10 flex flex-col space-y-10">
+          <div class="flex justify-start">
+            <div class=" p-4 rounded-lg w-1/2">
+              <p class="text-lg leading-8 text-gray-300">QuestProxy is a revolutionary piloting platform that connects gamers with skilled pilots to enhance their gaming experience...</p>
+            </div>
+          </div>
 
-    </div>
-  </header>
+          <div class="flex justify-end">
+            <div class=" p-4 rounded-lg w-1/2">
+              <p class="text-lg leading-8 text-gray-300">Whether you're looking to level up faster, complete challenging quests, or learn advanced strategies, our network of experienced pilots is here to help...</p>
+            </div>
+          </div>
+ 
+          <div class="flex justify-start">
+            <div class=" p-4 rounded-lg w-1/2">
+              <p class="text-lg leading-8 text-gray-300">Join QuestProxy today and take your gaming to the next level!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <RouterView />
-</div>
+    <RouterView />
+  </div>
 </template>
 
+<script>
+import { ref } from 'vue';
+import ComparisonSlider from '@/components/ComparisonSlider.vue';
+import gamerImage from '@/assets/img/Gamers.jpg';
+import chadImage from '@/assets/img/Pilots.jpg';
+import NavMenu from '@/components/NavMenu.vue';
 
-<style scoped>
-/* Header and Navigation */
-.header {
-  background-color: rgba(37,3,65,255); 
-  padding: 1rem;
-  position: sticky;
-  top: 0;
-  width: 100%;
-  z-index: 0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+export default {
+  components: {
+    ComparisonSlider,
+    NavMenu
+  },
+  setup() {
+    const gamerImageSrc = ref(gamerImage);
+    const chadImageSrc = ref(chadImage);
+    const gamerText = ref("Busy gamer seeking help to progress in favorite games");
+    const chadText = ref("Skilled pilot ready to assist and level up your game");
 
-.logo {
-  width: 120px;
+    return {
+      gamerImage: gamerImageSrc,
+      chadImage: chadImageSrc,
+      gamerText,
+      chadText
+    };
+  }
 }
-
-.nav {
-  display: flex;
-  gap: 1rem;
-}
-
-.nav a {
-  margin: 0 1rem;
-  font-weight: bold;
-  color: #333;
-  text-decoration: none;
-  transition: 0.3s;
-}
-
-.nav a:hover {
-  color: #42b983;
-}
-
-/* Main content area */
-#main-content {
-  background-color: rgba(216, 216, 216, 0.8); 
-  padding: 2rem;
-  border-radius: 8px;
-  margin-top: 2rem;
-}
-
-/* About section */
-.about-section {
-  background-color: rgba(232, 232, 232, 0.8); 
-  padding: 2rem;
-  border-radius: 8px;
-  margin-top: 2rem;
-}
-
-.about-section h2 {
-  margin-bottom: 1rem;
-}
-</style>
+</script>

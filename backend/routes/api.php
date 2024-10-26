@@ -1,14 +1,20 @@
 <?php
 //controllers
 use App\Http\Controllers\CaptchaController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\GamerController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PilotController;
+use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\RankController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 
 
+use App\Mail\EmailVerification;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,86 +22,120 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+
+//verify-email
+Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+    ->middleware('signed')
+    ->name('verification.verify');
+
 //grouped routes that use middleware laravel sanctum
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'auth'])->group(function () {
+
+    //email verification
+    Route::controller(EmailVerificationController::class)->group(function () {
+        Route::post('check-otp','checkOtp');
+
+        /*//notice
+        Route::get('/email/verify', 'notice')->name('verification.notice');
+        //resend email
+        Route::get('/email/verification-notification', 'send')
+            ->middleware('throttle:6,1')
+            ->name('verification.send');
+        */
+    });
 
     Route::controller(LoginController::class)->group(function () {
         //logout
-        Route::post('logout',[LoginController::class,'logout']);
-        Route::get('test',[LoginController::class,'testAuth']);
+        Route::post('logout', [LoginController::class, 'logout']);
+        Route::get('test', [LoginController::class, 'testAuth']);
     });
 
     Route::controller(UserController::class)->group(function () {
         //delete user
-        Route::delete('/delete/user/{id}', 'destroy');
-        Route::get('check_login', 'checklogin');
-        Route::get('/users/edit/{id}', 'edit');
-        Route::patch('/users/edit/{id}', 'update');
+        Route::get('users', 'index');
+        Route::get('users/{id}', 'show');
+        Route::post('users/delete-email', 'requestAccountDeletion');
+        Route::delete('users/delete/{id}', 'destroy');
+        Route::get('check_login', 'checklogin'); //just for checking
+        Route::get('users/edit/{id}', 'edit');
+        Route::patch('users/edit/{id}', 'update');
     });
 
     Route::controller(PilotController::class)->group(function () {
-        //Add more routes that need to use the login authentication
-        Route::get('pilot/edit{id}', 'edit');
+        Route::get('pilots', 'index');
+        Route::get('pilots/{id}', 'show');
+        Route::get('pilots/edit/{id}', 'edit');
         //patch because we're only updating some columns, not the whole record
-        Route::patch('pilot/edit/{id}', 'update');
-        //portfolio routes
+        Route::patch('pilots/edit/{id}', 'update');
 
-        Route::post('portfolio/create', 'createPortfolio');
-        //u cant take pilot id without user id
-        //if u view profile, it should be based on the user_id
-        //so this route needs drafting for now
-        Route::get('portfolio/show/{id}', 'showPortfolio');
-        //take portfolio id
-        Route::patch('portfolio/edit/{id}', 'editPortfolio');
-        //take portfolio id
-        Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyPortfolio']);
     });
 
-    Route::controller(GamerController::class)->group(function() {
-        Route::get('gamers/edit/{id}','edit');
-        Route::patch('gamers/edit/{id}','update');
+    Route::controller(PortfolioController::class)->group(function () {
+        Route::get('portfolios/{id}', 'show');//
+        Route::post('portfolios/create', 'store');//
+        Route::get('portfolios/edit/{id}', 'edit');
+        Route::patch('portfolios/edit/{id}', 'update');
+        Route::delete('portfolios/delete/{id}', 'destroy');
+        Route::delete('portfolios/delete/pilot/{pilot_id}', 'destroyAll');
+    });
+
+    Route::controller(GamerController::class)->group(function () {
+        Route::get('gamers/edit/{id}', 'edit');
+        Route::patch('gamers/edit/{id}', 'update');
     });
 
     Route::controller(ServiceController::class)->group(function () {
-      Route::get('service/index','index');
-      Route::get('service/{id}','show');
-      Route::post('service/create','store');
-      Route::get('service/edit/{id}','edit');
-      Route::post('service/edit/{id}','update');
-      Route::delete('service/destroy/{id}','destroy');
+        Route::get('services', 'index');
+        Route::get('services/search', 'search');
+        Route::get('services/{id}', 'show');
+        Route::post('services/create', 'store');
+        Route::get('services/edit/{id}', 'edit');
+        Route::patch('services/edit/{id}', 'update');
+        Route::delete('services/destroy/{id}', 'destroy');
     });
 
-    Route::controller(RankController::class)->group(function () {
-      Route::get('leaderboards', 'index');
-      Route::get('leaderboard/{id}','show');
+    Route::controller(ReportController::class)->group(function () {
+        Route::post('reports/create','store');
+        Route::get('reports/{id}','show');
     });
 });
 
 
 //login
-Route::post('login', [LoginController::class,'login']);
+Route::post('login', [LoginController::class, 'login']);
 //register
-Route::post('signup', [UserController::class,'create']);
-
-//should be middleware or not?
-Route::get('user/{id}', [UserController::class,'show']);
-Route::get('users', [UserController::class,'index']);
+Route::post('signup', [UserController::class, 'create']);
 
 
 //CAPTCHA:
 Route::controller(CaptchaController::class)->group(function () {
     //generate captcha
     //Route::get('load-catpcha','load');
-    //Route::post('post-captcha', 'post'); 
+    //Route::post('post-captcha', 'post');
 });
 
 
-//take pilot id
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
+Route::controller(RankController::class)->group(function () {
+    Route::get('leaderboards', 'index');
+    Route::get('leaderboards/{id}', 'show');
+});
+
 Route::post('rank/create', [RankController::class, 'store']);
-Route::delete('rank/delete/{id}',[RankController::class, 'destroy']);
+Route::delete('rank/delete/{id}', [RankController::class, 'destroy']);
 
 //testing
-Route::get('testPostman', function() {
-    return response()->json('Postman is works and is running',200);
+Route::get('testPostman', function () {
+    return response()->json('Postman is works and is running', 200);
+});
+
+Route::controller(CategoryController::class)->group(function () {
+    Route::get('categories', 'index');
+    Route::get('categories/{id}', 'show');
+});
+
+Route::get('test-email', function () {
+    Mail::to('hello@gmail.com')->send(new EmailVerification('123456'));
+
+    return response()->json(['message'=>'Okay sent'],201);
 });

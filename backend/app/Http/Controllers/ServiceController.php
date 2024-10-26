@@ -4,25 +4,40 @@ namespace App\Http\Controllers;
 
 use App\Models\Pilot;
 use App\Models\Service;
+use App\Traits\ApiResponseTrait;
 use Auth;
+use Exception;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
     //
+    use ApiResponseTrait;
+
+    public function search(Request $request) {
+        try {
+            $services = Service::search($request->search)->paginate();
+            if (!$services) {
+                return $this->successResponse('Services are empty', 200);
+            }
+            //return success
+            return $this->successResponse('Here are the search results...',200,['services' => $services]);
+        } catch (Exception $error) {
+            return $this->failedResponse("Error {$error->getMessage()}",400);
+        }
+    }
+
     public function index()
     {
         try {
             $services = Service::all();
-            return response()->json([
-                'services' => $services,
-                'status' => true,
-            ],200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-                'status' => false,
-            ],500);
+            if (!$services) {
+                return $this->successResponse('Services are empty',200);
+            }
+            //if there are service listings
+            return $this->successResponse('All services retrieved.',200,['services' => $services]);
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(),500);
         }
     }
 
@@ -31,29 +46,16 @@ class ServiceController extends Controller
         try
         {
             $service = Service::find($service_id);
+            
+            if (!$service) {
+                return $this->failedResponse("Service listing {$service_id} not found.",404);
+            }
 
-            if ($service)
-            {
-                return response()->json([
-                    'service' => $service,
-                    'message' => 'Service listing retrieved.',
-                    'status' => true,
-                ],200);
-            }
-            else
-            {
-                return response()->json([
-                    'message' => "Service listing {$service_id} not found.",
-                    'status' => false,
-                ],404);
-            }
+            return $this->successResponse('Service listing retrieved.',200,['service' => $service]);
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
-            return response()->json([
-                'message' => $e->getMessage(),
-                'status' => false,
-            ],500);
+            return $this->failedResponse($e->getMessage(),500);
         }
 
     }
@@ -65,46 +67,32 @@ class ServiceController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric||min:0',
             'duration' => 'required|date',
-            'availability' => 'required|date',
-            'service_timestamp' => 'required|date',
+            'availability' => 'required|boolean',
         ]);
         //get pilot id by auth::user()->id
         $pilot_id = $this->getPilot();
+        
+        if (!$pilot_id){
+            return $this->failedResponse('Pilot record was not found.',404);
+        }
         //::create
-        if ($pilot_id) {
-            try {
-                $service = Service::create([
-                    'game' => $request->game,
-                    'description' => $request->description,
-                    'price' => $request->price,
-                    'duration' => $request->duration,
-                    'availability' => $request->availability,
-                    'service_timestamp' => $request->service_timestamp,
-                    'pilot_id' => $pilot_id,
-                ]);
-                //return response
-                if ($service) {
-                    return response()->json([
-                        'message' => "Listing {id} has been created.",
-                        'status' => true,
-                    ], 201);
-                }
-            } catch (\Exception $e) {
-                //throw $th;
-                return response()->json([
-                    'message' => $e->getMessage(),
-                    'status' => false,
-                ],500);
+        try {
+            $service = Service::create([
+                'game' => $request->game,
+                'description' => $request->description,
+                'price' => $request->price,
+                'duration' => $request->duration,
+                'availability' => $request->availability,
+                'pilot_id' => $pilot_id,
+            ]);
+            //return response
+            if ($service) {
+                return $this->successResponse("Listing {$service->id} has been created.", 201);
             }
+        } catch (Exception $e) {
+            //throw $th;
+            return $this->failedResponse($e->getMessage(), 500);
         }
-        else
-        {
-            return response()->json([
-                'message' => 'Pilot record was not found.',
-                'status' => false,
-            ],404);
-        }
-
     }
 
     public function edit($service_id)
@@ -120,8 +108,7 @@ class ServiceController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric||min:0',
             'duration' => 'required|date',
-            'availability' => 'required|date',
-            'service_timestamp' => 'required|date',
+            'availability' => 'required|boolean',
         ]);
         //update
         try
@@ -133,24 +120,15 @@ class ServiceController extends Controller
                 'price' => $request->price,
                 'duration' => $request->duration,
                 'availability' => $request->availability,
-                'service_timestamp' => $request->service_timestamp,
             ]);
             //response
-            if ($service)
+            if (!$service)
             {
-                return response()->json([
-                    'message' => "Updated listing {$service->id} successfully",
-                    'status' => true,
-                ],200);
+                return $this->failedResponse("Updating listing {$service->id} unsuccessful.",500);
             }
-            else {
-                return response()->json([
-                    'message' => "Updating listing {$service->id} unsuccessful.",
-                    'status' => false,
-                ],500);
-            }
+            return $this->successResponse("Updated listing {$service->id} successfully",200);
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             return response()->json($e->getMessage());
         }
@@ -161,21 +139,15 @@ class ServiceController extends Controller
         try{
             $deleted = Service::destroy($service_id);
 
-            if ($deleted)
+            if (!$deleted)
             {
-                return response()->json([
-                    'message' => "Service Listing {$service_id} deleted successfully",
-                    'status' => true,
-                ],204);
+                return $this->failedResponse("Deletion failed",500);
             }
             else {
-                return response()->json([
-                    'message' => "Deletion failed",
-                    'status' => false,
-                ], 500);
+                return $this->successResponse("Service Listing {$service_id} deleted successfully",204);
             }
         }
-        catch(\Exception $e) {
+        catch(Exception $e) {
             return response()->json($e->getMessage());
         }
     }
@@ -186,7 +158,7 @@ class ServiceController extends Controller
         try {
             $pilot_id = Pilot::where('user_id',$id)->first()->id;
             return $pilot_id;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }

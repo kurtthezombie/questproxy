@@ -2,54 +2,50 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RegisteredUser;
+use App\Mail\AccountDeletionMail;
 use App\Models\Gamer;
 use App\Models\Pilot;
 use App\Models\User;
 use App\Traits\RankOperations;
-use Auth;
-use DB;
+use App\Traits\ApiResponseTrait;
 use Exception;
 use Hash;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Registered;
+use Mail;
+
 
 class UserController extends Controller
 {
     //
-    use RankOperations;
+    use RankOperations, ApiResponseTrait;
 
     public function show($id)
     {
         $user = User::find($id);
 
-        if ($user)
-        {
-            return response()->json($user,200);
-        }
-        else {
-            return response()->json([
-                'message' => 'User not found',
-                'status' => false,
-            ],404);
-        }
+        return (!$user)
+        ?  $this->failedResponse("User {$id} not found.",404)
+        :  $this->successResponse("User {$id} is found.",200,['user' => $user]);
     }
 
     public function index()
     {
         $users = User::all();
-        return response()->json($users);
+
+        return $this->successResponse('User records retrieved successfully.', 200, ['users' => $users]);
     }
 
     public function create(Request $request)
     {
-        $captcha_validated = $this->validateCaptcha($request->captcha, $request->key);
-        
+        //uncomment and just set validated to true if testing postman
+        //$captcha_validated = $this->validateCaptcha($request->captcha, $request->key);
+        $captcha_validated = true;
         if(!$captcha_validated){
-            return response()->json([
-                'status' => false,
-                'message' => 'Captcha incorrect or invalid.',
-            ]);
+            return $this->failedResponse('Captcha incorrect or invalid.', 400);
         }
-        
+
         //validate inputs
         $request->validate([
             'username' => 'required|string|unique:users,username',
@@ -70,25 +66,25 @@ class UserController extends Controller
             'contact_number' => $request->contact_number,
             'role' => $request->role,
         ]);
-
+        //
+        event(new RegisteredUser($user));
         //should admin be made through registration ? sounds dumb
         $addGamerOrPilot = ($request->role == 'gamer') ? $this->createGamer($user->id) : $this->createPilot($user->id);
 
         if ($addGamerOrPilot)
         {
-            return response()->json([
-                'message' => 'User created successfully',
-                'user' => $user,
-                'role_created' => $addGamerOrPilot,
-                'status' => true,
-            ],201);
+            return $this->successResponse(
+                'User created successfully',
+                201,
+                [
+                    'user' => $user,
+                    'role_created' => $addGamerOrPilot
+                ],
+            );
         }
         else
         {
-            return response()->json([
-                'message' => 'Error occurred while trying to create gamer/pilot record',
-                'status' => false,
-            ],500);
+            return $this->failedResponse("Error occurred while trying to create gamer/pilot record",500);
         }
     }
 
@@ -117,22 +113,15 @@ class UserController extends Controller
         $user = User::find($id);
 
         if (!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => "User account $id not found",
-            ],404);
+            return $this->failedResponse("User account {$id} not found.", 404);
         }
 
-        return response()->json([
-            'user' => $user,
-            'status' => true,
-            'message' => "User account $id found."
-        ]);
+        return $this->successResponse("User account {$id} found.", 200, ['user' => $user]);
     }
 
     public function update(Request $request, $id) {
         $request->validate([
-            'email' => 'required|string|email',
+            'email' => 'required|email',
             'f_name' => 'required|string',
             'l_name' => 'required|string',
             'contact_number' => 'required|string|max:15',
@@ -141,30 +130,21 @@ class UserController extends Controller
         $user = User::find($id);
         //if user does not exist
         if(!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'User not found',
-            ],404);    
+            return $this->failedResponse('User not found.', 404);
         }
-        
+
         try {
             $user->update([
                 'email' => $request->email,
                 'f_name' => $request->f_name,
                 'l_name' => $request->l_name,
-                'contact_number' => $request->contact_number, 
+                'contact_number' => $request->contact_number,
             ]);
 
-            return response()->json([
-                'message' => "User account has been updated successfully.",
-                'status' => true,
-            ], 200);
+            return $this->successResponse("User account has been updated successfully.",200);
 
         } catch (Exception $error) {
-            return response()->json([
-                'status' => false,
-                'message' => "Error {$error->getMessage()}",
-            ],500);
+            return $this->failedResponse("Error {$error->getMessage()}", 500);
         }
     }
 
@@ -181,9 +161,9 @@ class UserController extends Controller
         //declare to have in scope
         $rank_id = null;
         $deleted_rank = null;
-        
+
         //determine if pilot or gamer
-        if ($user->role == 'game_pilot')
+        if ($user->role == 'game_pilot' || $user->role == 'game pilot')
         {
             $pilot = Pilot::where('user_id', $id)->first();
 
@@ -201,19 +181,14 @@ class UserController extends Controller
             //delete ranking
             $deleted_rank = $this->destroyRankRecord($rank_id);
         }
-        
+
         //return responses
-        if ($deleted_rank){
-            return response()->json([
-                'message' => 'User deleted successfully.',
-                'status' => true,
-            ],200);
-        } else {
-            return response()->json([
-                'message' => 'An error occured during deletion',
-                'status' => true,
-            ],500);
+        if (!$deleted_rank) {
+            return $this->failedResponse('An error occurred during user deletion.',500);
         }
+        //if deletion is successful
+        return $this->successResponse('User deleted successfully.',200);
+
     }
 
     private function validateCaptcha(string $captcha, string $key){
@@ -223,12 +198,23 @@ class UserController extends Controller
         return !($validator->fails());
     }
 
+    public function requestAccountDeletion(Request $request )
+    {
+        try {
+            $user = $request->user();
+            
+            Mail::to($user->email)->send(new AccountDeletionMail($user));
+
+            return $this->successResponse("Deletion email sent. Please check your inbox.",200);
+        } catch (Exception $error) {
+            return $this->failedResponse($error,500);
+        }
+        
+    }
+
     //for testing, not a major function
     public function checklogin()
     {
-        return response([
-            'message' => 'im logged in.',
-            'status' => true,
-        ]);
+        return $this->successResponse("I'm logged in.", 200);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Traits\ApiResponseTrait;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
+    use ApiResponseTrait;
 
     public function login(Request $request)
     {
@@ -23,16 +25,13 @@ class LoginController extends Controller
 
         if (!$user || !Hash::check($request->password,$user->password))
         {
-            return response()->json([
-                'message' => 'Incorrect username or password.',
-                'status' => false,
-            ],401);
+            return $this->failedResponse('Incorrect username or password.', 400);
         }
         //create token
 
         $token = $user->createToken($user->name.'Auth-Token',['*'], now()->addMinutes(30))->plainTextToken;
         //set auth info
-        Auth::login($user);
+        Auth::login($user, true);
 
         return response()->json([
             'message' => 'Login successful.',
