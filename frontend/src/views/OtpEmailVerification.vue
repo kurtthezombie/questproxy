@@ -3,29 +3,23 @@ import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import router from '@/router';
+import { useLoader } from '@/services/loader-service';
 
 const email = ref('');
 const otp = ref('');
 const message = ref('');
+const { loadShow, loadHide } = useLoader();
 
 const route = useRoute();
 email.value = route.query.email;
 
 const submitOtp = async () => {
-    /*
-        const token = localStorage.getItem('authToken');
-      try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/user`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-    */
     const formData = {
         email: email.value,
         otp: otp.value,
     }
     const token = localStorage.getItem('authToken');
+    const loader = loadShow();
     try{ 
         const response = await axios.post('http://127.0.0.1:8000/api/check-otp', formData, {
             headers: {
@@ -37,7 +31,10 @@ const submitOtp = async () => {
         router.push({ name: 'homepage' });  
     } catch (error) {
         console.log("ni error man", error.response.data);
-    } //to do: add loader if pwede
+        message.value = error.response.data.message;
+    } finally {
+        loadHide(loader);
+    }
 };
 </script>
 
@@ -47,7 +44,7 @@ const submitOtp = async () => {
         <div class="w-full max-w-sm rounded-lg border border-green-200 bg-white p-4 shadow-lg sm:p-6 md:p-8">
             <form class="space-y-6" @submit.prevent="submitOtp">
                 <h5 class="text-xl font-medium text-gray-900">OTP Verification</h5>
-                <h3>{{  message }}</h3>
+                <h3 class="text-red-800 bg-red-100 text-center p-1" v-if="message">{{ message }}</h3>
                 <div>
                     <label for="email"
                         class="mb-2 block text-sm  text-center text-lime-700 font-medium bg-lime-100 p-3">A six-digit
@@ -62,5 +59,4 @@ const submitOtp = async () => {
             </form>
         </div>
     </div>
-
 </template>

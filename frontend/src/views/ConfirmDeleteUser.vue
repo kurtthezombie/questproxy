@@ -27,12 +27,16 @@
     import axios from 'axios';
     import { ref } from 'vue';
     import { useRoute } from 'vue-router';
+    import { useLoader } from '@/services/loader-service';
 
+    
     const route = useRoute();
     const userId = ref(route.query.id);
+    const { loadShow, loadHide } = useLoader();
 
     const confirmDeletion = async () => {
         console.log('User Id: ', userId.value);
+        const loader = loadShow();
         try {
             const response = await axios.delete(`http://localhost:8000/api/users/delete/${userId.value}`, {
                 headers: {
@@ -43,6 +47,8 @@
             window.location.href = '/';
         } catch (error) {
             console.log('Error deleting account: ', error);
+        } finally {
+            loadHide(loader);
         }
     }
 
