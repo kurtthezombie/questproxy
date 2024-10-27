@@ -10,6 +10,7 @@ import AccountSettingview from '@/views/AccountSettingView.vue'
 import CreateServiceView from '@/views/CreateServiceView.vue'
 import UserProfileView from '@/views/UserProfileView.vue'
 import OtpEmailVerification from '@/views/OtpEmailVerification.vue'
+import ServiceView from '@/views/ServiceView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -79,6 +80,11 @@ const router = createRouter({
       path: '/otp-verification',
       name: 'otp',
       component: OtpEmailVerification, 
+    },
+    {
+      path: '/services/:title',
+      name: 'ServiceView',
+      component: ServiceView
     },
   ]
 })

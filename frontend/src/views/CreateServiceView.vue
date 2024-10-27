@@ -76,7 +76,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 import UserDropdown from '@/components/UserDropdown.vue';
 
-// Define reactive variables
+
 const username = ref(''); 
 const email = ref('');    
 const role = ref('');
@@ -86,7 +86,7 @@ const description = ref('');
 const price = ref(null);
 const duration = ref('');
 const availability = ref(1);
-const message = ref('');  // Add this line to define 'message'
+const message = ref('');  
 const router = useRouter();
 
 const isLoggedIn = () => {

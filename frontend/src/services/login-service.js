@@ -90,7 +90,7 @@
           pilot_id: currentUserId.value, 
         };
     
-        const response = await axios.post(`http://127.0.0.1:8000/api/portfolios/create`, store);
+        const response = await axios.post(`http://127.0.0.1:8000/api/portfolios/create`, portfolioData);
         
         if (response.data.success) {
           alert('Portfolio created successfully');
@@ -140,7 +140,7 @@
       }
     }
 
-    const createReport = async (id, reportData) => {
+    const createReport = async () => {
       try {
         const response = await axios.post(`http://127.0.0.1:8000/api/reports/create`, reportData);
         return response.data;
