@@ -71,7 +71,6 @@ import loginService from '@/services/login-service';
 import { useRouter } from 'vue-router';
 import UserDropdown from '@/components/UserDropdown.vue';
 
-
 const router = useRouter();
 const searchQuery = ref('');
 const username = ref('');
@@ -96,7 +95,6 @@ const filteredGames = computed(() => {
   );
 });
 
-
 const fetchUserData = async () => {
   try {
     const userData = await loginService.fetchUserData(); 
@@ -104,6 +102,7 @@ const fetchUserData = async () => {
     role.value = userData.role || 'User';  
   } catch (error) {
     console.error('Error fetching user data:', error);
+    router.push({ name: 'login' });
   }
 };
 

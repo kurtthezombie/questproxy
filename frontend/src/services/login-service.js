@@ -166,8 +166,14 @@
       }
     };
 
-
-
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/categories');
+        categories.value = response.data;
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
 
     const logout = async () => {
         const token = localStorage.getItem('authToken');
@@ -192,6 +198,7 @@
     logout,
     updateUser,
     fetchUserData,
+    fetchCategories,
     createReport,
     editPilot, 
     updatePilot, 

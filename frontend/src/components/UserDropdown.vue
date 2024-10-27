@@ -56,17 +56,15 @@ import { ref, computed, onMounted } from 'vue';
 import loginService from '@/services/login-service';
 import { useRouter } from 'vue-router';
 
-// Initialize variables and router
 const router = useRouter();
 const isDropdownOpen = ref(false);
 const username = ref('');
 const email = ref('');
 const role = ref('');
 
-// Fetch user data when the component is mounted
 const fetchUserData = async () => {
   try {
-    const userData = await loginService.fetchUserData();  // Fetch from API
+    const userData = await loginService.fetchUserData();  
     username.value = userData.username;
     email.value = userData.email;
     role.value = userData.role || 'User';
@@ -75,23 +73,19 @@ const fetchUserData = async () => {
   }
 };
 
-// Fetch user data once when the component is mounted
 onMounted(() => {
   fetchUserData();
 });
 
-// Toggle the visibility of the dropdown
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value;
 };
 
-// Capitalize the role for display
 const capitalizedRole = computed(() => {
   if (!role.value) return '';
   return role.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 });
 
-// Props for avatar and logout function
 const props = defineProps({
   avatar: {
     type: String,
@@ -100,12 +94,10 @@ const props = defineProps({
   callLogout: Function
 });
 
-// Call the logout function
 const callLogout = () => {
   if (props.callLogout) {
-    props.callLogout();  // Call the logout function passed as prop
+    props.callLogout();  
   } else {
-    // Fallback logout logic
     loginService.logout();
     router.push({ name: 'login' });
   }
