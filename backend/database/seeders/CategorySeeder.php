@@ -19,7 +19,7 @@ class CategorySeeder extends Seeder
             ['title'=> 'Valorant','game' => 'valorant','category_type' => 'fps'],
             ['title'=> 'Diablo IV','game' => 'diablo_4','category_type' => 'arpg'],
             ['title'=> 'Torchlight Infinite','game' => 'torchlight_infinite','category_type' => 'arpg'],
-            ['title'=> 'Roblox','game' => 'torchlight_infinite','category_type' => 'sandbox'],
+            ['title'=> 'Roblox','game' => 'roblox','category_type' => 'sandbox'],
         ]);
     }
 }
