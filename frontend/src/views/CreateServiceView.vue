@@ -1,17 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-900 flex flex-col">
     <!-- Header -->
-    <header class="bg-gray-800 sticky top-0 z-50 p-4 flex justify-between items-center shadow-lg border-b-4 border-green-500">
-      <div class="flex items-center">
-        <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
-        <span class="text-2xl font-bold text-green-500 ml-2">QuestProxy</span>
-      </div>
-      <nav class="flex space-x-6">
-        <router-link to="/home" class="text-white hover:text-green-500 transition-colors duration-300">Home</router-link>
-        <router-link to="/leaderboards" class="text-white hover:text-green-500 transition-colors duration-300">Leaderboard</router-link>
-        <UserDropdown :username="username" :email="email" :role="role" :callLogout="callLogout" />
-      </nav>
-    </header>
+    <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
 
     <!-- Form Container -->
     <div class="flex items-center justify-center flex-grow">
@@ -75,6 +65,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import UserDropdown from '@/components/UserDropdown.vue';
+import NavBar from '@/components/NavBar.vue';
 
 
 const username = ref(''); 

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { leaderboards } from '@/services/rank-service';
+import NavBar from '@/components/NavBar.vue';
 
 const records = ref([]);
 
@@ -20,8 +21,8 @@ onMounted(async () => {
 </script>
 
 <template>
-    <!-- INSERT NAVBAR HERE -->
-    <div class="flex flex-col justify-between">
+    <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
+      <div class="min-h-screen bg-gray-900 flex flex-col">
         <div class="mt-40 flex justify-center">
             <h2 class="text-5xl text-gray-500">Leaderboards</h2>
         </div>
