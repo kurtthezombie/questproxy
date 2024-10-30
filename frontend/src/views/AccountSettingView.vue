@@ -1,35 +1,7 @@
 <template>
   <div class="max-h-screen bg-gray-900 text-white">
     <!-- Header -->
-    <header class="bg-gray-800 sticky top-0 z-50 p-4 flex justify-between items-center shadow-lg border-b-4 border-green-500">
-      <div class="flex items-center">
-        <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
-        <span class="text-2xl font-bold text-white-500">QuestProxy</span>
-      </div>
-      <nav class="flex space-x-6">
-        <router-link to="/home" class="text-white hover:text-green-500 transition-colors duration-300">
-          Home
-        </router-link>
-        
-        <router-link to="/leaderboards" class="text-white hover:text-green-500 transition-colors duration-300">
-          Leaderboard
-        </router-link>
-
-        <router-link 
-          v-if="role === 'game pilot'" 
-          to="/create-service" 
-          class="text-white hover:text-green-500 transition-colors duration-300">
-          Service
-        </router-link>
-
-        <UserDropdown 
-          :username="username" 
-          :email="email" 
-          :role="role" 
-          :callLogout="callLogout"
-        />
-      </nav>
-    </header>
+    <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
     
     <!-- Sidebar and Account Form -->
     <div class="flex">
@@ -122,6 +94,7 @@ import loginService from '@/services/login-service';
 import { useRouter } from 'vue-router';
 import UserDropdown from '@/components/UserDropdown.vue';
 import { useLoader } from '@/services/loader-service';
+import NavBar from '@/components/NavBar.vue';
 
 const { loadShow, loadHide } = useLoader();
 const router = useRouter();
@@ -159,6 +132,7 @@ const fetchUserData = async () => {
     loadHide(loader);
   }
 };
+
 onMounted(fetchUserData);
 
 const UpdateForm = async () => {
