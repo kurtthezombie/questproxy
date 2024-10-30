@@ -1,4 +1,5 @@
-  import axios from 'axios';
+import { useUserStore } from '@/stores/userStore';
+import axios from 'axios';
 
   const register = async(user) => {
       console.log("Inside register function");
@@ -16,10 +17,15 @@
   }
 
   const login = async(credentials) => {
+    const userStore = useUserStore();
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/login',credentials);
       console.log(response);
       
+      //store user details in userStore
+      const { authenticated_user, token } = response.data; //destructure
+      userStore.setUser(authenticated_user,token);
+
       localStorage.setItem('authToken', response.data.token);
       localStorage.setItem('tokenType', response.data.token_type);
       
