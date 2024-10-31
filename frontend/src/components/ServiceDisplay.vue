@@ -12,14 +12,11 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
-
-defineProps({
+const props = defineProps({
   service: {
     type: Object,
-    required: true
+    required: true,
   }
 });
 
-const currency = (value) => `$${value.toFixed(2)}`;
 </script>
