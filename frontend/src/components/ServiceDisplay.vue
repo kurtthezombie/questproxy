@@ -12,7 +12,11 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 const props = defineProps({
+=======
+defineProps({
+>>>>>>> 399e7ca4dcfc8c61429e39cdf6b628da70df7e51
   service: {
     type: Object,
     required: true,
