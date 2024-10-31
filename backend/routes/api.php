@@ -34,14 +34,6 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
     //email verification
     Route::controller(EmailVerificationController::class)->group(function () {
         Route::post('check-otp','checkOtp');
-
-        /*//notice
-        Route::get('/email/verify', 'notice')->name('verification.notice');
-        //resend email
-        Route::get('/email/verification-notification', 'send')
-            ->middleware('throttle:6,1')
-            ->name('verification.send');
-        */
     });
 
     Route::controller(LoginController::class)->group(function () {
