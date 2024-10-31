@@ -183,6 +183,7 @@ import axios from 'axios';
 
     const logout = async () => {
         const token = localStorage.getItem('authToken');
+        const userStore = useUserStore();
 
         if (token) {
             // Send a request to the logout API
@@ -191,6 +192,7 @@ import axios from 'axios';
                     'Authorization': `Bearer ${token}` // Pass the token in the Authorization header
                 }
             });
+            userStore.clearUser();
             localStorage.removeItem('authToken');
             console.log('Logout successful!');
         } else {
