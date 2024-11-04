@@ -36,8 +36,8 @@
           <router-link to="/account-settings" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Settings</router-link>
         </li>
         <li>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">WIP</a>
-        </li>
+          <router-link v-if="role === 'game pilot'" 
+        to="/serviceshistory" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Services</router-link>        </li>
       </ul>
 
       <div class="py-0">

@@ -92,7 +92,6 @@ import { ref, onMounted } from 'vue';
 import Sidebar from '@/components/Sidebar.vue';
 import loginService from '@/services/login-service'; 
 import { useRouter } from 'vue-router';
-import UserDropdown from '@/components/UserDropdown.vue';
 import { useLoader } from '@/services/loader-service';
 import NavBar from '@/components/NavBar.vue';
 
@@ -159,8 +158,11 @@ const UpdateForm = async () => {
   }
 };
 
-const callLogout = async () => {
-  await loginService.logout();
+const callLogout = () => {
+  userStore.clearUser();
+  serviceStore.clearServices();
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('tokenType');
   router.push({ name: 'login' });
 };
 </script>

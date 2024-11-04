@@ -32,7 +32,7 @@
           v-for="category in filteredCategories" 
           :key="category.id"
           class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-green-500 transition-colors duration-300 cursor-pointer"
-          @click="$router.push({ name: 'ServiceView', params: { title: category.title } })"
+          @click="$router.push({ name: 'ServiceView', params: { title: category.game } })"
         >
           <h3 class="text-xl font-semibold">{{ category.title }}</h3>
         </div>
@@ -47,7 +47,6 @@ import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import loginService from '@/services/login-service';
-import UserDropdown from '@/components/UserDropdown.vue';
 import { useLoader } from '@/services/loader-service';
 import NavBar from '@/components/NavBar.vue';
 
@@ -79,9 +78,7 @@ const filteredCategories = computed(() => {
   );
 });
 
-const navigateToServiceView = (categoryTitle) => {
-  router.push({ name: 'ServiceView', params: { title: categoryTitle } });
-};
+
 
 
 const fetchUserData = async () => {
@@ -104,7 +101,10 @@ onMounted(() => {
 });
 
 const callLogout = () => {
-  loginService.logout();
+  userStore.clearUser();
+  serviceStore.clearServices();
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('tokenType');
   router.push({ name: 'login' });
 };
 
