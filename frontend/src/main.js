@@ -9,13 +9,13 @@ import router from './router'
 import 'vue-loading-overlay/dist/css/index.css';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
-
 const app = createApp(App)
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
-app.use(pinia);
+app.use(pinia)
+
 app.use(LoadingPlugin);
 app.use(router)
 
