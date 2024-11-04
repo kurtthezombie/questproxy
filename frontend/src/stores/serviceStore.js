@@ -87,6 +87,18 @@ export const useServiceStore = defineStore('service', () => {
         }
     };
     
+    const fetchServicesByPilot = async (pilotId) => {
+        loading.value = true;
+        try {
+          const response = await axios.get(`http://127.0.0.1:8000/api/pilots/${pilotId}/services`);
+          services.value = response.data.services; 
+        } catch (error) {
+          error.value = 'Failed to fetch services for pilot.';
+        } finally {
+          loading.value = false;
+        }
+    };
+
     const updateService = async (serviceId, serviceData) => {
         loading.value = true;
         try {
@@ -158,5 +170,6 @@ export const useServiceStore = defineStore('service', () => {
         clearServices,
         updateService,
         deleteService,
+        fetchServicesByPilot,
     };
 });
