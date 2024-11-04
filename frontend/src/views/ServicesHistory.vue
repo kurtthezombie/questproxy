@@ -16,7 +16,6 @@
     <div v-else-if="serviceStore.error" class="text-red-500 text-center mt-10">
       {{ serviceStore.error }}
     </div>
-    
 
     <!-- Content -->
     <template v-else>
@@ -25,14 +24,14 @@
       </h1>
 
       <!-- No Services Message -->
-      <div v-if="!serviceStore.services.length" class="text-center mt-10 text-gray-400">
+      <div v-if="!filteredUserServices.length" class="text-center mt-10 text-gray-400">
         No services available.
       </div>
 
       <div v-else class="container mx-auto py-10">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <ServiceDisplay
-            v-for="service in pilotServices"
+            v-for="service in filteredUserServices"
             :key="service.id"
             :service="service"
             :categories="serviceStore.categories"
@@ -62,10 +61,10 @@ const role = computed(() => userStore.userData?.role || '');
 
 const filteredUserServices = computed(() => {
   const userId = userStore.userData?.id;
-  return userId ? serviceStore.services.filter(service => service.user?.id === userId) : [];
+  return userId ? serviceStore.services.filter(service => service.pilot_id === userId) : [];
 });
 
-// Check for authentication
+
 const checkAuth = () => {
   if (!localStorage.getItem('authToken')) {
     router.push({ name: 'login' });
@@ -76,6 +75,7 @@ const checkAuth = () => {
 
 const fetchData = async () => {
   try {
+    await serviceStore.fetchServicesByPilot();
     await serviceStore.fetchCategories(); 
     await serviceStore.fetchUserServices(); 
     console.log('Fetched services:', serviceStore.services); 
@@ -95,6 +95,7 @@ const callLogout = () => {
 onMounted(async () => {
   if (checkAuth()) {
     await fetchData();
+    await fetchServices();
   }
 });
 </script>
