@@ -87,17 +87,27 @@ export const useServiceStore = defineStore('service', () => {
         }
     };
     
-    const fetchServicesByPilot = async (pilotId) => {
+    const fetchServicesByPilot = async (pilot_id) => {
         loading.value = true;
         try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/pilots/${pilotId}/services`);
-          services.value = response.data.services; 
-        } catch (error) {
-          error.value = 'Failed to fetch services for pilot.';
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/pilots/${pilot_id}/services`,
+            {
+              headers: {
+                Authorization: `${localStorage.getItem('tokenType')} ${localStorage.getItem('authToken')}`
+              }
+            }
+          );
+          services.value = response.data.services;
+          error.value = null; 
+        } catch (err) {
+          error.value = err.message || 'Failed to fetch services for pilot.';
+          console.error('Error fetching services for pilot:', err);
         } finally {
           loading.value = false;
         }
-    };
+      };
+      
 
     const updateService = async (serviceId, serviceData) => {
         loading.value = true;

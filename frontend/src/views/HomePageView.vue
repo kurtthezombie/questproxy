@@ -25,9 +25,14 @@
 
       <!-- Categories Section -->
       <section>
-      <h2 class="text-2xl font-semibold mb-4">Trending Categories</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <h2 class="text-2xl font-semibold mb-4">Trending Categories</h2>
+
+        <div v-if="!categories.length" class="text-center mt-10 text-gray-400">
+          Loading categories...
+        </div>
+
         <!-- Category Titles -->
+        <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-6">
         <div 
           v-for="category in filteredCategories" 
           :key="category.id"
@@ -49,6 +54,9 @@ import { useRouter } from 'vue-router';
 import loginService from '@/services/login-service';
 import { useLoader } from '@/services/loader-service';
 import NavBar from '@/components/NavBar.vue';
+import { useUserStore } from '@/stores/userStore';
+import { useServiceStore } from '@/stores/serviceStore';
+
 
 const { loadShow, loadHide } = useLoader();
 
@@ -59,14 +67,18 @@ const email = ref('');
 const role = ref('');
 const categories = ref([]);
 
+const userStore = useUserStore();
+const serviceStore = useServiceStore();
+
 const fetchCategories = async () => {
   const loader = loadShow();
   try {
     const response = await axios.get('http://127.0.0.1:8000/api/categories');
-    categories.value = response.data.categories;
+    categories.value = response.data.categories || [];
     console.log("Fetched categories:", categories.value); 
   } catch (error) {
     console.error('Error fetching categories:', error);
+    categories.value = [];
   } finally {
     loadHide(loader);
   }
@@ -74,11 +86,9 @@ const fetchCategories = async () => {
 
 const filteredCategories = computed(() => {
   return categories.value.filter(category => 
-    category.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+    category?.title?.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
-
-
 
 
 const fetchUserData = async () => {

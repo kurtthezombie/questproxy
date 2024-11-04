@@ -74,13 +74,18 @@ const checkAuth = () => {
 };
 
 const fetchData = async () => {
+  const pilot_id = userStore.userData?.id;
+  if (!pilot_id) {
+    console.error("Pilot ID not found.");
+    return;
+  }
+  
   try {
-    await serviceStore.fetchServicesByPilot();
-    await serviceStore.fetchCategories(); 
-    await serviceStore.fetchUserServices(); 
-    console.log('Fetched services:', serviceStore.services); 
+    await serviceStore.fetchServicesByPilot(pilot_id); 
+    await serviceStore.fetchCategories();
+    console.log("Fetched services:", serviceStore.services);
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error("Error fetching data:", error);
   }
 };
 
@@ -95,7 +100,6 @@ const callLogout = () => {
 onMounted(async () => {
   if (checkAuth()) {
     await fetchData();
-    await fetchServices();
   }
 });
 </script>

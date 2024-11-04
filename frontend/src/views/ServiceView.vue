@@ -67,20 +67,22 @@ const getDisplayTitle = computed(() => {
   if (!categoryGame.value || categoryGame.value.toLowerCase() === 'all') {
     return 'All';
   }
-  const category = serviceStore.categories.find(
-    cat => cat.game.toLowerCase() === categoryGame.value.toLowerCase()
+  const category = serviceStore.categories?.find(
+    cat => cat.game?.toLowerCase() === categoryGame.value.toLowerCase()
   );
   return category ? category.title : categoryGame.value;
 });
+
 
 const filteredServices = computed(() => {
   if (!categoryGame.value || categoryGame.value.toLowerCase() === 'all') {
     return serviceStore.services;
   }
   return serviceStore.services.filter(service => 
-    service.game.toLowerCase() === categoryGame.value.toLowerCase()
+    service && service.game && service.game.toLowerCase() === categoryGame.value.toLowerCase()
   );
 });
+
 
 const checkAuth = () => {
   if (!localStorage.getItem('authToken')) {
@@ -91,10 +93,12 @@ const checkAuth = () => {
 const fetchServices = async () => {
   try {
     await serviceStore.fetchUserServices();
+    console.log('Fetched services:', serviceStore.services); 
   } catch (error) {
     console.error('Error fetching services:', error);
   }
 };
+
 
 const callLogout = () => {
   userStore.clearUser();
