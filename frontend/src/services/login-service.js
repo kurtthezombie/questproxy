@@ -172,6 +172,7 @@ import axios from 'axios';
       }
     };
 
+
     const fetchCategories = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/categories');
@@ -213,5 +214,5 @@ import axios from 'axios';
     createPortfolio, 
     editPortfolio, 
     deletePortfolio,
-    createService 
+    createService,
   }; 
