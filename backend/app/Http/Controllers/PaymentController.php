@@ -20,53 +20,6 @@ class PaymentController extends Controller
         return $this->successResponse('Payment records retrieved.', 200, ['payment' => $payment]);
     }
 
-    public function initiate($service_id)
-    {
-        //get service
-        $service = Service::findOrFail($service_id);
-        //set amount from service price 
-        $amount = $service->price * 100;
-        $description = $service->description;
-        //call response
-        $secret_key = env('PAYMONGO_SECRET_KEY');
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Authorization' => 'Basic ' . base64_encode($secret_key . ':'),
-            'Content-Type' => 'application/json'
-        ])->post('https://api.paymongo.com/v1/links', [
-                    'data' => [
-                        'attributes' => [
-                            'amount' => $amount,
-                            'description' => $description,
-                        ]
-                    ]
-                ]);
-        //get checkout url and transaction_id
-        $responseData = $response->json();
-        $checkout_url = $responseData['data']['attributes']['checkout_url'];
-        $transaction_id = $responseData['data']['id'];
-        $status = $responseData['data']['attributes']['status'];
-
-        //insert into payment and transaction history
-        $payment = Payment::create([
-            'amount' => $amount,
-            'description' => $description,
-            'transaction_id' => $transaction_id,
-            'status' => $status,
-            'payer_id' => Auth::user()->id,
-            'service_id' => $service_id,
-        ]);
-
-        $this->addTransaction($payment->id, $status);
-
-        //return checkout url
-        return $this->successResponse(
-            'Payment link created',
-            201,
-            ['link' => $checkout_url]
-        );
-    }
-
     public function pay($service_id)
     {
         //get service
@@ -154,8 +107,14 @@ class PaymentController extends Controller
         
         if ($status == 'paid'){
             //update tables
-            //expire session
-            //call paymongo api to expire session if it's paid
+            $payment->method = $payment_method_used;
+            $payment->save();
+            
+            //create transaction history
+            $this->addTransaction($payment->id,$status);
+
+            //return response
+            return $this->successResponse('Payment successful.',200);
         }
     }
 
