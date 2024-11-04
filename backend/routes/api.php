@@ -84,6 +84,7 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('services/edit/{id}', 'edit');
         Route::patch('services/edit/{id}', 'update');
         Route::delete('services/destroy/{id}', 'destroy');
+        Route::get('pilots/{pilot_id}/services','getServicesByPilot');
     });
 
     Route::controller(ReportController::class)->group(function () {

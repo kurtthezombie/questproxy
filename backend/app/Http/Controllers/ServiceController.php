@@ -151,6 +151,17 @@ class ServiceController extends Controller
             return response()->json($e->getMessage());
         }
     }
+
+    public function getServicesByPilot($pilot_id){
+        $services = Service::where('pilot_id',$pilot_id)->get();
+
+        if($services->isEmpty()) {
+            return $this->successResponse('No services found for this pilot.',404);
+        }
+
+        return $this->successResponse('Services retrieved.',200,['services' => $services]);
+    }
+
     //
     public function getPilot()
     {
