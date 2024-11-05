@@ -81,7 +81,7 @@ class PaymentController extends Controller
             'service_id' => $service_id,
         ]);
         //insert into transactions_history
-        $this->addTransaction($payment->id, $status);
+        $this->addTransaction($payment->id, "pending");
         //redirect to checkout_url
         return redirect()->away($checkout_url);
     }
@@ -108,6 +108,7 @@ class PaymentController extends Controller
         if ($status == 'paid'){
             //update tables
             $payment->method = $payment_method_used;
+            $payment->status = $status;
             $payment->save();
             
             //create transaction history
@@ -118,6 +119,18 @@ class PaymentController extends Controller
         }
     }
 
+    public function paymentsPaid($user_id){
+        $payments = Payment::where('payer_id',$user_id)
+                    ->where('status','paid')
+                    ->get();
+        if ($payments->isEmpty()){
+            return $this->successResponse('No paid payments found for this user.',204);
+        }
+
+        return $this->successResponse('Payments retrieved.',200,['payments' => $payments]);       
+    }
+
+    //refactors
     public function addTransaction($payment_id, $status)
     {
         TransactionHistory::create([

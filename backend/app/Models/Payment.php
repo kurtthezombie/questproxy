@@ -23,9 +23,9 @@ class Payment extends Model
     ];
 
     //relationships
-    public function transactionHistories()
+    public function transactionHistory()
     {
-        return $this->hasMany(TransactionHistory::class);
+        return $this->hasMany(TransactionHistory::class,'payment_id');
     }
 
     public function user(){

@@ -28,6 +28,10 @@ class User extends Authenticatable
         'status'
     ];
 
+
+    public function payments(){
+        return $this->hasMany(Payment::class,'payer_id');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

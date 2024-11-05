@@ -5,11 +5,13 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\GamerController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PilotController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 
 
@@ -90,6 +92,18 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
     Route::controller(ReportController::class)->group(function () {
         Route::post('reports/create','store');
         Route::get('reports/{id}','show');
+    });
+
+    Route::controller(PaymentController::class)->group(function() {
+        Route::get('/payments', [PaymentController::class, 'index']);
+        Route::post('/payments/{service_id}', [PaymentController::class, 'pay']);
+        Route::get('/payments/success/{transaction_id}', [PaymentController::class, 'success']);
+        Route::get('/users/{user_id}/payments/paid', [PaymentController::class, 'paymentsPaid']);
+    });
+
+    Route::controller(TransactionController::class)->group(function() {
+        Route::get('/users/{user_id}/transactions', [TransactionController::class, 'transactionByUser'])->middleware('auth');
+        Route::get('/payments/{payment_id}/transactions', [TransactionController::class, 'transactionByPayment'])->middleware('auth');
     });
 });
 
