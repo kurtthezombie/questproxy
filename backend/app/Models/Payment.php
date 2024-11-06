@@ -19,7 +19,7 @@ class Payment extends Model
         'payment_link',
         'status',
         'payer_id',
-        'service_id',
+        'booking_id',
     ];
 
     //relationships
@@ -32,7 +32,7 @@ class Payment extends Model
         return $this->belongsTo(User::class, 'payer_id');
     }
 
-    public function service(){
-        return $this->belongsTo(Service::class, 'service_id');
+    public function booking(){
+        return $this->belongsTo(Booking::class, 'booking_id');
     }
 }
