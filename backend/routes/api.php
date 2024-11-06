@@ -1,5 +1,6 @@
 <?php
 //controllers
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmailVerificationController;
@@ -92,6 +93,16 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
     Route::controller(ReportController::class)->group(function () {
         Route::post('reports/create','store');
         Route::get('reports/{id}','show');
+    });
+
+    Route::controller(BookingController::class)->group(function() {
+        Route::get('bookings/{booking_id}', 'show');
+        Route::post('bookings/store', 'store');
+        Route::delete('bookings/{booking_id}', 'destroy');
+        Route::put('bookings/{booking_id}/status', 'updateStatus');
+        Route::put('bookings/{booking_id}/instruction', 'updateInstruction');
+        Route::get('bookings/service/{service_id}', 'booksByService');
+        Route::get('bookings/client/{client_id}', 'booksByClient');
     });
 
     Route::controller(PaymentController::class)->group(function() {

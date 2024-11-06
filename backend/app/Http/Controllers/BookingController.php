@@ -135,5 +135,4 @@ class BookingController extends Controller
 
         return $this->successResponse("Bookings by Client $client_id retrieved", 200);
     }
-
 }
