@@ -135,4 +135,18 @@ class BookingController extends Controller
 
         return $this->successResponse("Bookings by Client $client_id retrieved", 200);
     }
+
+    public function getBookingInstructions($booking_id) {
+        $booking = Booking::find($booking_id);
+
+        if (!$booking) {
+            return $this->failedResponse('Booking not found',404);
+        }
+
+        return $this->successResponse(
+            "Instructions for booking $booking_id is retrieved.",
+            200,
+            ['instruction' => $booking->instruction],
+        );
+    }
 }

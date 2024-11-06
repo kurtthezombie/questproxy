@@ -26,7 +26,7 @@ class Booking extends Model
     }
     //a booking has an instruction
     public function instruction(){
-        return $this->hasOne(Instruction::class);
+        return $this->hasOne(Instruction::class,'booking_id');
     }
     //a booking has a payment
     public function payment(){
