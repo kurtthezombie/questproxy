@@ -142,11 +142,20 @@ class BookingController extends Controller
         if (!$booking) {
             return $this->failedResponse('Booking not found',404);
         }
+        $instruction = $booking->instruction;
+
+        if (!$instruction){
+            return $this->failedResponse('No instructions found for this booking', 404);
+        }
+
+        // Decrypt and set values directly on the instruction object
+        $instruction->credential_username = Crypt::decryptString($instruction->credential_username);
+        $instruction->credential_password = Crypt::decryptString($instruction->credential_password);
 
         return $this->successResponse(
             "Instructions for booking $booking_id is retrieved.",
             200,
-            ['instruction' => $booking->instruction],
+            ['instruction' => $instruction],
         );
     }
 }
