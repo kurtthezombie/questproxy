@@ -107,15 +107,16 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
     });
 
     Route::controller(PaymentController::class)->group(function() {
-        Route::get('/payments', [PaymentController::class, 'index']);
-        Route::post('/payments/{service_id}', [PaymentController::class, 'pay']);
-        Route::get('/payments/success/{transaction_id}', [PaymentController::class, 'success']);
-        Route::get('/users/{user_id}/payments/paid', [PaymentController::class, 'paymentsPaid']);
+        Route::get('/payments', 'index');
+        Route::post('/payments/{service_id}', 'pay');
+        Route::get('/payments/success/{transaction_id}', 'success');
+        Route::get('/users/{user_id}/payments/paid', 'paymentsPaid');
     });
 
     Route::controller(TransactionController::class)->group(function() {
-        Route::get('/users/{user_id}/transactions', [TransactionController::class, 'transactionByUser'])->middleware('auth');
-        Route::get('/payments/{payment_id}/transactions', [TransactionController::class, 'transactionByPayment'])->middleware('auth');
+        Route::get('/users/{user_id}/transactions', 'transactionByUser');
+        Route::get('/payments/{payment_id}/transactions','transactionByPayment');
+        Route::get('/export-transaction-history/{userId}', 'exportTransactionHistory');
     });
 });
 

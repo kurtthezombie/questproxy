@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\TransactionsExport;
 use App\Models\TransactionHistory;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Excel;
 
 class TransactionController extends Controller
 {
@@ -26,5 +28,9 @@ class TransactionController extends Controller
         $transactions = TransactionHistory::where('payment_id',$payment_id)->get();
 
         return $this->successResponse('Transactions by payment retrieved.',200,['transactions' => $transactions]);
+    }
+
+    public function exportTransactionHistory($user_id){
+        return Excel::download(new TransactionsExport($user_id), 'transaction_history.csv');
     }
 }
