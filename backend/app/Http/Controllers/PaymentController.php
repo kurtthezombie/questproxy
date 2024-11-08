@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Service;
 use App\Models\TransactionHistory;
@@ -20,14 +21,20 @@ class PaymentController extends Controller
         return $this->successResponse('Payment records retrieved.', 200, ['payment' => $payment]);
     }
 
-    public function pay($service_id)
+    public function pay($booking_id)
     {
-        //get service
-        $service = Service::class($service_id);
-
-        if (!$service) {
-            return $this->failedResponse('No service found.',404);
+        //get booking
+        $booking = Booking::findOrFail($booking_id);
+        if (!$booking) {
+            return $this->failedResponse('No booking found.',404);
         }
+        //get service
+        $service = $booking->service;
+        if (!$service) {
+            return $this->failedResponse('No service retrieved.',404);
+        }   
+        //get service id 
+        $service_id = $service->id;
 
         //set amount to payment gateway format
         $amount = $service->price * 100;
@@ -78,7 +85,7 @@ class PaymentController extends Controller
             'payment_link' => $checkout_url,
             'status' => $status,
             'payer_id' => Auth::user()->id,
-            'service_id' => $service_id,
+            'booking_id' => $booking_id,
         ]);
         //insert into transactions_history
         $this->addTransaction($payment->id, "pending");

@@ -1,5 +1,6 @@
 <?php
 //controllers
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmailVerificationController;
@@ -94,16 +95,28 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('reports/{id}','show');
     });
 
+    Route::controller(BookingController::class)->group(function() {
+        Route::get('bookings/{booking_id}', 'show');
+        Route::post('bookings/store', 'store');
+        Route::delete('bookings/{booking_id}', 'destroy');
+        Route::put('bookings/{booking_id}/status', 'updateStatus');
+        Route::put('bookings/{booking_id}/instruction', 'updateInstruction');
+        Route::get('bookings/service/{service_id}', 'booksByService');
+        Route::get('bookings/client/{client_id}', 'booksByClient');
+        Route::get('/bookings/{id}/instructions', 'getBookingInstructions');
+    });
+
     Route::controller(PaymentController::class)->group(function() {
-        Route::get('/payments', [PaymentController::class, 'index']);
-        Route::post('/payments/{service_id}', [PaymentController::class, 'pay']);
-        Route::get('/payments/success/{transaction_id}', [PaymentController::class, 'success']);
-        Route::get('/users/{user_id}/payments/paid', [PaymentController::class, 'paymentsPaid']);
+        Route::get('/payments', 'index');
+        Route::post('/payments/{service_id}', 'pay');
+        Route::get('/payments/success/{transaction_id}', 'success');
+        Route::get('/users/{user_id}/payments/paid', 'paymentsPaid');
     });
 
     Route::controller(TransactionController::class)->group(function() {
-        Route::get('/users/{user_id}/transactions', [TransactionController::class, 'transactionByUser'])->middleware('auth');
-        Route::get('/payments/{payment_id}/transactions', [TransactionController::class, 'transactionByPayment'])->middleware('auth');
+        Route::get('/users/{user_id}/transactions', 'transactionByUser');
+        Route::get('/payments/{payment_id}/transactions','transactionByPayment');
+        Route::get('/export-transaction-history/{userId}', 'exportTransactionHistory');
     });
 });
 

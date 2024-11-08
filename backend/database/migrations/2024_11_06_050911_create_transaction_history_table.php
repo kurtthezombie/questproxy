@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->string('method')->nullable()->change();
+        Schema::create('transaction_history', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('payment_id');
+            $table->string('status');
+            $table->timestamps();
+
+            $table->foreign('payment_id')->references('id')->on('payments');
         });
     }
 
@@ -21,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->string('method')->change();
-        });
+        Schema::dropIfExists('transaction_history');
     }
 };
