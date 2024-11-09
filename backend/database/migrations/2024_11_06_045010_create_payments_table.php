@@ -13,27 +13,18 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('payer_id'); 
+            $table->unsignedBigInteger('booking_id');
             $table->decimal('amount',10,2);
-            $table->string('method');
+            $table->string('method')->nullable();
             $table->string('details')->nullable();
             $table->string('transaction_id');
             $table->string('payment_link');
             $table->string('status')->default('pending');
-            $table->unsignedBigInteger('payer_id');
-            $table->unsignedBigInteger('service_id');
             $table->timestamps();
 
             $table->foreign('payer_id')->references('id')->on('users');
-            $table->foreign('service_id')->references('id')->on('services');
-        });
-        
-        Schema::create('transaction_history', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('payment_id');
-            $table->string('status');
-            $table->timestamps();
-
-            $table->foreign('payment_id')->references('id')->on('payments');
+            $table->foreign('booking_id')->references('id')->on('bookings');
         });
     }
 
@@ -42,7 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaction_history');
         Schema::dropIfExists('payments');
     }
 };
