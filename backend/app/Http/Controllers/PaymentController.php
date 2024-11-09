@@ -21,8 +21,10 @@ class PaymentController extends Controller
         return $this->successResponse('Payment records retrieved.', 200, ['payment' => $payment]);
     }
 
-    public function pay($booking_id)
+    public function pay(Request $request, $booking_id)
     {
+        $success_url = $request->success_url;
+        $cancel_url = $request->cancel_url;
         //get booking
         $booking = Booking::findOrFail($booking_id);
         if (!$booking) {
@@ -33,14 +35,9 @@ class PaymentController extends Controller
         if (!$service) {
             return $this->failedResponse('No service retrieved.',404);
         }   
-        //get service id 
-        $service_id = $service->id;
-
         //set amount to payment gateway format
         $amount = $service->price * 100;
         $description = $service->description;
-        $success_url = env('APP_FRONTEND_URL') . "/payment/success";
-        $cancel_url =  env('APP_FRONTEND_URL') . "/services/" .$service_id;
 
         //call response
         $secret_key = env('PAYMONGO_SECRET_KEY');
@@ -48,7 +45,11 @@ class PaymentController extends Controller
             'Accept' => 'application/json',
             'Authorization' => 'Basic ' . base64_encode($secret_key . ':'),
             'Content-Type' => 'application/json'
-        ])->post('https://api.paymongo.com/v1/checkout_sessions', [
+        ])
+        ->withOptions([
+            'verify' => false,
+        ])
+        ->post('https://api.paymongo.com/v1/checkout_sessions', [
                     'data' => [
                         'attributes' => [
                             'send_email_receipt' => false,
@@ -90,7 +91,12 @@ class PaymentController extends Controller
         //insert into transactions_history
         $this->addTransaction($payment->id, "pending");
         //redirect to checkout_url
-        return redirect()->away($checkout_url);
+        //return redirect()->away($checkout_url);
+        return $this->successResponse(
+            'Payment record created, redirect to checkout url.',
+            201,
+            ['checkout_url'=> $checkout_url]
+        );
     }
 
     public function success($transaction_id){
