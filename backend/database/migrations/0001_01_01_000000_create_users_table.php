@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('contact_number',15);
             $table->char('status')->default('x');
             $table->char('role');
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();    
             $table->timestamps();
         });
