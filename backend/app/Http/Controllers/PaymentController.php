@@ -8,6 +8,7 @@ use App\Models\Service;
 use App\Models\TransactionHistory;
 use App\Traits\ApiResponseTrait;
 use Auth;
+use DB;
 use Http;
 use Illuminate\Http\Request;
 
@@ -78,18 +79,29 @@ class PaymentController extends Controller
         $checkout_id = $responseData['data']['id'];
         $checkout_url = $responseData['data']['attributes']['checkout_url'];
         $status = $responseData['data']['attributes']['status'];
-
-        $payment = Payment::create([
-            'amount' => $amount,
-            'description' => $description,
-            'transaction_id' => $checkout_id,
-            'payment_link' => $checkout_url,
-            'status' => $status,
-            'payer_id' => Auth::user()->id,
-            'booking_id' => $booking_id,
-        ]);
-        //insert into transactions_history
-        $this->addTransaction($payment->id, "pending");
+        
+        DB::beginTransaction();
+        try {
+            $payment = Payment::create([
+                'amount' => $amount,
+                'description' => $description,
+                'transaction_id' => $checkout_id,
+                'payment_link' => $checkout_url,
+                'status' => $status,
+                'payer_id' => Auth::user()->id,
+                'booking_id' => $booking_id,
+            ]);
+            //insert into transactions_history
+            $transaction = $this->addTransaction($payment->id, "pending");
+            if (!$transaction) {
+                throw new \Exception("Failed to create transaction history record.");
+            }
+            
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->failedResponse($e->getMessage(),500);
+        }
         //redirect to checkout_url
         //return redirect()->away($checkout_url);
         return $this->successResponse(
@@ -146,7 +158,7 @@ class PaymentController extends Controller
     //refactors
     public function addTransaction($payment_id, $status)
     {
-        TransactionHistory::create([
+        return TransactionHistory::create([
             'payment_id' => $payment_id,
             'status' => $status,
         ]);
