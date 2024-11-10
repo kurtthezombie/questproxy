@@ -6,6 +6,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\GamerController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PilotController;
 use App\Http\Controllers\PortfolioController;
@@ -117,6 +118,13 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('/users/{user_id}/transactions', 'transactionByUser');
         Route::get('/payments/{payment_id}/transactions','transactionByPayment');
         Route::get('/export-transaction-history/{userId}', 'exportTransactionHistory');
+    });
+
+    Route::controller(NotificationController::class)->group(function() {
+        Route::get('pilot/notifications', 'NotificationController@index');
+        Route::post('pilot/notifications/{id}/read', 'NotificationController@markAsRead');
+        Route::delete('pilot/notifications/{id}', 'NotificationController@destroy');
+        Route::post('pilot/notifications/read-all', 'NotificationController@markAllAsRead');
     });
 });
 
