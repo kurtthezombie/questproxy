@@ -116,7 +116,7 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
     Route::controller(TransactionController::class)->group(function() {
         Route::get('/users/{user_id}/transactions', 'transactionByUser');
         Route::get('/payments/{payment_id}/transactions','transactionByPayment');
-        Route::get('/export-transaction-history/{userId}', 'exportTransactionHistory');
+        Route::get('/export-transaction-history/{user_id}', 'exportTransactionHistory');
     });
 });
 
