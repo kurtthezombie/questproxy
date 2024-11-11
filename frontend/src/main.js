@@ -8,6 +8,7 @@ import App from './App.vue'
 import router from './router'
 import 'vue-loading-overlay/dist/css/index.css';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import echo from './echo';
 
 const app = createApp(App)
 

@@ -2,12 +2,14 @@
 
 namespace App\Notifications;
 
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class PilotMatchedNotification extends Notification
+class PilotMatchedNotification extends Notification implements ShouldBroadcastNow
 {
     use Queueable;
 
@@ -42,5 +44,23 @@ class PilotMatchedNotification extends Notification
             'user_id' => $this->user->id,
             'user_name' => $this->user->username,
         ];
+    }
+
+    public function broadcastOn(){
+        return new Channel('notifications');
+    }
+
+    public function broadcastsWith(){
+        return [
+            'message' => 'A user has matched with you!',
+            'user_id' => $this->user->id,
+            'user_name' => $this->user->username,
+        ];
+    }
+
+    public function broadcastAs()
+    {
+        // Optional: Define a custom name for the event
+        return 'PilotMatchedNotification';
     }
 }
