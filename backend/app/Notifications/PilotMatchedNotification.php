@@ -6,12 +6,12 @@ use Illuminate\Broadcasting\Channel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class PilotMatchedNotification extends Notification implements ShouldBroadcastNow
 {
-    use Queueable;
 
     protected $user;
     /**
@@ -46,16 +46,18 @@ class PilotMatchedNotification extends Notification implements ShouldBroadcastNo
         ];
     }
 
-    public function broadcastOn(){
-        return new Channel('notifications');
+    public function toBroadcast(object $notifiable) : BroadcastMessage {
+        return new BroadcastMessage([
+                'message' => 'A user has matched with you!',
+                'user_id' => $this->user->id,
+                'user_name' => $this->user->username,
+            ]);
     }
 
-    public function broadcastsWith(){
-        return [
-            'message' => 'A user has matched with you!',
-            'user_id' => $this->user->id,
-            'user_name' => $this->user->username,
-        ];
+    public function broadcastOn()
+    {
+        // Broadcasting to a private channel based on the user ID
+        return new Channel('App.Models.User.' . $this->user->id);
     }
 
     public function broadcastAs()
