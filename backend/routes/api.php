@@ -127,14 +127,6 @@ Route::post('login', [LoginController::class, 'login']);
 Route::post('signup', [UserController::class, 'create']);
 
 
-//CAPTCHA:
-Route::controller(CaptchaController::class)->group(function () {
-    //generate captcha
-    //Route::get('load-catpcha','load');
-    //Route::post('post-captcha', 'post');
-});
-
-
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
 Route::controller(RankController::class)->group(function () {
     Route::get('leaderboards', 'index');

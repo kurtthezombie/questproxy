@@ -39,13 +39,6 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
-        //uncomment and just set validated to true if testing postman
-        //$captcha_validated = $this->validateCaptcha($request->captcha, $request->key);
-        $captcha_validated = true;
-        if(!$captcha_validated){
-            return $this->failedResponse('Captcha incorrect or invalid.', 400);
-        }
-
         //validate inputs
         $request->validate([
             'username' => 'required|string|unique:users,username',
@@ -189,13 +182,6 @@ class UserController extends Controller
         //if deletion is successful
         return $this->successResponse('User deleted successfully.',200);
 
-    }
-
-    private function validateCaptcha(string $captcha, string $key){
-        //
-        $rules = ['captcha' => 'required|captcha_api:'.$key.',math'];
-        $validator = validator()->make(['captcha' => $captcha], $rules);
-        return !($validator->fails());
     }
 
     public function requestAccountDeletion(Request $request )
