@@ -1,5 +1,6 @@
 <?php
 //controllers
+use App\Events\TestEvent;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\CategoryController;
@@ -121,7 +122,7 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
     });
 
     Route::controller(NotificationController::class)->group(function() {
-        Route::get('pilot/notifications', 'NotificationController@index');
+        Route::get('notifications', 'NotificationController@index');
         Route::post('pilot/notifications/{id}/read', 'NotificationController@markAsRead');
         Route::delete('pilot/notifications/{id}', 'NotificationController@destroy');
         Route::post('pilot/notifications/read-all', 'NotificationController@markAllAsRead');

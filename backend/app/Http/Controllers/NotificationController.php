@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
+    use ApiResponseTrait;
+
     //to do: revise this one since there is pilot notification
     //but maybe think about centralizing stuff
     public function index (Request $request){
@@ -13,7 +16,7 @@ class NotificationController extends Controller
 
         $notifications = $user->notifications()->latest()->get();
         //revise response
-        return response()->json($notifications);
+        return $this->successResponse('Notifications retrieved',200,['notifications' => $notifications]);
     }
 
     public function markAsRead($id){
