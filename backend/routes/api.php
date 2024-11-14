@@ -126,23 +126,11 @@ Route::post('login', [LoginController::class, 'login']);
 //register
 Route::post('signup', [UserController::class, 'create']);
 
-
-//CAPTCHA:
-Route::controller(CaptchaController::class)->group(function () {
-    //generate captcha
-    //Route::get('load-catpcha','load');
-    //Route::post('post-captcha', 'post');
-});
-
-
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
 Route::controller(RankController::class)->group(function () {
     Route::get('leaderboards', 'index');
     Route::get('leaderboards/{id}', 'show');
 });
-
-Route::post('rank/create', [RankController::class, 'store']);
-Route::delete('rank/delete/{id}', [RankController::class, 'destroy']);
 
 //testing
 Route::get('testPostman', function () {

@@ -54,4 +54,21 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    protected static function booted(){
+        static::created(function ($user) {
+            if($user->role == 'gamer'){
+                Gamer::create([
+                    'user_id' => $user->id
+                ]);
+            }
+            elseif(in_array($user->role, ['game_pilot','game pilot'])){
+                $rank = Rank::create();
+                Pilot::create([
+                    'user_id' => $user->id,
+                    'rank_id' => $rank->id
+                ]);
+            }
+        });
+    }
 }

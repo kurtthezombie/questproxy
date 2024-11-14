@@ -56,57 +56,31 @@ class UserController extends Controller
             'contact_number' => 'required|string|max:15',
             'role' => 'required|string',
         ]);
-        //create user object
-        $user = User::create([
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'f_name' => $request->f_name,
-            'l_name' => $request->l_name,
-            'contact_number' => $request->contact_number,
-            'role' => $request->role,
-        ]);
-        //
-        event(new RegisteredUser($user));
-        //should admin be made through registration ? sounds dumb
-        $addGamerOrPilot = ($request->role == 'gamer') ? $this->createGamer($user->id) : $this->createPilot($user->id);
 
-        if ($addGamerOrPilot)
-        {
-            return $this->successResponse(
-                'User created successfully',
-                201,
-                [
-                    'user' => $user,
-                    'role_created' => $addGamerOrPilot
-                ],
-            );
+        try {
+            //create user object
+            $user = User::create([
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'f_name' => $request->f_name,
+                'l_name' => $request->l_name,
+                'contact_number' => $request->contact_number,
+                'role' => $request->role,
+            ]);
+            //
+            event(new RegisteredUser($user));
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(),500);
         }
-        else
-        {
-            return $this->failedResponse("Error occurred while trying to create gamer/pilot record",500);
-        }
-    }
-
-    private function createGamer(int $id)
-    {
-        Gamer::create(['user_id' => $id]);
-
-        return true;
-    }
-
-    private function createPilot(int $id)
-    {
-        //create ranking
-        $rank = $this->createRankRecord();
-        $rank_id = $rank->id;
-        //set id
-        Pilot::create([
-            'user_id' => $id, //derived from parameter
-            'rank_id' => $rank_id, //derived from db query above this
-        ]);
-
-        return true;
+    
+        return $this->successResponse(
+            'User created successfully',
+            201,
+            [
+                'user' => $user,
+            ],
+        );
     }
 
     public function edit(int $id){
@@ -162,7 +136,7 @@ class UserController extends Controller
         $rank_id = null;
         $deleted_rank = null;
 
-        //determine if pilot or gamer
+        //determine if pilot
         if ($user->role == 'game_pilot' || $user->role == 'game pilot')
         {
             $pilot = Pilot::where('user_id', $id)->first();
@@ -188,7 +162,6 @@ class UserController extends Controller
         }
         //if deletion is successful
         return $this->successResponse('User deleted successfully.',200);
-
     }
 
     private function validateCaptcha(string $captcha, string $key){
@@ -209,7 +182,6 @@ class UserController extends Controller
         } catch (Exception $error) {
             return $this->failedResponse($error,500);
         }
-        
     }
 
     //for testing, not a major function
