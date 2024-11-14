@@ -14,7 +14,6 @@ import ServiceView from '@/views/ServiceView.vue'
 import EditServiceView from '@/views/EditServiceView.vue'
 import ServicesHistory from '@/views/ServicesHistory.vue'
 import NotificationsTest from '@/views/NotificationsTest.vue'
-import Test from '@/views/Test.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

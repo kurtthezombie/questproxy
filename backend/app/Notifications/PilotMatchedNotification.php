@@ -9,10 +9,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Log;
 
-class PilotMatchedNotification extends Notification implements ShouldBroadcastNow
+class PilotMatchedNotification extends Notification implements ShouldQueue
 {
-
+    use Queueable;
     protected $user;
     /**
      * Create a new notification instance.
@@ -29,7 +30,7 @@ class PilotMatchedNotification extends Notification implements ShouldBroadcastNo
      */
     public function via(object $notifiable): array
     {
-        return ['database','broadcast'];
+        return ['database'];
     }
 
     /**
@@ -46,23 +47,24 @@ class PilotMatchedNotification extends Notification implements ShouldBroadcastNo
         ];
     }
 
-    public function toBroadcast(object $notifiable) : BroadcastMessage {
-        return new BroadcastMessage([
-                'message' => 'A user has matched with you!',
-                'user_id' => $this->user->id,
-                'user_name' => $this->user->username,
-            ]);
-    }
+    // public function toBroadcast(object $notifiable) : BroadcastMessage {
+    //     Log::info('Broadcasting NOTIFICATION for USER', ['user' => $this->user]);
+    //     return (new BroadcastMessage([
+    //             'message' => 'A user has matched with you!',
+    //             'user_id' => $this->user->id,
+    //             'user_name' => $this->user->username,
+    //         ]))->onQueue('broadcasts');
+    // }
 
-    public function broadcastOn()
-    {
-        // Broadcasting to a private channel based on the user ID
-        return new Channel('App.Models.User.' . $this->user->id);
-    }
+    // public function broadcastOn()
+    // {
+    //     // Broadcasting to a private channel based on the user ID
+    //     return new Channel('App.Models.User.' . $this->user->id);
+    // }
 
-    public function broadcastAs()
-    {
-        // Optional: Define a custom name for the event
-        return 'PilotMatchedNotification';
-    }
+    // public function broadcastAs()
+    // {
+    //     // Optional: Define a custom name for the event
+    //     return 'PilotMatchedNotification';
+    // }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationBroadcastEvent;
 use App\Models\Pilot;
 use App\Notifications\PilotMatchedNotification;
 use App\Traits\ApiResponseTrait;
@@ -35,6 +36,7 @@ class MatchingController extends Controller
         $pilot_user = $matchingPilot->user;
         $user = $request->user();
         $pilot_user->notify(new PilotMatchedNotification($user));
+        event(new NotificationBroadcastEvent($user));
         //return response
         return $this->successResponse('Matching pilots found.', 200, ['pilot' => $pilot_user]);
     }
