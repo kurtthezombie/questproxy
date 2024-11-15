@@ -13,6 +13,3 @@
 <script setup>
 </script>
 
-<style scoped>
-/* Add custom styles here */
-</style>

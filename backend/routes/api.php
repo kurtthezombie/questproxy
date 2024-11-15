@@ -1,19 +1,28 @@
 <?php
 //controllers
+use App\Events\NotificationBroadcastEvent;
+use App\Events\TestEvent;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\GamerController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MatchingController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PilotController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 
 
 use App\Mail\EmailVerification;
+use App\Models\User;
+use App\Notifications\PilotMatchedNotification;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,14 +43,6 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
     //email verification
     Route::controller(EmailVerificationController::class)->group(function () {
         Route::post('check-otp','checkOtp');
-
-        /*//notice
-        Route::get('/email/verify', 'notice')->name('verification.notice');
-        //resend email
-        Route::get('/email/verification-notification', 'send')
-            ->middleware('throttle:6,1')
-            ->name('verification.send');
-        */
     });
 
     Route::controller(LoginController::class)->group(function () {
@@ -92,12 +93,46 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('services/edit/{id}', 'edit');
         Route::patch('services/edit/{id}', 'update');
         Route::delete('services/destroy/{id}', 'destroy');
+        Route::get('pilots/{pilot_id}/services','getServicesByPilot');
     });
 
     Route::controller(ReportController::class)->group(function () {
         Route::post('reports/create','store');
         Route::get('reports/{id}','show');
     });
+
+    Route::controller(BookingController::class)->group(function() {
+        Route::get('bookings/{booking_id}', 'show');
+        Route::post('bookings/store', 'store');
+        Route::delete('bookings/{booking_id}', 'destroy');
+        Route::put('bookings/{booking_id}/status', 'updateStatus');
+        Route::put('bookings/{booking_id}/instruction', 'updateInstruction');
+        Route::get('bookings/service/{service_id}', 'booksByService');
+        Route::get('bookings/client/{client_id}', 'booksByClient');
+        Route::get('/bookings/{id}/instructions', 'getBookingInstructions');
+    });
+
+    Route::controller(PaymentController::class)->group(function() {
+        Route::get('payments', 'index');
+        Route::post('payments/{booking_id}', 'pay');
+        Route::get('payments/success/{transaction_id}', 'success');
+        Route::get('users/{user_id}/payments/paid', 'paymentsPaid');
+    });
+
+    Route::controller(TransactionController::class)->group(function() {
+        Route::get('/users/{user_id}/transactions', 'transactionByUser');
+        Route::get('/payments/{payment_id}/transactions','transactionByPayment');
+        Route::get('/export-transaction-history/{user_id}', 'exportTransactionHistory');
+    });
+
+    Route::controller(NotificationController::class)->group(function() {
+        Route::get('notifications', 'NotificationController@index');
+        Route::post('pilot/notifications/{id}/read', 'NotificationController@markAsRead');
+        Route::delete('pilot/notifications/{id}', 'NotificationController@destroy');
+        Route::post('pilot/notifications/read-all', 'NotificationController@markAllAsRead');
+    });
+
+    Route::post('match-pilot',[MatchingController::class,'matchPilot']);
 });
 
 
@@ -105,14 +140,6 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
 Route::post('login', [LoginController::class, 'login']);
 //register
 Route::post('signup', [UserController::class, 'create']);
-
-
-//CAPTCHA:
-Route::controller(CaptchaController::class)->group(function () {
-    //generate captcha
-    //Route::get('load-catpcha','load');
-    //Route::post('post-captcha', 'post');
-});
 
 
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
@@ -139,3 +166,11 @@ Route::get('test-email', function () {
 
     return response()->json(['message'=>'Okay sent'],201);
 });
+
+Route::get('/test-notification', function () {
+    $user = User::find(1); // Replace with the actual user ID for testing
+    $user->notify(new PilotMatchedNotification($user));
+    event(new NotificationBroadcastEvent($user));
+    return response()->json(['message' => 'Notification sent']);
+});
+

@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
+            $table->string('game')->nullable(false);
+            $table->string('title');
             $table->string('category_type');
         });
 
@@ -22,8 +24,7 @@ return new class extends Migration
             $table->text('description');
             $table->float('price');
             $table->dateTime('duration');
-            $table->dateTime('availability');
-            $table->dateTime('service_timestamp');
+            $table->boolean('availability');
             $table->timestamps();
 
             $table->unsignedBigInteger('pilot_id');

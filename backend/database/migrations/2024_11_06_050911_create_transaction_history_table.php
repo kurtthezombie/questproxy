@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('email_verified_at')->nullable();
+        Schema::create('transaction_history', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('payment_id');
+            $table->string('status');
+            $table->timestamps();
+
+            $table->foreign('payment_id')->references('id')->on('payments');
         });
     }
 
@@ -21,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('email_verified_at');
-        });
+        Schema::dropIfExists('transaction_history');
     }
 };

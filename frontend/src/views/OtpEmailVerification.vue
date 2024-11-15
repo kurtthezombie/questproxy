@@ -18,7 +18,8 @@ const submitOtp = async () => {
         email: email.value,
         otp: otp.value,
     }
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken')?.trim();
+    console.log(`Bearer ${token}`);
     const loader = loadShow();
     try{ 
         const response = await axios.post('http://127.0.0.1:8000/api/check-otp', formData, {

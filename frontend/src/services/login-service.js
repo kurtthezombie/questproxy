@@ -1,4 +1,5 @@
-  import axios from 'axios';
+import { useUserStore } from '@/stores/userStore';
+import axios from 'axios';
 
   const register = async(user) => {
       console.log("Inside register function");
@@ -16,10 +17,15 @@
   }
 
   const login = async(credentials) => {
+    const userStore = useUserStore();
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/login',credentials);
       console.log(response);
       
+      //store user details in userStore
+      const { authenticated_user, token } = response.data; //destructure
+      userStore.setUser(authenticated_user,token);
+
       localStorage.setItem('authToken', response.data.token);
       localStorage.setItem('tokenType', response.data.token_type);
       
@@ -90,7 +96,7 @@
           pilot_id: currentUserId.value, 
         };
     
-        const response = await axios.post(`http://127.0.0.1:8000/api/portfolios/create`, store);
+        const response = await axios.post(`http://127.0.0.1:8000/api/portfolios/create`, portfolioData);
         
         if (response.data.success) {
           alert('Portfolio created successfully');
@@ -140,7 +146,7 @@
       }
     }
 
-    const createReport = async (id, reportData) => {
+    const createReport = async () => {
       try {
         const response = await axios.post(`http://127.0.0.1:8000/api/reports/create`, reportData);
         return response.data;
@@ -167,10 +173,18 @@
     };
 
 
-
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/categories');
+        categories.value = response.data;
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
 
     const logout = async () => {
         const token = localStorage.getItem('authToken');
+        const userStore = useUserStore();
 
         if (token) {
             // Send a request to the logout API
@@ -179,6 +193,7 @@
                     'Authorization': `Bearer ${token}` // Pass the token in the Authorization header
                 }
             });
+            userStore.clearUser();
             localStorage.removeItem('authToken');
             console.log('Logout successful!');
         } else {
@@ -192,11 +207,12 @@
     logout,
     updateUser,
     fetchUserData,
+    fetchCategories,
     createReport,
     editPilot, 
     updatePilot, 
     createPortfolio, 
     editPortfolio, 
     deletePortfolio,
-    createService 
+    createService,
   }; 

@@ -1,31 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
     <!-- Header -->
-    <header class="bg-gray-800 sticky top-0 z-50 p-4 flex justify-between items-center shadow-lg border-b-4 border-green-500">
-      <div class="flex items-center">
-        <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
-        <span class="text-2xl font-bold text-green-500">QuestProxy</span>
-      </div>
-      <nav class="flex space-x-6">
-        <router-link to="/leaderboards" class="text-white hover:text-green-500 transition-colors duration-300">
-          Leaderboard
-        </router-link>
-        <router-link 
-          v-if="role === 'game pilot'" 
-          to="/create-service" 
-          class="text-white hover:text-green-500 transition-colors duration-300">
-          Service
-        </router-link>
-
-        <!-- Avatar Dropdown Component -->
-        <UserDropdown 
-          :username="username" 
-          :email="email" 
-          :role="role" 
-          :callLogout="callLogout"
-        />
-      </nav>
-    </header>
+    <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
 
     <!-- Main Dashboard -->
     <div class="container mx-auto py-10">
@@ -47,72 +23,99 @@
         </div>
       </div>
 
-      <!-- Game Types -->
+      <!-- Categories Section -->
       <section>
-        <h2 class="text-2xl font-semibold mb-4">Trending Games</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <!-- Game Cards -->
-          <div 
-            v-for="game in filteredGames" 
-            :key="game.name"
-            class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-green-500 transition-colors duration-300">
-            <img :src="game.image" :alt="game.name" class="mb-4 rounded-md object-cover w-36 h-36">
-            <h3 class="text-xl font-semibold">{{ game.name }}</h3>
-          </div>
+        <h2 class="text-2xl font-semibold mb-4">Trending Categories</h2>
+
+        <div v-if="!categories.length" class="text-center mt-10 text-gray-400">
+          Loading categories...
         </div>
-      </section>
+
+        <!-- Category Titles -->
+        <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div 
+          v-for="category in filteredCategories" 
+          :key="category.id"
+          class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-green-500 transition-colors duration-300 cursor-pointer"
+          @click="$router.push({ name: 'ServiceView', params: { title: category.game } })"
+        >
+          <h3 class="text-xl font-semibold">{{ category.title }}</h3>
+        </div>
+      </div>
+    </section>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import loginService from '@/services/login-service';
+import axios from 'axios';
 import { useRouter } from 'vue-router';
-import UserDropdown from '@/components/UserDropdown.vue';
+import loginService from '@/services/login-service';
+import { useLoader } from '@/services/loader-service';
+import NavBar from '@/components/NavBar.vue';
+import { useUserStore } from '@/stores/userStore';
+import { useServiceStore } from '@/stores/serviceStore';
 
+
+const { loadShow, loadHide } = useLoader();
 
 const router = useRouter();
 const searchQuery = ref('');
 const username = ref('');
 const email = ref('');
 const role = ref('');
+const categories = ref([]);
 
-import WOWImage from '@/assets/img/WOW.webp';
-import Dota2Image from '@/assets/img/Dota2.webp';
-import GTA5Image from '@/assets/img/gta5.webp';
-import Diablo4Image from '@/assets/img/diablo4.webp';
+const userStore = useUserStore();
+const serviceStore = useServiceStore();
 
-const games = ref([
-  { name: 'World of Warcraft', image: WOWImage },
-  { name: 'Dota 2', image: Dota2Image },
-  { name: 'GTA 5 Online', image: GTA5Image },
-  { name: 'Diablo 4', image: Diablo4Image },
-]);
+const fetchCategories = async () => {
+  const loader = loadShow();
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/categories');
+    categories.value = response.data.categories || [];
+    console.log("Fetched categories:", categories.value); 
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    categories.value = [];
+  } finally {
+    loadHide(loader);
+  }
+};
 
-const filteredGames = computed(() => {
-  return games.value.filter(game => 
-    game.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+const filteredCategories = computed(() => {
+  return categories.value.filter(category => 
+    category?.title?.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
 
 
 const fetchUserData = async () => {
+  const loader = loadShow();
   try {
     const userData = await loginService.fetchUserData(); 
     username.value = userData.username;
     role.value = userData.role || 'User';  
   } catch (error) {
     console.error('Error fetching user data:', error);
+    router.push({ name: 'login' });
+  } finally {
+    loadHide(loader);
   }
 };
 
 onMounted(() => {
   fetchUserData();
+  fetchCategories();  
 });
 
 const callLogout = () => {
-  loginService.logout();
+  userStore.clearUser();
+  serviceStore.clearServices();
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('tokenType');
   router.push({ name: 'login' });
 };
+
 </script>

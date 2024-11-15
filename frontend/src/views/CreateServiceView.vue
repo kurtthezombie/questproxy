@@ -1,116 +1,157 @@
 <template>
-  <form @submit.prevent="submitService">
-    <div class="min-h-screen bg-gray-900 text-white">
-      <!-- Header -->
-      <header class="bg-gray-800 sticky top-0 z-50 p-4 flex justify-between items-center shadow-lg border-b-4 border-green-500">
-        <div class="flex items-center">
-          <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
-          <span class="text-2xl font-bold text-green-500">QuestProxy</span>
+  <div class="min-h-screen bg-gray-900 flex flex-col">
+    <!-- Header -->
+    <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
+
+    <!-- Form Container -->
+    <div class="flex items-center justify-center flex-grow">
+      <form @submit.prevent="submitService" class="bg-gray-800 p-6 rounded-lg shadow-lg w-96">
+        <!-- Message -->
+        <div v-if="serviceStore.message" 
+             class="flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50" 
+             role="alert">
+          <svg class="flex-shrink-0 inline w-4 h-4 me-3" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+          </svg>
+          <div>
+            <span class="font-medium">Success!</span> {{ serviceStore.message }}
+          </div>
         </div>
-        <nav class="flex space-x-6">
-          <router-link to="/home" class="text-white hover:text-green-500 transition-colors duration-300">Home</router-link>
-          <router-link to="/leaderboards" class="text-white hover:text-green-500 transition-colors duration-300">Leaderboard</router-link>
-          <UserDropdown :username="username" :email="email" :role="role" :callLogout="callLogout" />
-        </nav>
-      </header>
 
-      <!-- Form Fields -->
-      <div>
-        <label for="games" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Game:</label>
-        <select v-model="serviceData.game" id="games" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-          <option v-for="game in categories" :key="game.id" :value="game.title">
-            {{ game.title }}
-          </option>
-        </select>
-      </div>
+        <!-- Loading State -->
+        <div v-if="serviceStore.loading" class="text-white text-center mb-4">
+          Loading...
+        </div>
 
-      <div>
-        <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description:</label>
-        <textarea v-model="serviceData.description" id="description" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required></textarea>
-      </div>
+        <!-- Error Message -->
+        <div v-if="serviceStore.error" class="text-red-500 text-center mb-4">
+          {{ serviceStore.error }}
+        </div>
 
-      <div>
-        <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price (₱):</label>
-        <input v-model="serviceData.price" type="number" step="0.01" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-      </div>
+        <!-- Form Fields -->
+        <div>
+          <label for="games" class="block mb-2 text-sm font-medium text-white">Game:</label>
+          <select v-model="formData.game" 
+                  id="games" 
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option value="" disabled>Select a game</option>
+            <option v-for="category in serviceStore.categories" 
+                    :key="category.id" 
+                    :value="category.game">
+              {{ category.title }}
+            </option>
+          </select>
+        </div>
 
-      <div>
-        <label for="duration" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Duration:</label>
-        <input v-model="serviceData.duration" type="datetime-local" id="duration" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-      </div>
+        <div>
+          <label for="description" class="block mb-2 text-sm font-medium text-white">Description:</label>
+          <textarea v-model="formData.description" 
+                    id="description" 
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5" 
+                    required></textarea>
+        </div>
 
-      <div>
-        <label for="availability" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Availability:</label>
-        <select v-model="serviceData.availability" id="availability" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-          <option :value="1">Available</option>
-          <option :value="0">Not Available</option>
-        </select>
-      </div>
+        <div>
+          <label for="price" class="block mb-2 text-sm font-medium text-white">Price (₱):</label>
+          <input v-model="formData.price" 
+                 type="number" 
+                 step="0.01" 
+                 id="price" 
+                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5" 
+                 required />
+        </div>
 
-      <!-- Submit Button -->
-      <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-        Submit
-      </button>
+        <div>
+          <label for="duration" class="block mb-2 text-sm font-medium text-white">Duration:</label>
+          <input v-model="formData.duration" 
+                 type="datetime-local" 
+                 id="duration" 
+                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5" 
+                 required />
+        </div>
+
+        <div>
+          <label for="availability" class="block mb-2 text-sm font-medium text-white">Availability:</label>
+          <select v-model="formData.availability" 
+                  id="availability" 
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option :value="1">Available</option>
+            <option :value="0">Not Available</option>
+          </select>
+        </div>
+
+        <button type="submit" 
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 mt-4"
+                :disabled="serviceStore.loading">
+          {{ serviceStore.loading ? 'Submitting...' : 'Submit' }}
+        </button>
+      </form>
     </div>
-  </form>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
+import { ref, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
-import UserDropdown from '@/components/UserDropdown.vue';
+import { useServiceStore } from '@/stores/serviceStore';
+import { useUserStore } from '@/stores/userStore';
+import NavBar from '@/components/NavBar.vue';
 
-const serviceData = ref({
+const router = useRouter();
+const serviceStore = useServiceStore();
+const userStore = useUserStore();
+
+const username = ref(userStore.userData?.username || '');
+const email = ref(userStore.userData?.email || '');
+const role = ref(userStore.userData?.role || '');
+
+const formData = reactive({
   game: '',
   description: '',
   price: null,
   duration: '',
-  availability: 1,
+  availability: 1
 });
 
-const errorMessage = ref('');
-const message = ref('');
-const categories = ref([]); 
-const router = useRouter();
+const isLoggedIn = () => {
+  return !!localStorage.getItem('authToken');
+};
 
-const fetchCategories = async () => {
+if (!isLoggedIn()) {
+  router.push({ name: 'login' });
+}
+
+onMounted(async () => {
+  await serviceStore.fetchCategories();
+});
+
+const submitService = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/categories'); 
-    categories.value = response.data;
+    await serviceStore.createService({
+      game: formData.game,
+      description: formData.description,
+      price: formData.price,
+      duration: formData.duration,
+      availability: formData.availability,
+    });
+
+    Object.assign(formData, {
+      game: '',
+      description: '',
+      price: null,
+      duration: '',
+      availability: 1
+    });
   } catch (error) {
-    console.error('Error fetching categories:', error);
+    console.error('Error in submitService:', error);
   }
 };
 
-fetchCategories();
-
-const submitService = async () => {
-  const loader = $loading.show();
-  errorMessage.value = '';
-  message.value = '';
-
-  try {
-    const response = await axios.post('http://127.0.0.1:8000/api/services/create', serviceData.value);
-    
-    if (response.status === 201) { 
-      serviceData.value = {
-        game: '',
-        description: '',
-        price: null,
-        duration: '',
-        availability: 1,
-      };
-      message.value = 'Service created successfully!';
-      router.push({ path: '/services', query: { message: 'Service created successfully!' } });
-    } else {
-      errorMessage.value = response.data.message || 'Error creating service.';
-    }
-  } catch (error) {
-    errorMessage.value = 'An error occurred during service creation. Please try again.';
-    console.error('Error creating service:', error);
-  } finally {
-    loader.hide();
-  }
+const callLogout = () => {
+  userStore.clearUser();
+  serviceStore.clearServices();
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('tokenType');
+  router.push({ name: 'login' });
 };
 </script>

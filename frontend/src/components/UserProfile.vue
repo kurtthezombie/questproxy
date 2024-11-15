@@ -8,14 +8,14 @@
           <div class="flex flex-col items-center space-y-2">
             <div class="w-24 h-24 rounded-full bg-gray-200 overflow-hidden">
               <img 
-                :src="avatar" 
-                :alt="username" 
+                :src="profileData.avatar || '/default-avatar.png'" 
+                :alt="profileData.username" 
                 class="w-full h-full object-cover"
               />
             </div>
-            <h2 class="text-xl font-semibold">{{ username }}</h2>
-            
-            <!-- Report Button - Always visible for non-owners -->
+            <h2 class="text-xl font-semibold">{{ profileData.username }}</h2>
+
+            <!-- Report Button - Only visible for non-owners -->
             <button 
               v-if="!isOwner"
               @click="showReportModal = true"
@@ -25,20 +25,23 @@
             </button>
           </div>
 
-          <!-- Description Section - Editable -->
+          <!-- Description/Portfolio Section -->
           <div class="mt-4">
             <div class="flex justify-between items-center mb-2">
               <h3 class="font-medium">Description</h3>
               <button 
-                @click="isEditing = !isEditing"
+                v-if="isOwner" 
+                @click="isEditing ? updateDescription() : isEditing = true"
                 class="text-blue-500"
               >
                 {{ isEditing ? 'Save' : 'Edit' }}
               </button>
             </div>
-            <p v-if="!isEditing" class="text-gray-600 text-sm">{{ description }}</p>
+            <p v-if="!isEditing || !isOwner" class="text-gray-600 text-sm">
+              {{ profileData.description || 'No description available' }}
+            </p>
             <textarea 
-              v-if="isEditing"
+              v-if="isEditing && isOwner"
               v-model="editableDescription"
               rows="3"
               class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -51,13 +54,13 @@
       <div class="col-span-8">
         <div class="bg-white rounded-lg shadow h-full p-4">
           <div class="h-full flex items-center justify-center text-gray-500">
-            {{ service }}
+            {{ profileData.service || 'No services available' }}
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Report Modal with Message Input -->
+    <!-- Report Modal -->
     <div v-if="showReportModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 max-w-md w-full">
         <div class="flex justify-between items-center mb-4">
@@ -106,47 +109,129 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'; 
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import axios from 'axios';
 
 const props = defineProps({
   username: String,
   avatar: String,
   description: String,
-  service: String,
-  reportedUserId: Number 
+  service: Object
 });
 
+const route = useRoute();
+const loggedInUsername = ref('');
+const currentUserId = ref(null);
+const profileData = ref({
+  username: '',
+  avatar: '',
+  description: '',
+  service: null
+});
+const isOwner = ref(false);
 const showReportModal = ref(false);
 const reportMessage = ref('');
 const reportError = ref('');
+const isEditing = ref(false);
+const editableDescription = ref('');
 
-const closeReportModal = () => {
-  showReportModal.value = false;
-  reportMessage.value = ''; 
-  reportError.value = ''; 
+const fetchLoggedInUser = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get('http://127.0.0.1:8000/api/user', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    loggedInUsername.value = response.data.username;
+    currentUserId.value = response.data.id;
+    isOwner.value = loggedInUsername.value === route.params.username;
+  } catch (error) {
+    console.error('Error fetching logged in user:', error);
+  }
+};
+
+const fetchProfileData = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const username = route.params.username;
+    const response = await axios.get(`http://127.0.0.1:8000/api/users/${username}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    profileData.value = response.data;
+    editableDescription.value = response.data.description || '';
+  } catch (error) {
+    console.error('Error fetching profile data:', error);
+  }
+};
+
+const updateDescription = async () => {
+  try {
+    const portfolioData = {
+      p_content: editableDescription.value,
+      pilot_id: currentUserId.value
+    };
+
+    const response = await axios.post('http://127.0.0.1:8000/api/portfolios/create', portfolioData);
+
+    if (response.data.success) {
+      profileData.value.description = editableDescription.value;
+      isEditing.value = false;
+    } else {
+      console.error('Portfolio update failed:', response.data.message);
+      alert('Failed to update portfolio');
+    }
+  } catch (error) {
+    console.error('Error updating portfolio:', error);
+    alert('Error updating portfolio');
+  }
 };
 
 const submitReport = async () => {
-  const reportData = {
-    reason: reportMessage.value.trim(),
-    reported_user_id: props.reportedUserId 
-  };
+  if (!reportMessage.value.trim()) {
+    reportError.value = 'Please enter a reason for reporting';
+    return;
+  }
 
   try {
-    const token = localStorage.getItem('token'); 
+    const reportData = {
+      reason: reportMessage.value,
+      reported_user_id: profileData.value.id 
+    };
 
-    const response = await axios.post('http://127.0.0.1:8000/api/reports/create', reportData, {
-      headers: {
-        Authorization: `Bearer ${token}`, 
-      },
-    });
+    const response = await axios.post('http://127.0.0.1:8000/api/reports/create', reportData);
     
-    console.log('Report submitted:', response.data);
-    closeReportModal();
+    if (response.data) {
+      showReportModal.value = false;
+      reportMessage.value = '';
+      reportError.value = '';
+      alert('Report submitted successfully');
+    }
   } catch (error) {
     console.error('Error submitting report:', error);
-    reportError.value = 'Failed to submit report. Please try again later.';
+    reportError.value = 'Failed to submit report. Please try again.';
   }
 };
+
+const closeReportModal = () => {
+  showReportModal.value = false;
+  reportMessage.value = '';
+  reportError.value = '';
+};
+
+onMounted(() => {
+  fetchLoggedInUser();
+  fetchProfileData();
+});
+
+watch(
+  () => route.params.username,
+  () => {
+    fetchProfileData();
+    fetchLoggedInUser();
+  }
+);
 </script>
