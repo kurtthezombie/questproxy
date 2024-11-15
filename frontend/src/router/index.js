@@ -13,6 +13,7 @@ import OtpEmailVerification from '@/views/OtpEmailVerification.vue'
 import ServiceView from '@/views/ServiceView.vue'
 import EditServiceView from '@/views/EditServiceView.vue'
 import ServicesHistory from '@/views/ServicesHistory.vue'
+import NotificationsTest from '@/views/NotificationsTest.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -98,7 +99,12 @@ const router = createRouter({
       name: 'editService',
       component: EditServiceView,
       meta: { requiresAuth: true }
-    }
+    },
+    {
+      path: '/notifications/test',
+      name: 'notifTest',
+      component: NotificationsTest
+    },
   ]
 })
 
