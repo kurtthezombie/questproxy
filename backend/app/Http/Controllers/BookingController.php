@@ -4,13 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Instruction;
+use App\Services\BookingService;
+use App\Services\InstructionService;
 use App\Traits\ApiResponseTrait;
 use Crypt;
+use Exception;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
     use ApiResponseTrait;
+
+    protected $bookingService;
+    protected $instructionService;
+
+    public function __construct(BookingService $bookingService, InstructionService $instructionService){
+        $this->bookingService = $bookingService;
+        $this->instructionService = $instructionService;
+    }
 
     public function show($booking_id)
     {
@@ -22,7 +33,7 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         //validate
-        $request->validate([
+        $data = $request->validate([
             'client_id' => 'required',
             'service_id' => 'required',
             'additional_notes' => 'required|string',
@@ -31,28 +42,19 @@ class BookingController extends Controller
         ]);
 
         //create booking
-        $booking = Booking::create([
-            'client_id' => $request->client_id,
-            'service_id' => $request->service_id
-        ]);
+        $booking = $this->bookingService->create($data);
 
         if (!$booking) {
             return $this->failedResponse('Booking failed.', 500);
         }
-
-        //create booking instruction
-        $instruction = Instruction::create([
-            'booking_id' => $booking->id,
-            'additional_notes' => $request->additional_notes,
-            'credentials_username' => Crypt::encryptString($request->credentials_username),
-            'credentials_password' => Crypt::encryptString($request->credentials_password),
-        ]);
+        $instruction = $this->instructionService->create($booking->id,$data);
 
         if (!$instruction) {
             return $this->failedResponse('Instruction creation failed', 500);
         }
+
         //return success response
-        return $this->successResponse('Booking created successfully.', 200);
+        return $this->successResponse('Booking and instruction created successfully.', 200);
     }
 
     public function destroy($booking_id)
@@ -71,11 +73,12 @@ class BookingController extends Controller
             'status' => 'required|string',
         ]);
 
-        $booking = Booking::findOrFail($booking_id);
-        $booking->status = $request->status;
-        $booking->save();
-
-        return $this->successResponse('Booking status updated successfully', 200);
+        try {
+            $updated = $this->bookingService->updateStatus($request->status,$booking_id);
+            return $this->successResponse('Booking status updated successfully', 200);
+        } catch (Exception $e) {
+            return $this->failedResponse('Error: ' . $e->getMessage(), 500);
+        }
     }
 
     public function updateInstruction(Request $request, $booking_id)

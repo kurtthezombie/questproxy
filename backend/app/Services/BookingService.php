@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Booking;
+
+class BookingService
+{
+    protected $booking;
+
+    public function __construct(Booking $booking)
+    {
+        $this->booking = $booking;
+    }
+
+    public function create($data)
+    {
+        //create booking
+        $booking = new Booking();
+        $booking->client_id = $data->client_id;
+        $booking->service_id = $data->service_id;
+
+        if (!$booking->save()){
+            return false;
+        }
+        
+        return $booking;
+    }
+
+    public function updateStatus($status, $booking_id){
+        $booking = $this->booking->findOrFail($booking_id);
+        $booking->status = $status;
+        $booking->save();
+
+        return $booking;
+    }
+}
