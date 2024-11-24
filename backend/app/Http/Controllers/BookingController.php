@@ -40,21 +40,18 @@ class BookingController extends Controller
             'credentials_username' => 'required|string',
             'credentials_password' => 'required|string',
         ]);
-
-        //create booking
-        $booking = $this->bookingService->create($data);
-
-        if (!$booking) {
-            return $this->failedResponse('Booking failed.', 500);
+        
+        try {
+            //create booking
+            $booking = $this->bookingService->create($data);
+            
+            $this->instructionService->create($booking->id,$data);
+            
+            //return success response
+            return $this->successResponse('Booking and instruction created successfully.', 200);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
-        $instruction = $this->instructionService->create($booking->id,$data);
-
-        if (!$instruction) {
-            return $this->failedResponse('Instruction creation failed', 500);
-        }
-
-        //return success response
-        return $this->successResponse('Booking and instruction created successfully.', 200);
     }
 
     public function destroy($booking_id)

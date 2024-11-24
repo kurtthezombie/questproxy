@@ -20,7 +20,7 @@ class InstructionService
         $instruction->credentials_password = Crypt::encryptString($data['credentials_password']);
 
         if (!$instruction->save()) {
-            return false;
+            throw new Exception('Failed to create instruction.');
         }
 
         return $instruction;

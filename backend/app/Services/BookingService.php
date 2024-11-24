@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Booking;
+use Exception;
 
 class BookingService
 {
@@ -32,7 +33,7 @@ class BookingService
         $booking->service_id = $data->service_id;
 
         if (!$booking->save()){
-            return false;
+            throw new Exception('Failed to create booking.');
         }
         
         return $booking;
