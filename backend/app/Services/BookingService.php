@@ -13,6 +13,17 @@ class BookingService
         $this->booking = $booking;
     }
 
+    public function booksByService($id){
+        $bookings = Booking::where('service_id', $id)->get();
+
+        if($bookings->isEmpty())
+        {
+            return collect();
+        }
+
+        return $bookings;
+    }
+
     public function create($data)
     {
         //create booking
