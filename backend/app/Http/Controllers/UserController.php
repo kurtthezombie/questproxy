@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Events\RegisteredUser;
 use App\Mail\AccountDeletionMail;
-use App\Models\Gamer;
-use App\Models\Pilot;
 use App\Models\User;
 use App\Services\UserService;
 use App\Traits\RankOperations;
@@ -13,7 +11,6 @@ use App\Traits\ApiResponseTrait;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Auth\Events\Registered;
 use Mail;
 
 
