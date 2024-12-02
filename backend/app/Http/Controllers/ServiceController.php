@@ -25,10 +25,10 @@ class ServiceController extends Controller
         $query = $request->validate([
             'search' => 'nullable|string'
         ]);
-
+        
         try {
             $services = $this->listingService->search($query);
-            $message = $services ? 'Services are empty' : 'Here are the search results';
+            $message = $services->isEmpty() ? 'Services are empty' : 'Here are the search results';
             
             //return success
             return $this->successResponse($message,200,['services' => $services]);
@@ -36,7 +36,7 @@ class ServiceController extends Controller
             return $this->failedResponse("Error {$error->getMessage()}",400);
         }
     }
-
+    
     public function index()
     {
         try {
@@ -164,8 +164,7 @@ class ServiceController extends Controller
             return $pilot_id ? $pilot_id : null;
         } catch (Exception $e) {
             return null;
-        }
-        
+        }     
     }
 
 }
