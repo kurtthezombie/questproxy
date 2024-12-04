@@ -157,14 +157,9 @@ class ServiceController extends Controller
     //
     public function getPilot()
     {
-        $id = Auth::user()->id;
+        $id = Auth::id(); // Shortcut for Auth::user()->id
 
-        try {
-            $pilot_id = Pilot::where('user_id',$id)->first()->id;
-            return $pilot_id ? $pilot_id : null;
-        } catch (Exception $e) {
-            return null;
-        }     
+        return Pilot::where('user_id', $id)->value('id'); // Directly fetch the 'id' column value
     }
 
 }
