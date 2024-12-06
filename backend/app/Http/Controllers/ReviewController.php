@@ -25,7 +25,7 @@ class ReviewController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'required|string',
             'service_id' => 'required|exists:services,id',
-            'pilot_id' => 'requried|exists:pilots,id',
+            'pilot_id' => 'required|exists:pilots,id',
         ]);
 
         try {

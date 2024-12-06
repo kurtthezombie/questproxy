@@ -65,7 +65,7 @@ class ServiceController extends Controller
         $request->validate([
             'game' => 'required|string',
             'description' => 'required|string',
-            'price' => 'required|numeric||min:0',
+            'price' => 'required|numeric|min:0',
             'duration' => 'required|date',
             'availability' => 'required|boolean',
         ]);
@@ -106,7 +106,7 @@ class ServiceController extends Controller
         $request->validate([
             'game' => 'required|string',
             'description' => 'required|string',
-            'price' => 'required|numeric||min:0',
+            'price' => 'required|numeric|min:0',
             'duration' => 'required|date',
             'availability' => 'required|boolean',
         ]);

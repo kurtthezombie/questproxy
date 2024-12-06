@@ -66,7 +66,7 @@ class RankController extends Controller
             ]);
 
         } catch (Exception $error) {
-            return $this->failedResponse('Rank record not found.',404,['rank_record' => $rank_record]);
+            return $this->failedResponse('Rank record not found.',404);
         }
     }
 
