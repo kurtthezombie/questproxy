@@ -51,7 +51,7 @@ class ReviewController extends Controller
 
     public function show($review_id){
         try {
-            $review = $this->reviewService->show($review_id);
+            $review = $this->reviewService->findById($review_id);
             return $this->successResponse('Review retrieved.',200,['review'=>$review]);
         } catch (ModelNotFoundException $e) {
             return $this->failedResponse("Review {$review_id} is not found", 404);

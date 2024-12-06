@@ -17,7 +17,7 @@ class ReviewService
         return $this->review->where('service_id',$service_id)->get();
     }
 
-    public function show($id) {
+    public function findById($id) {
         return $this->review->findOrFail($id);
     }
 

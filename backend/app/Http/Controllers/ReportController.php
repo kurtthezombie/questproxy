@@ -49,7 +49,7 @@ class ReportController extends Controller
     public function show($id)
     {
         try {
-            $report = $this->reportService->find($id);
+            $report = $this->reportService->findById($id);
 
             return $this->successResponse(
                 'Report retrieved.',

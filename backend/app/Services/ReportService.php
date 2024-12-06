@@ -13,7 +13,7 @@ class ReportService {
         $this->report = $report;
     }
 
-    public function find($id) {
+    public function findById($id) {
         return $this->report->findOrFail($id);
     }
 
