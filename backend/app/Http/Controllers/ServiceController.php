@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 class ServiceController extends Controller
 {
     use ApiResponseTrait;
-    protected $listingService;  
+    protected $listingService;
 
     public function __construct(ListingService $listingService){
         $this->listingService = $listingService;
@@ -25,18 +25,18 @@ class ServiceController extends Controller
         $query = $request->validate([
             'search' => 'nullable|string'
         ]);
-        
+
         try {
             $services = $this->listingService->search($query);
             $message = $services->isEmpty() ? 'Services are empty' : 'Here are the search results';
-            
+
             //return success
             return $this->successResponse($message,200,['services' => $services]);
         } catch (Exception $error) {
             return $this->failedResponse("Error {$error->getMessage()}",400);
         }
     }
-    
+
     public function index()
     {
         try {
@@ -53,9 +53,9 @@ class ServiceController extends Controller
     public function show($service_id)
     {
         try
-        {   
+        {
             $service = Service::find($service_id);
-    
+
             return $this->successResponse('Service listing retrieved.',200,['service' => $service]);
         }
         catch (ModelNotFoundException $e) {
@@ -79,7 +79,7 @@ class ServiceController extends Controller
         ]);
         //get pilot id by auth::user()->id
         $pilot_id = $this->getPilot();
-        
+
         if (!$pilot_id){
             return $this->failedResponse('Pilot record was not found.',404);
         }
@@ -117,8 +117,8 @@ class ServiceController extends Controller
             return $this->successResponse("Updated listing {$service_id} successfully",200);
         }
         catch (ModelNotFoundException $e) {
-            return $this->failedResponse("Error: " . $e->getMessage(), 404);
-        } 
+            return $this->failedResponse("Service listing {$service_id} not found.", 404);
+        }
         catch (Exception $e)
         {
             return $this->failedResponse("Error: " . $e->getMessage(), 500);
@@ -129,11 +129,11 @@ class ServiceController extends Controller
     {
         try{
             $this->listingService->destroy($service_id);
-            
+
             return $this->successResponse("Service {$service_id} deleted successfully.",200);
         }
         catch (ModelNotFoundException $e) {
-            return $this->failedResponse("Error: " . $e->getMessage(),404);
+            return $this->failedResponse("Service listing {$service_id} not found.",404);
         }
         catch(Exception $e) {
             return $this->failedResponse("Error: " . $e->getMessage(),500);
@@ -144,11 +144,11 @@ class ServiceController extends Controller
         try {
             $services = $this->listingService->serviceByPilot($pilot_id);
             $message = $services->isEmpty() ? 'No services found for this pilot.' : 'All services retrieved.';
-            
+
             return $this->successResponse($message,200,['services' => $services]);
         } catch (QueryException $e) { // Specific exception for DB errors
             return $this->failedResponse("Database error: " . $e->getMessage(), 500);
-        } 
+        }
         catch (Exception $e){
             return $this->failedResponse("Error: " . $e->getMessage(),500);
         }

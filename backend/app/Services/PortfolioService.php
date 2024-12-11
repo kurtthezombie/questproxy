@@ -51,7 +51,7 @@ class PortfolioService {
 
         //update p_content
         $portfolio->p_content = $data['p_content'];
-        
+
         if(!$portfolio->save()){
             throw new Exception("Failed to update portfolio record.");
         }
@@ -65,7 +65,7 @@ class PortfolioService {
         if(!$portfolio->delete()){
             throw new Exception("Failed to delete portfolio.");
         }
-        
+
         return true;
     }
 

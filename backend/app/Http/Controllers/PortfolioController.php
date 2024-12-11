@@ -33,13 +33,13 @@ class PortfolioController extends Controller
         try {
             //create portfolio
             $portfolio = $this->portfolioService->create($data);
-            
+
             return $this->successResponse('Portfolio successfully created.',201,['portfolio' => $portfolio]);
         } catch (ModelNotFoundException $e) {
             return $this->failedResponse("Error: " . $e->getMessage(),404);
         } catch (Exception $e) {
             return $this->failedResponse("Error: " . $e->getMessage(),500);
-        }   
+        }
     }
 
     /**
@@ -50,10 +50,10 @@ class PortfolioController extends Controller
     {
         try {
             $portfolios = $this->portfolioService->findByPilot($pilot_id);
-            
-            $message = $portfolios->isEmpty() 
-            ? "Pilot has no portfolio items yet." 
-            : "Portfolios successfully retrieved."; 
+
+            $message = $portfolios->isEmpty()
+            ? "Pilot has no portfolio items yet."
+            : "Portfolios successfully retrieved.";
 
             return $this->successResponse($message, 200, ['portfolios' => $portfolios]);
         } catch(Exception $e) {
@@ -68,7 +68,7 @@ class PortfolioController extends Controller
     {
         try {
             $portfolio = $this->portfolioService->findPortfolio($id);
-            
+
             return $this->successResponse("Portfolio successfully retrieved.",200,['portfolio' => $portfolio]);
         } catch (ModelNotFoundException $e) {
             return $this->failedResponse("Error: " . $e->getMessage(), 404);
@@ -83,10 +83,10 @@ class PortfolioController extends Controller
     public function update(Request $request, $id)
     {
         $data = $request->validate(['p_content'=>'required|string']);
-        
+
         try {
             $this->portfolioService->update($data,$id);
-            
+
             return $this->successResponse("Portfolio record {$id} successfully updated.",200);
         } catch (ModelNotFoundException $e) {
             return $this->failedResponse("Portfolio {$id} not found.", 404);

@@ -12,12 +12,12 @@ use Illuminate\Http\Request;
 class ReportController extends Controller
 {
     use ApiResponseTrait;
-    
+
     protected $reportService;
 
     public function __construct(ReportService $reportService){
         $this->reportService = $reportService;
-    }   
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -27,10 +27,10 @@ class ReportController extends Controller
         //validate the form
         $validatedData = $request->validate([
             'reason' => 'required|string',
-            'reported_user_id' => 'required' 
+            'reported_user_id' => 'required'
         ]);
 
-        //add authenticated user's id 
+        //add authenticated user's id
         $validatedData['reporting_user_id'] = $request->user()->id;
 
         //insert in reports table
@@ -56,8 +56,8 @@ class ReportController extends Controller
                 200,
                 ['report' => $report],);
         } catch (ModelNotFoundException $e) {
-            return $this->failedResponse("Error: " . $e->getMessage(),404);
-        } 
+            return $this->failedResponse("Report {$id} is not found.",404);
+        }
         catch (Exception $e){
             return $this->failedResponse($e->getMessage(),500);
         }
