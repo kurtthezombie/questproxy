@@ -3,21 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gamer;
+use App\Services\GamerService;
 use App\Traits\ApiResponseTrait;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class GamerController extends Controller
 {
     use ApiResponseTrait;
+
+    protected $gamerService;
+
+    public function __construct(GamerService $gamerService){
+        $this->gamerService = $gamerService;
+    }
+
     public function edit($id){
-        $gamer = Gamer::find($id);
+        try {
+            $gamer = $this->gamerService->findById($id);
 
-        if (!$gamer) {
-            return $this->failedResponse("Gamer account {$id} not found",404);
+            return $this->successResponse("Gamer account {$id} successfully retrieved.",200, ['gamer' => $gamer]);
+        } catch (ModelNotFoundException $e) {
+            return $this->failedResponse("Error: " . $e->getMessage(), 404);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
-
-        return $this->successResponse("Gamer account {$id} found.",200,['gamer' => $gamer]);
     }
 
     public function update(Request $request, $id) {

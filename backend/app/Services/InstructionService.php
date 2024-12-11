@@ -8,6 +8,8 @@ use Exception;
 
 class InstructionService
 {
+    protected $instruction;
+
     public function __construct(Instruction $instruction){
         $this->instruction = $instruction;
     }
