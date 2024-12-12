@@ -55,8 +55,7 @@ class PaymentController extends Controller
                             'show_description' => false,
                             'show_line_items' => true,
                             'payment_method_types' => [
-                                "qrph","billease","card","dob","dob_ubp","brankas_bdo","brankas_landbank",
-                                "brankas_metrobank","gcash","grab_pay","paymaya"
+                                "card","gcash","paymaya"
                             ],
                             'line_items' => [
                                 [
