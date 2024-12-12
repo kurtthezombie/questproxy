@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Services;
 
@@ -36,7 +36,7 @@ class ListingService
             'availability' => $data['availability'],
             'pilot_id' => $pilot_id,
         ]);
-        
+
         if(!$service){
             throw new Exception('Failed to create instruction.');
         }
@@ -53,7 +53,7 @@ class ListingService
         }
 
         //return
-        return true;
+        return $service;
     }
 
     public function destroy($id) {
@@ -67,6 +67,6 @@ class ListingService
     }
 
     public function serviceByPilot($pilot_id){
-        return $this->service->where('pilot_id', $pilot_id)->get();        
+        return $this->service->where('pilot_id', $pilot_id)->get();
     }
 }

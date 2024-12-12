@@ -56,7 +56,7 @@ class PortfolioService {
             throw new Exception("Failed to update portfolio record.");
         }
 
-        return true;
+        return $portfolio;
     }
 
     public function delete($id){

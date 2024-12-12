@@ -35,7 +35,7 @@ class BookingService
         if (!$booking->save()){
             throw new Exception('Failed to create booking.');
         }
-        
+
         return $booking;
     }
 
