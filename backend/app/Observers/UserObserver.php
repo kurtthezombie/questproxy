@@ -6,6 +6,7 @@ use App\Models\Gamer;
 use App\Models\Pilot;
 use App\Models\Rank;
 use App\Models\User;
+use DB;
 
 class UserObserver
 {
@@ -58,5 +59,24 @@ class UserObserver
     public function forceDeleted(User $user): void
     {
         //
+    }
+
+    public function deleting(User $user)
+    {
+        DB::transaction(function () use($user) {
+            if($user->role === 'game_pilot' || $user->role === 'game pilot') {
+                $pilot = Pilot::where('user_id',$user->id)->first();
+    
+                if ($pilot) {
+                    $rank_id = $pilot->rank_id;
+    
+                    $pilot->delete();
+    
+                    if ($rank_id) {
+                        Rank::destroy($rank_id);
+                    }
+                }
+            }
+        });
     }
 }
