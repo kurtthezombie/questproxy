@@ -46,7 +46,7 @@ class ServiceController extends Controller
             //if there are service listings
             return $this->successResponse($message,200,['services' => $services]);
         } catch (Exception $e) {
-            return $this->failedResponse($e->getMessage(),500);
+            return $this->failedResponse("Error: " . $e->getMessage(),500);
         }
     }
 
