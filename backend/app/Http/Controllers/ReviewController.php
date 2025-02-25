@@ -3,25 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\Review;
+use App\Services\ReviewService;
 use App\Traits\ApiResponseTrait;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
     use ApiResponseTrait;
 
+    protected $reviewService;  
+
+    public function __construct(ReviewService $reviewService) {
+        $this->ReviewService = $reviewService;
+    }
+
     public function index($service_id)
     {
-        $reviews = Review::where('service_id', $service_id)->get();
-
-        return $this->successResponse("Reviews for service {$service_id} retrieved.", 200, ['reviews' => $reviews]);
+        try {
+            $reviews = $this->reviewService->index();
+            $message = $reviews->isEmpty() ? "No reviews yet." : "Reviews for service {$service_id} retrieved.";
+            
+            return $this->successResponse($message, 200, ['reviews' => $reviews]);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error: " . $e->getMessage(), 500);
+        }
     }
 
     //assuming the service_id is included in the form as hidden input
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'required|string',
             'service_id' => 'required|exists:services,id',
@@ -29,12 +42,7 @@ class ReviewController extends Controller
         ]);
 
         try {
-            $review = Review::create([
-                'rating' => $request->rating,
-                'comment' => $request->comment,
-                'service_id' => $request->service_id,
-                'pilot_id' => $request->pilot_id,
-            ]);
+            $review = $this->reviewService->create($data);
             return $this->successResponse('Review created.',201,['review' => $review]);
         } catch (Exception $e) {
             return $this->failedResponse($e->getMessage(),500);
@@ -43,10 +51,12 @@ class ReviewController extends Controller
 
     public function show($review_id){
         try {
-            $review = Review::findOrFail($review_id);
+            $review = $this->reviewService->findById($review_id);
             return $this->successResponse('Review retrieved.',200,['review'=>$review]);
-        } catch (Exception $e) {
-            return $this->failedResponse($e->getMessage(),500);
+        } catch (ModelNotFoundException $e) {
+            return $this->failedResponse("Review {$review_id} is not found", 404);
+        }catch (Exception $e) {
+            return $this->failedResponse("Error: " . $e->getMessage(),500);
         }
     }
 
@@ -54,9 +64,11 @@ class ReviewController extends Controller
     public function destroy($review_id)
     {
         try {
-            $deleted = Review::destroy($review_id);
+            $deleted = $this->reviewService->destroy($review_id);
 
             return $this->successResponse('Review deleted.',200);
+        } catch (ModelNotFoundException $e) {
+            return $this->failedResponse("Review {$review_id} is not found", 404);
         } catch (Exception $e) {
             return $this->failedResponse($e->getMessage(),500);
         }
