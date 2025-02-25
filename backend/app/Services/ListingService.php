@@ -23,7 +23,7 @@ class ListingService
     }
 
     public function search($query) {
-        return $this->service->search($query)->paginate();
+        return Service::search($query)->paginate();
     }
 
     public function create($data, $pilot_id)
@@ -47,9 +47,9 @@ class ListingService
     public function update($data,$id) {
         //find service
         $service = $this->service->findOrFail($id);
-
-        if(!$service->update($data)) {
-            throw new Exception("Failed to create service.");
+        $result = $service->update($data);
+        if(!$result) {
+            throw new Exception("Failed to update service.");
         }
 
         //return

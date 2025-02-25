@@ -32,7 +32,7 @@ class UserService
      * @param $id user id $data formdata
      * @return bool to confirm if updated or not
     */
-    public function updateUser($id, array $data): bool
+    public function updateUser($id, $data)
     {
         $user = $this->user->findOrFail($id);
 

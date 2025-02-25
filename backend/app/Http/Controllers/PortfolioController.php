@@ -18,7 +18,7 @@ class PortfolioController extends Controller
     protected $portfolioService;
 
     public function __construct(PortfolioService $portfolioService){
-        $this->$portfolioService = $portfolioService;
+        $this->portfolioService = $portfolioService;
     }
 
     /**

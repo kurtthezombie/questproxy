@@ -22,9 +22,8 @@ class ServiceController extends Controller
     }
 
     public function search(Request $request) {
-        $query = $request->validate([
-            'search' => 'nullable|string'
-        ]);
+        $validated = $request->validate(['search' => 'nullable|string']);
+        $query = $validated['search'] ?? '';
 
         try {
             $services = $this->listingService->search($query);
@@ -33,7 +32,7 @@ class ServiceController extends Controller
             //return success
             return $this->successResponse($message,200,['services' => $services]);
         } catch (Exception $error) {
-            return $this->failedResponse("Error {$error->getMessage()}",400);
+            return $this->failedResponse("Error: {$error->getMessage()}",400);
         }
     }
 
@@ -112,9 +111,9 @@ class ServiceController extends Controller
         //update
         try
         {
-            $this->listingService->update($data,$service_id);
-
-            return $this->successResponse("Updated listing {$service_id} successfully",200);
+            $this->listingService->update($data, $service_id);
+            
+            return $this->successResponse("Service listing {$service_id} updated successfully.",200);
         }
         catch (ModelNotFoundException $e) {
             return $this->failedResponse("Service listing {$service_id} not found.", 404);

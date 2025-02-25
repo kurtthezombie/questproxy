@@ -63,7 +63,7 @@ class PilotController extends Controller
     public function edit($id)
     {
         //just call the show function
-        $this->show($id);
+        return $this->show($id);
     }
 
     public function update(Request $request, int $id)
