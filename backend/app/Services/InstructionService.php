@@ -29,7 +29,7 @@ class InstructionService
     }
 
     public function update($booking_id, $data){
-        $instruction = Instruction::firstWhere('booking_id', $booking_id);
+        $instruction = $this->instruction->firstWhere('booking_id',$booking_id);
         
         if (!$instruction) {
             throw new Exception('Instruction not found.');
