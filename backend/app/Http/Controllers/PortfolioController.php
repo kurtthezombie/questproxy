@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pilot;
 use App\Models\Portfolio;
+use App\Services\PilotService;
 use App\Services\PortfolioService;
 use App\Traits\ApiResponseTrait;
 use Auth;
@@ -16,9 +17,11 @@ class PortfolioController extends Controller
     use ApiResponseTrait;
 
     protected $portfolioService;
+    protected $pilotService;
 
-    public function __construct(PortfolioService $portfolioService){
+    public function __construct(PortfolioService $portfolioService, PilotService $pilotService){
         $this->portfolioService = $portfolioService;
+        $this->pilotService = $pilotService;
     }
 
     /**
@@ -115,7 +118,7 @@ class PortfolioController extends Controller
         try {
             //find pilot id
             $user_id = Auth::user()->id;
-            $pilot = Pilot::where('user_id',$user_id)->first();
+            $pilot = $this->pilotService->findByUserId($user_id);
 
             $this->portfolioService->deleteAll($pilot->id);
 

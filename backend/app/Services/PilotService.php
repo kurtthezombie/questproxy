@@ -20,6 +20,10 @@ class PilotService {
         return $this->pilot->findOrFail($id);
     }
 
+    public function findByUserId($id) {
+        return $this->pilot->where('user_id',$id)->first();
+    }
+
     public function update($data,$id) {
         $pilot = $this->pilot->findOrFail($id);
 
