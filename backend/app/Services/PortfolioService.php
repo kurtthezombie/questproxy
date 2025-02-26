@@ -20,7 +20,7 @@ class PortfolioService {
         $user_id = Auth::user()->id;
 
         //retrieve pilot associated with the authenticated user
-        $pilot = Pilot::where('user_id',$user_id)->first();
+        $pilot = $this->pilotService->findByUserId($user_id);
 
         if(!$pilot){
             throw new ModelNotFoundException("Pilot not found.");
