@@ -15,7 +15,8 @@ class BookingService
     }
 
     public function booksByService($id){
-        $bookings = Booking::where('service_id', $id)->get();
+        // Use the instance method instead of the static method
+        $bookings = $this->booking->where('service_id', $id)->get();
 
         if($bookings->isEmpty())
         {
