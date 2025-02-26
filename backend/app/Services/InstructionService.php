@@ -55,7 +55,7 @@ class InstructionService
 
     public function retrieveInstructions($booking_id)
     {
-        $instruction = Instruction::firstWhere('booking_id',$booking_id);
+        $instruction = $this->instruction->firstWhere('booking_id',$booking_id);
 
         if(!$instruction)
         {
