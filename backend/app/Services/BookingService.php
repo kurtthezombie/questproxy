@@ -47,4 +47,8 @@ class BookingService
 
         return $booking;
     }
+
+    public function findById($id){
+        return $this->booking->findOrFail($id);
+    }
 }

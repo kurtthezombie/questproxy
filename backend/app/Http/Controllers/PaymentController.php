@@ -4,15 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Payment;
+use App\Services\BookingService;
+use App\Services\PaymentService;
 use App\Traits\ApiResponseTrait;
 use Auth;
 use DB;
+use Exception;
 use Http;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
     use ApiResponseTrait;
+
+    protected $bookingService;
+    protected $paymentService;
+
+    public function __construct(BookingService $bookingService, PaymentService $paymentService)
+    {
+        $this->bookingService = $bookingService;
+        $this->paymentService = $paymentService;
+    }
 
     public function index()
     {
@@ -22,85 +34,25 @@ class PaymentController extends Controller
 
     public function pay(Request $request, $booking_id)
     {
-        $success_url = $request->success_url;
-        $cancel_url = $request->cancel_url;
-        //get booking
-        $booking = Booking::findOrFail($booking_id);
-        if (!$booking) {
-            return $this->failedResponse('No booking found.',404);
-        }
-        //get service
-        $service = $booking->service;
-        if (!$service) {
-            return $this->failedResponse('No service retrieved.',404);
-        }   
-        //set amount to payment gateway format
-        $amount = $service->price * 100;
-        $description = $service->description;
-
-        //call response
-        $secret_key = env('PAYMONGO_SECRET_KEY');
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Authorization' => 'Basic ' . base64_encode($secret_key . ':'),
-            'Content-Type' => 'application/json'
-        ])
-        ->withOptions([
-            'verify' => false,
-        ])
-        ->post('https://api.paymongo.com/v1/checkout_sessions', [
-                    'data' => [
-                        'attributes' => [
-                            'send_email_receipt' => false,
-                            'show_description' => false,
-                            'show_line_items' => true,
-                            'payment_method_types' => [
-                                "card","gcash","paymaya"
-                            ],
-                            'line_items' => [
-                                [
-                                    'currency' => 'PHP',
-                                    'amount' => $amount,
-                                    'description' => $description,
-                                    'quantity' => 1,
-                                    'name' => 'Service'
-                                ]
-                            ],
-                            'success_url' => $success_url,
-                            'cancel_url' => $cancel_url
-                        ]
-                    ]
-                ]);
-        //insert into payment db
-        $responseData = $response->json();
-        $checkout_id = $responseData['data']['id'];
-        $checkout_url = $responseData['data']['attributes']['checkout_url'];
-        $status = $responseData['data']['attributes']['status'];
-        
-        DB::beginTransaction();
         try {
-            $payment = Payment::create([
-                'amount' => $amount,
-                'description' => $description,
-                'transaction_id' => $checkout_id,
-                'payment_link' => $checkout_url,
-                'status' => $status,
-                'payer_id' => Auth::user()->id,
-                'booking_id' => $booking_id,
-            ]);
-            
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return $this->failedResponse($e->getMessage(),500);
+            // Get booking and service
+            $booking = $this->bookingService->findById($booking_id);
+            $service = $booking->service;
+
+            // Create payment session
+            $responseData = $this->paymentService->createPaymentSession($service, $request->success_url, $request->cancel_url);
+
+            // Store payment record
+            $this->paymentService->storePaymentRecord($responseData, $booking_id);
+
+            return $this->successResponse(
+                'Payment record created, redirect to checkout URL.',
+                201,
+                ['checkout_url' => $responseData['data']['attributes']['checkout_url']]
+            );
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
         }
-        //redirect to checkout_url
-        //return redirect()->away($checkout_url);
-        return $this->successResponse(
-            'Payment record created, redirect to checkout url.',
-            201,
-            ['checkout_url'=> $checkout_url]
-        );
     }
 
     public function success($transaction_id){
