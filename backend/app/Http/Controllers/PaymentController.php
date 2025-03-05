@@ -56,43 +56,26 @@ class PaymentController extends Controller
     }
 
     public function success($transaction_id){
-        //retrieve session check if paid
-        $payment = Payment::where('transaction_id',$transaction_id)->first();
-        
-        if (!$payment){
-            return $this->failedResponse('Transaction not found',404);
-        }
-        $checkout_session_id = $payment->transaction_id;
-        $url = "https://api.paymongo.com/v1/checkout_sessions/{$checkout_session_id}";
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Authorization' => 'Basic ' . base64_encode(env('PAYMONGO_SECRET_KEY') . ':'),
-            'Content-Type' => 'application/json'
-        ])->get($url);
-        $data = $response->json();
+        try {
+            $payment = $this->paymentService->findByTransactionId($transaction_id);
+            $paymentData = $this->paymentService->fetchPaymentStatus($transaction_id);
 
-        $payment_method_used = $data['data']['attributes']['payment_method_used'];
-        $status = $data['data']['attributes']['status'];
-        
-        if ($status == 'paid'){
-            //update tables
-            $payment->method = $payment_method_used;
-            $payment->status = $status;
-            $payment->save();
+            $this->paymentService->updatePaymentStatus($payment, $paymentData['data']['attributes']);
 
-            //return response
-            return $this->successResponse('Payment successful.',200);
+            return $this->successResponse('Payment successful.', 200);
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
         }
     }
 
-    public function paymentsPaid($user_id){
-        $payments = Payment::where('payer_id',$user_id)
-                    ->where('status','paid')
-                    ->get();
-        if ($payments->isEmpty()){
-            return $this->successResponse('No paid payments found for this user.',204);
+    public function paymentsPaid($user_id)
+    {
+        $payments = $this->paymentService->getPaidPaymentByUserId($user_id);
+
+        if ($payments->isEmpty()) {
+            return $this->successResponse('No paid payments found for this user.', 204);
         }
 
-        return $this->successResponse('Payments retrieved.',200,['payments' => $payments]);       
+        return $this->successResponse('Payments retrieved.', 200, ['payments' => $payments]);
     }
 }
