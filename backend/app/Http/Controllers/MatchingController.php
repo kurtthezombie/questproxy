@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\NotificationBroadcastEvent;
 use App\Models\Pilot;
 use App\Notifications\PilotMatchedNotification;
+use App\Services\MatchingService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Str;
@@ -12,32 +13,37 @@ use Str;
 class MatchingController extends Controller
 {
     use ApiResponseTrait;
+
+    protected $matchingService;
+
+    public function __construct(MatchingService $matchingService)
+    {
+        $this->matchingService = $matchingService;
+    }
+
     public function matchPilot(Request $request){
         //game and task details from the form input
         //validate
-        $request->validate([
+        $validated = $request->validate([
             'game' => 'required|string',
-            'task' => 'required|text',
-            'points' => 'required|int' 
+            'task' => 'required|string',
+            'points' => 'required|integer' 
         ]);
-        $game = Str::snake($request->game);
-        //query matching pilots
-        $matchingPilot = Pilot::whereHas('services', function($query) use ($request, $game) {
-            $query->where('game',$game)
-                ->where('description','like', '%' . $request->task . '%')
-                ->where('points','>=',$request->points);
-        })->get();
 
-        //check results
-        if ($matchingPilot->isEmpty()){
+        //call service method to find a matching pilot
+        $result = $this->matchingService->findMatchingPilot($validated, $request->user());
+
+        if (!$result['pilot']){
             return $this->successResponse('No matching pilots found.', 404);
         }
-        //trigger notifications
-        $pilot_user = $matchingPilot->user;
-        $user = $request->user();
-        $pilot_user->notify(new PilotMatchedNotification($user));
-        event(new NotificationBroadcastEvent($user));
+
+        $pilot = $result['pilot'];
+
         //return response
-        return $this->successResponse('Matching pilots found.', 200, ['pilot' => $pilot_user]);
+        return $this->successResponse(
+            $pilot ? 'Matching pilots found.' : 'No matching pilots found.', 
+            $pilot ? 200 : 404, 
+            ['pilot' => $pilot]
+        );
     }
 }
