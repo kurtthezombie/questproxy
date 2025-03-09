@@ -23,20 +23,6 @@ class PilotController extends Controller
         $this->pilotService = $pilotService;
     }
 
-    public function getPilot(int $id, string $type)
-    {
-        try {
-            if ($type === "pilot_id"){
-                return Pilot::find($id);
-            }
-            else {
-                return Pilot::where('user_id',$id)->first();
-            }
-        } catch (Exception $e) {
-            return null;
-        }
-    }
-
     public function index() {
         try {
             $pilots = $this->pilotService->index();
