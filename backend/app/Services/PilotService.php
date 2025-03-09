@@ -16,6 +16,14 @@ class PilotService {
         return $this->pilot->all();
     }
 
+    public function update($data,$id) {
+        $pilot = $this->pilot->findOrFail($id);
+
+        $pilot->update($data);
+
+        return $pilot;
+    }
+
     public function findById($id){
         return $this->pilot->findOrFail($id);
     }
@@ -24,11 +32,4 @@ class PilotService {
         return $this->pilot->where('user_id',$id)->first();
     }
 
-    public function update($data,$id) {
-        $pilot = $this->pilot->findOrFail($id);
-
-        $pilot->update($data);
-
-        return $pilot;
-    }
 }

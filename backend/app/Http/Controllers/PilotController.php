@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pilot;
 use App\Services\PilotService;
-use App\Services\PilotServices;
 use App\Traits\ApiResponseTrait;
-use Auth;
-use DB;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
