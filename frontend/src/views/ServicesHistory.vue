@@ -97,6 +97,8 @@ const callLogout = () => {
   router.push({ name: 'login' });
 };
 
+
+
 onMounted(async () => {
   if (checkAuth()) {
     await fetchData();

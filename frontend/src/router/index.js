@@ -13,6 +13,9 @@ import OtpEmailVerification from '@/views/OtpEmailVerification.vue'
 import ServiceView from '@/views/ServiceView.vue'
 import EditServiceView from '@/views/EditServiceView.vue'
 import ServicesHistory from '@/views/ServicesHistory.vue'
+import PaymentView from '@/views/PaymentView.vue'
+import PaymentHistoryView from '@/views/PaymentHistoryView.vue'
+import BookingView from '@/components/BookingView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -72,11 +75,11 @@ const router = createRouter({
       name: 'create-service',
       component: CreateServiceView,
     },
-
     {
-      path: '/users/:username',
+      path: '/users/:id',
       name: 'userprofile',
-      component: UserProfileView, 
+      component: UserProfileView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/otp-verification',
@@ -89,7 +92,7 @@ const router = createRouter({
       component: ServiceView
     },
     {
-      path: '/serviceshistory',
+      path: '/services-history',
       name: 'ServicesHistory',
       component: ServicesHistory
     },
@@ -98,7 +101,27 @@ const router = createRouter({
       name: 'editService',
       component: EditServiceView,
       meta: { requiresAuth: true }
-    }
+    },
+    {
+      path: '/payment/:serviceId',
+      name: 'PaymentView',
+      component: PaymentView,
+    },
+    {
+      path: '/payment-history/',
+      name: 'PaymentHistory',
+      component: PaymentHistoryView,
+    },
+   /*  {
+      path: '/transactions/:paymentId',
+      name: 'TransactionView',
+      component: TransactionView,
+    }, */
+    {
+      path: '/bookings/:serviceId',
+      name: 'BookingView',
+      component: BookingView,
+    },
   ]
 })
 

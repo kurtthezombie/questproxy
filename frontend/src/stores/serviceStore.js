@@ -9,6 +9,8 @@ export const useServiceStore = defineStore('service', () => {
     const loading = ref(false);
     const error = ref(null);
     const message = ref('');
+    const service = ref(null);
+    const pilots = ref([]);
 
     const hasServices = computed(() => services.value.length > 0);
     const categoriesLoaded = computed(() => categories.value.length > 0);
@@ -19,6 +21,7 @@ export const useServiceStore = defineStore('service', () => {
         error.value = null;
         message.value = '';
     };
+    
 
     const fetchCategories = async () => {
         loading.value = true;
@@ -86,28 +89,64 @@ export const useServiceStore = defineStore('service', () => {
             loading.value = false;
         }
     };
+
+    const fetchServiceById = async (serviceId) => {
+        loading.value = true;
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/services/${serviceId}`, {
+                headers: {
+                    Authorization: `${localStorage.getItem('tokenType')} ${localStorage.getItem('authToken')}`,
+                },
+            });
+            service.value = response.data.service; 
+            error.value = null;
+        } catch (err) {
+            error.value = err.message || 'Error fetching service';
+            console.error('Error fetching service:', err);
+        } finally {
+            loading.value = false;
+        }
+    };
     
     const fetchServicesByPilot = async (pilot_id) => {
         loading.value = true;
         try {
-          const response = await axios.get(
-            `http://127.0.0.1:8000/api/pilots/${pilot_id}/services`,
-            {
-              headers: {
-                Authorization: `${localStorage.getItem('tokenType')} ${localStorage.getItem('authToken')}`
-              }
-            }
-          );
-          services.value = response.data.services;
-          error.value = null; 
+            const response = await axios.get(
+                `http://127.0.0.1:8000/api/pilots/${pilot_id}/services`,
+                {
+                    headers: {
+                        Authorization: `${localStorage.getItem('tokenType')} ${localStorage.getItem('authToken')}`
+                    }
+                }
+            );
+            services.value = response.data.services;
+            console.log("Fetched services:", services.value); 
+            error.value = null; 
         } catch (err) {
-          error.value = err.message || 'Failed to fetch services for pilot.';
-          console.error('Error fetching services for pilot:', err);
+            error.value = err.message || 'Failed to fetch services for pilot.';
+            console.error('Error fetching services for pilot:', err);
         } finally {
-          loading.value = false;
+            loading.value = false;
         }
-      };
+    };
+
+     const fetchPilots = async () => { 
+        loading.value = true; 
+        try { 
+            const response = await axios.get('http://127.0.0.1:8000/api/pilots', 
+                { 
+                    headers: { 
+                        Authorization: `Bearer ${localStorage.getItem('authToken')}` 
+                    } 
+                }); 
+            pilots.value = response.data.pilots; error.value = null; 
+        } catch (err) { error.value = err.message || 'Error fetching pilots'; 
+        } finally { 
+            loading.value = false;
+        }
+    };
       
+    
 
     const updateService = async (serviceId, serviceData) => {
         loading.value = true;
@@ -167,6 +206,8 @@ export const useServiceStore = defineStore('service', () => {
 
     return {
         services,
+        service,
+        pilots,
         categories,
         loading,
         error,
@@ -177,9 +218,11 @@ export const useServiceStore = defineStore('service', () => {
         fetchCategories,
         createService,
         fetchUserServices,
+        fetchServiceById,
         clearServices,
         updateService,
         deleteService,
         fetchServicesByPilot,
+        fetchPilots,
     };
 });

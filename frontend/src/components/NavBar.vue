@@ -22,7 +22,8 @@
       <UserDropdown 
         :username="username" 
         :email="email" 
-        :role="role" 
+        :role="role"
+        :avatar="avatar"
         @logout="callLogout"
       />
     </nav>
@@ -39,6 +40,7 @@ export default {
     username: String,
     email: String,
     role: String,
+    avatar: String,
     callLogout: Function
   },
   data() {

@@ -4,9 +4,11 @@
       <img 
         id="avatarButton" 
         @click="toggleDropdown" 
-        class="w-10 h-10 rounded-full cursor-pointer" 
-        :src="avatar" 
-        alt="User dropdown">
+        class="w-10 h-10 rounded-full cursor-pointer object-cover"
+        :src="userAvatar"
+        @error="handleAvatarError"
+        :alt="username || 'User avatar'"
+      >
     </div>
     <!-- Dropdown menu -->
     <div 
@@ -22,7 +24,8 @@
           <span class="font-bold text-green-600 dark:text-green-500">Username:</span>
           <router-link 
             v-if="username" 
-            :to="{ name: 'userprofile', params: { username } }">
+            :to="{ name: 'userprofile', params: { id: userId } }"
+            @click.native.prevent="navigateToProfile">
             {{ username }}
           </router-link>
         </p>
@@ -37,9 +40,12 @@
         </li>
         <li>
           <router-link v-if="role === 'game pilot'" 
-        to="/serviceshistory" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Services</router-link>        </li>
-      </ul>
-
+        to="/services-history" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Services</router-link>        
+        </li>
+        <li>
+          <router-link to="/payment-history" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Account History</router-link>
+        </li>
+      
       <div class="py-0">
         <button 
           @click="callLogout" 
@@ -47,6 +53,7 @@
           Sign out
         </button>
       </div>
+      </ul>
     </div>
   </div>
 </template>
@@ -61,15 +68,40 @@ const isDropdownOpen = ref(false);
 const username = ref('');
 const email = ref('');
 const role = ref('');
+const userAvatar = ref('');
+const userId = ref(''); 
+
+const props = defineProps({
+  username: String
+});
+
+const navigateToProfile = () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    router.push({ 
+      name: 'userprofile', 
+      params: { id: userId.value } 
+    });
+  }
+};
+
+const generateUserAvatar = (userId) => {
+  const avatarNumber = (userId % 6) + 1;
+  return `src/assets/avatarimg/avatar${avatarNumber}.png`;
+};
+
 
 const fetchUserData = async () => {
   try {
-    const userData = await loginService.fetchUserData();  
+    const userData = await loginService.fetchUserData();
     username.value = userData.username;
     email.value = userData.email;
     role.value = userData.role || 'User';
+    userId.value = userData.id; // Set userId
+    userAvatar.value = userData.avatar || generateUserAvatar(userId.value); // Use userId for avatar generation
   } catch (error) {
     console.error('Error fetching user data:', error);
+    userAvatar.value = generateUserAvatar(userId.value);
   }
 };
 
@@ -83,23 +115,16 @@ const toggleDropdown = () => {
 
 const capitalizedRole = computed(() => {
   if (!role.value) return '';
-  return role.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  return role.value
+    .split(',')
+    .map(word => word.trim())
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(', ');
 });
 
-const props = defineProps({
-  avatar: {
-    type: String,
-    default: '@/assets/img/qplogo3.png'
-  },
-  callLogout: Function
-});
-
+// Handle logout
 const callLogout = () => {
-  if (props.callLogout) {
-    props.callLogout();  
-  } else {
-    loginService.logout();
-    router.push({ name: 'login' });
-  }
+  loginService.logout();
+  router.push({ name: 'login' });
 };
 </script>

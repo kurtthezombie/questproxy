@@ -21,66 +21,38 @@
             </div>
           </div>
 
+          <!-- Update Account Form -->
           <form @submit.prevent="UpdateForm">
             <div class="grid gap-6 mb-6 md:grid-cols-2">
-              <!-- First Name -->
+              <!-- Form Fields for Name, Email, and Contact Number -->
               <div>
                 <label for="firstName" class="block mb-2 text-sm font-medium text-gray-800">First Name</label>
-                <input
-                  type="text"
-                  id="firstName"
-                  class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5"
-                  v-model="firstName"
-                  required
-                />
+                <input type="text" id="firstName" class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" v-model="firstName" required />
               </div>
-
-              <!-- Last Name -->
               <div>
                 <label for="lastName" class="block mb-2 text-sm font-medium text-gray-800">Last Name</label>
-                <input
-                  type="text"
-                  id="last_name"
-                  class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5"
-                  v-model="lastName"
-                  required
-                />
+                <input type="text" id="last_name" class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" v-model="lastName" required />
               </div>
-
-              <!-- Email -->
               <div>
                 <label for="email" class="block mb-2 text-sm font-medium text-gray-800">Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5"
-                  v-model="email" 
-                  required
-                />
+                <input type="email" id="email" class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" v-model="email" required />
               </div>
-
-              <!-- Contact Number -->
               <div>
                 <label for="contact_number" class="block mb-2 text-sm font-medium text-gray-800">Contact Number</label>
-                <input
-                  type="tel"
-                  id="contact_number"
-                  class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5"
-                  v-model="contactNumber"
-                  placeholder="123-456-7890"
-                  required
-                />
+                <input type="tel" id="contact_number" class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" v-model="contactNumber" placeholder="123-456-7890" required />
               </div>
             </div>
-
-            <!-- Save Button -->
-            <button
-              type="submit"
-              class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-            >
-              Save
-            </button>
+            <button type="submit" class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Save</button>
           </form>
+
+          <!-- Account Deletion Section -->
+          <div class="mt-10">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Delete Account</h2>
+            <p class="text-gray-700 mb-4">This action cannot be undone. Confirm if you want to delete your account.</p>
+            <form @submit.prevent="confirmDeletion">
+              <button type="submit" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition duration-200">Delete My Account</button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -108,7 +80,6 @@ const userId = ref('');
 const message = ref(''); 
 
 // Fetch user data and populate form fields
-
 const fetchUserData = async () => {
   const loader = loadShow();
   try {
@@ -158,11 +129,31 @@ const UpdateForm = async () => {
   }
 };
 
+// Delete Account Function
+const confirmDeletion = async () => {
+  const loader = loadShow();
+  try {
+    const response = await axios.delete(`http://localhost:8000/api/users/delete/${userId.value}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+    alert('Account has been deleted.');
+    router.push({ name: 'home' }); 
+  } catch (error) {
+    console.error('Error deleting account:', error);
+  } finally {
+    loadHide(loader);
+  }
+};
+
 const callLogout = () => {
-  userStore.clearUser();
-  serviceStore.clearServices();
   localStorage.removeItem('authToken');
   localStorage.removeItem('tokenType');
   router.push({ name: 'login' });
 };
 </script>
+
+<style scoped>
+/* Add any additional styles here if necessary */
+</style>

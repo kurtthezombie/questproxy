@@ -1,9 +1,15 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import loginservice from '@/services/login-service';
 import { fetchImage } from '@/services/captcha-service';
 import { useLoader } from '@/services/loader-service';
+
+// Generate random avatar function based on user ID
+const generateUserAvatar = (userId) => {
+  const avatarNumber = (userId % 6) + 1; 
+  return `/assets/avatarimg/avatar${avatarNumber}.png`;
+};
 
 //form
 const form = reactive({
@@ -14,10 +20,20 @@ const form = reactive({
   password: '',
   confirmPassword: '',
   contact_number: '',
-  role: '',
+  role: '', 
   captcha_input: '',
-  captchaKey: ''
+  captchaKey: '',
+  avatar: ''
 });
+
+// Watch for changes in user ID and update avatar
+watch(() => form.username, (newUsername) => {
+  if (newUsername) {
+    const userId = newUsername.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0); // Generate a pseudo user ID based on username
+    form.avatar = generateUserAvatar(userId);
+  }
+});
+
 //captchaImg
 const captchaImg = ref('');
 //message variables
@@ -39,6 +55,9 @@ const submitForm = async () => {
   }
 
   const loader = loadShow();
+  const userId = form.username.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0); // Generate a pseudo user ID based on username
+  form.avatar = generateUserAvatar(userId);
+
   const formData = {
     username: form.username,
     email: form.email,
@@ -49,6 +68,7 @@ const submitForm = async () => {
     role: form.role,
     captcha: form.captcha_input,
     key: form.captchaKey,
+    avatar: form.avatar 
   };
 
   try {
@@ -63,7 +83,6 @@ const submitForm = async () => {
       });
       //push to otp
       router.push({ path: '/otp-verification', query: { email: form.email } });
-      //router.push({ path: '/login', query: { message: 'Registration successful!' } });
     } else {
       message.error = response.message;
       handleReload();
@@ -88,9 +107,14 @@ const handleReload = async () => {
 };
 
 onMounted(() => {
-  handleReload();
+  handleReload();  
+  if (form.username) {
+    const userId = form.username.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0); // Generate a pseudo user ID based on username
+    form.avatar = generateUserAvatar(userId); 
+  }
 });
 </script>
+
 
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-200">

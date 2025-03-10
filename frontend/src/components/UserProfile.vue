@@ -7,9 +7,10 @@
           <!-- Avatar and Username -->
           <div class="flex flex-col items-center space-y-2">
             <div class="w-24 h-24 rounded-full bg-gray-200 overflow-hidden">
-              <img 
-                :src="profileData.avatar || '/default-avatar.png'" 
-                :alt="profileData.username" 
+              <img
+                :src="userAvatar || 'src/assets/default-avatar.png'"
+                @error="handleAvatarError"
+                :alt="profileData.username || 'User avatar'"
                 class="w-full h-full object-cover"
               />
             </div>
@@ -29,13 +30,23 @@
           <div class="mt-4">
             <div class="flex justify-between items-center mb-2">
               <h3 class="font-medium">Description</h3>
-              <button 
-                v-if="isOwner" 
-                @click="isEditing ? updateDescription() : isEditing = true"
-                class="text-blue-500"
-              >
-                {{ isEditing ? 'Save' : 'Edit' }}
-              </button>
+              <div>
+                <button 
+                  v-if="isOwner" 
+                  @click="isEditing ? saveDescription() : startEditing()"
+                  class="text-blue-500 mr-2"
+                  :disabled="isLoading"
+                >
+                  {{ isEditing ? 'Update' : 'Edit' }}
+                </button>
+                <button 
+                  v-if="isEditing && isOwner"
+                  @click="cancelEditing"
+                  class="text-gray-500"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
             <p v-if="!isEditing || !isOwner" class="text-gray-600 text-sm">
               {{ profileData.description || 'No description available' }}
@@ -109,111 +120,87 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import loginService from '@/services/login-service';
 
-const props = defineProps({
-  username: String,
-  avatar: String,
-  description: String,
-  service: Object
-});
+const userAvatar = ref('');
+const isOwner = ref(false);
+const isEditing = ref(false);
+const editableDescription = ref('');
+const showReportModal = ref(false);
+const reportMessage = ref('');
+const reportError = ref('');
+const isLoading = ref(false);
 
-const route = useRoute();
-const loggedInUsername = ref('');
-const currentUserId = ref(null);
+
+
 const profileData = ref({
   username: '',
   avatar: '',
   description: '',
   service: null
 });
-const isOwner = ref(false);
-const showReportModal = ref(false);
-const reportMessage = ref('');
-const reportError = ref('');
-const isEditing = ref(false);
-const editableDescription = ref('');
+
+const generateUserAvatar = (userId) => {
+  const avatarNumber = (userId % 6) + 1;
+  return `src/assets/avatarimg/avatar${avatarNumber}.png`;
+};
 
 const fetchLoggedInUser = async () => {
   try {
-    const token = localStorage.getItem('token');
-    const response = await axios.get('http://127.0.0.1:8000/api/user', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    loggedInUsername.value = response.data.username;
-    currentUserId.value = response.data.id;
-    isOwner.value = loggedInUsername.value === route.params.username;
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Authentication token is missing');
+    }
+    const response = await loginService.fetchUserData();
+    currentUserId.value = response.id;
+    loggedInUsername.value = response.username;
   } catch (error) {
-    console.error('Error fetching logged in user:', error);
+    console.error('Error fetching logged-in user:', error);
+    // Handle redirection to login if needed
   }
 };
 
+
 const fetchProfileData = async () => {
   try {
-    const token = localStorage.getItem('token');
-    const username = route.params.username;
-    const response = await axios.get(`http://127.0.0.1:8000/api/users/${username}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    profileData.value = response.data;
-    editableDescription.value = response.data.description || '';
+    const userId = route.params.userId; 
+    const data = await loginService.fetchUserDataById(userId);
+    profileData.value = data;
+    userAvatar.value = data.avatar || generateUserAvatar(userId);
+    isOwner.value = data.id === currentUserId.value;
   } catch (error) {
     console.error('Error fetching profile data:', error);
   }
 };
 
-const updateDescription = async () => {
+const startEditing = () => {
+  isEditing.value = true;
+  editableDescription.value = profileData.value.description;
+};
+
+const saveDescription = async () => {
+  isLoading.value = true;
   try {
-    const portfolioData = {
-      p_content: editableDescription.value,
-      pilot_id: currentUserId.value
-    };
-
-    const response = await axios.post('http://127.0.0.1:8000/api/portfolios/create', portfolioData);
-
-    if (response.data.success) {
-      profileData.value.description = editableDescription.value;
-      isEditing.value = false;
-    } else {
-      console.error('Portfolio update failed:', response.data.message);
-      alert('Failed to update portfolio');
-    }
+    const response = await axios.put(`http://127.0.0.1:8000/api/users/${profileData.value.id}/description`, {
+      description: editableDescription.value,
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+    profileData.value.description = response.data.description;
+    isEditing.value = false;
   } catch (error) {
-    console.error('Error updating portfolio:', error);
-    alert('Error updating portfolio');
+    console.error('Error saving description:', error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
-const submitReport = async () => {
-  if (!reportMessage.value.trim()) {
-    reportError.value = 'Please enter a reason for reporting';
-    return;
-  }
-
-  try {
-    const reportData = {
-      reason: reportMessage.value,
-      reported_user_id: profileData.value.id 
-    };
-
-    const response = await axios.post('http://127.0.0.1:8000/api/reports/create', reportData);
-    
-    if (response.data) {
-      showReportModal.value = false;
-      reportMessage.value = '';
-      reportError.value = '';
-      alert('Report submitted successfully');
-    }
-  } catch (error) {
-    console.error('Error submitting report:', error);
-    reportError.value = 'Failed to submit report. Please try again.';
-  }
+const cancelEditing = () => {
+  isEditing.value = false;
 };
 
 const closeReportModal = () => {
@@ -222,16 +209,25 @@ const closeReportModal = () => {
   reportError.value = '';
 };
 
+const submitReport = async () => {
+  try {
+    const reportedUserId = 42; 
+    const reason = "Inappropriate behavior";
+
+    const result = await loginService.reportUser({ reportedUserId, reason });
+    alert(result.message); 
+  } catch (error) {
+    console.error("Error submitting report:", error);
+  }
+};
+
 onMounted(() => {
-  fetchLoggedInUser();
   fetchProfileData();
+  fetchLoggedInUser();
 });
 
-watch(
-  () => route.params.username,
-  () => {
-    fetchProfileData();
-    fetchLoggedInUser();
-  }
-);
 </script>
+
+<style>
+/* Add any additional styles here */
+</style>

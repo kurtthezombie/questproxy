@@ -147,6 +147,12 @@ const submitService = async () => {
   }
 };
 
+const checkAuth = () => {
+  if (!localStorage.getItem('authToken')) {
+    router.push({ name: 'login' });
+  }
+};
+
 const callLogout = () => {
   userStore.clearUser();
   serviceStore.clearServices();

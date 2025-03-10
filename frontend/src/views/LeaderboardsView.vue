@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { leaderboards } from '@/services/rank-service';
 import NavBar from '@/components/NavBar.vue';
 
 const records = ref([]);
+const router = useRouter();
 
 onMounted(async () => {
     try {
@@ -18,6 +20,14 @@ onMounted(async () => {
         console.error('Error occurred while fetching leaderboard data:', error);
     }
 });
+
+const isLoggedIn = () => {
+  return !!localStorage.getItem('authToken');
+};
+
+if (!isLoggedIn()) {
+  router.push({ name: 'login' });
+}
 </script>
 
 <template>
