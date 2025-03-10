@@ -2,7 +2,6 @@
 import { ref, reactive, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import loginservice from '@/services/login-service';
-import { fetchImage } from '@/services/captcha-service';
 import { useLoader } from '@/services/loader-service';
 
 // Generate random avatar function based on user ID
@@ -87,23 +86,11 @@ const submitForm = async () => {
       message.error = response.message;
       handleReload();
     }
-    form.captcha_input = '';
   } catch (error) {
     message.error = 'An error occurred during registration. Please try again.';
   } finally {
     loadHide(loader);
   }
-};
-
-const handleReload = async () => {
-  fetchImage()
-    .then(response => {
-      captchaImg.value = response.img;
-      form.captchaKey = response.key;
-    })
-    .catch(error => {
-      console.log('Error reloading CAPTCHA', error);
-    })
 };
 
 onMounted(() => {
@@ -198,12 +185,6 @@ onMounted(() => {
           </div>
         </div>
         <div class="md:col-span-2 flex flex-col space-y-4">
-          <div class="form-group flex items-center space-x-4">
-            <img :src="captchaImg" alt="captcha" class="w-24 h-10">
-            <button type="button" @click="handleReload" class="text-gray-500 hover:text-gray-800">&#x21bb;</button>
-            <input type="text" placeholder="Enter CAPTCHA" v-model="form.captcha_input"
-              class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-48">
-          </div>
           <button type="submit"
             class="w-full p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">
             Register

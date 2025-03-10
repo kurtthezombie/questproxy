@@ -1,11 +1,15 @@
 <?php
 //controllers
+use App\Events\NotificationBroadcastEvent;
+use App\Events\TestEvent;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\GamerController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MatchingController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PilotController;
 use App\Http\Controllers\PortfolioController;
@@ -17,6 +21,8 @@ use App\Http\Controllers\UserController;
 
 
 use App\Mail\EmailVerification;
+use App\Models\User;
+use App\Notifications\PilotMatchedNotification;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -118,6 +124,15 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('/payments/{payment_id}/transactions','transactionByPayment');
         Route::get('/export-transaction-history/{user_id}', 'exportTransactionHistory');
     });
+
+    Route::controller(NotificationController::class)->group(function() {
+        Route::get('notifications', 'NotificationController@index');
+        Route::post('pilot/notifications/{id}/read', 'NotificationController@markAsRead');
+        Route::delete('pilot/notifications/{id}', 'NotificationController@destroy');
+        Route::post('pilot/notifications/read-all', 'NotificationController@markAllAsRead');
+    });
+
+    Route::post('match-pilot',[MatchingController::class,'matchPilot']);
 });
 
 
@@ -126,23 +141,11 @@ Route::post('login', [LoginController::class, 'login']);
 //register
 Route::post('signup', [UserController::class, 'create']);
 
-
-//CAPTCHA:
-Route::controller(CaptchaController::class)->group(function () {
-    //generate captcha
-    //Route::get('load-catpcha','load');
-    //Route::post('post-captcha', 'post');
-});
-
-
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
 Route::controller(RankController::class)->group(function () {
     Route::get('leaderboards', 'index');
     Route::get('leaderboards/{id}', 'show');
 });
-
-Route::post('rank/create', [RankController::class, 'store']);
-Route::delete('rank/delete/{id}', [RankController::class, 'destroy']);
 
 //testing
 Route::get('testPostman', function () {
@@ -159,3 +162,11 @@ Route::get('test-email', function () {
 
     return response()->json(['message'=>'Okay sent'],201);
 });
+
+Route::get('/test-notification', function () {
+    $user = User::find(1); // Replace with the actual user ID for testing
+    $user->notify(new PilotMatchedNotification($user));
+    event(new NotificationBroadcastEvent($user));
+    return response()->json(['message' => 'Notification sent']);
+});
+
