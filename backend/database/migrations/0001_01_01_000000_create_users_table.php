@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //still not migrated, wip
+        //removed gamers table 
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('username')->unique();
@@ -25,15 +25,6 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();    
             $table->timestamps();
-        });
-
-        Schema::create('gamers', function (Blueprint $table) {
-            $table->id();
-            $table->string('gamer_preference')->nullable();
-            $table->timestamps();
-            //fk user_id
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -57,16 +48,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('gamers', function (Blueprint $table) {
-            //$table->dropForeign('gamers_user_id_foreign');
-            $table->dropForeign(['user_id']);
-        });
-
-        Schema::table('gamers', function (Blueprint $table) {
-            $table->dropColumn('user_id');
-        });
-
-        Schema::dropIfExists('gamers');
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
