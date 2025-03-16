@@ -33,7 +33,7 @@ const initials = computed(() => {
 <template>
     <NavBar />
     <!--container-->
-    <div class="flex justify-center max-w-full bg-red-100">
+    <div class="flex justify-center max-w-full bg-base-100">
         <div class="flex w-1/2 flex-col items-center bg-violet-300 p-10">
             <div>
                 <!-- If image exists, show it -->
