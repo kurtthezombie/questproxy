@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white">
-    <!-- Header -->
-    <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
+  <!-- Header -->
+  <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
+  <div class="min-h-screen bg-gray-900 text-white p-5">
 
     <!-- Main Dashboard -->
     <div class="container mx-auto py-10">
