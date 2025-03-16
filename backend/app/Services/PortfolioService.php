@@ -15,19 +15,22 @@ class PortfolioService {
         $this->portfolio = $portfolio;
     }
 
-    public function create($data){
-        //retrieve pilot thru user id
-        $user_id = Auth::user()->id;
-
-        //retrieve pilot associated with the authenticated user
-        $pilot = Pilot::where('user_id',$user_id)->first();
-
-        if(!$pilot){
-            throw new ModelNotFoundException("Pilot not found.");
+    public function create(array $data){
+        $pilot = $this->getPilotByUserId();
+        try {
+            if (isset($data['p_content'])) {
+                $imagePath = $data['p_content']->store('portfolios', 'public');
+                $data['p_content'] = $imagePath;
+            }
+        } catch (Exception $e) {
+            \Log::error("Image Upload Failed: " . $e->getMessage());
+            return response()->json(['error' => 'Image upload failed'], 500);
         }
+        
 
         $created = $this->portfolio->create([
             'p_content' => $data['p_content'],
+            'caption' => $data['caption'],
             'pilot_id' => $pilot->id,
         ]);
 
@@ -77,5 +80,11 @@ class PortfolioService {
         }
 
         return true;
+    }
+
+    private function getPilotByUserId()
+    {
+        $user_id = Auth::user()->id;
+        return Pilot::where('user_id', $user_id)->firstOrFail();
     }
 }

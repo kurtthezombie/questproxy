@@ -1,6 +1,7 @@
 <script setup>
 
 import { ref, onMounted, onUnmounted } from 'vue';
+import { createPortfolio } from '@/services/portfolio.service';
 
 defineProps(["modelValue"]);
 const emit = defineEmits(["update:modelValue", "submit"]);
@@ -27,9 +28,30 @@ const handleFileUpload = (event) => {
     }
 };
 
-const submitForm = () => {
-    emit("submit", { file: file.value, caption: caption.value });
-    closeModal();
+const submitForm = async () => {
+    if (!file.value) return;
+
+    const data = {
+        p_content: file.value,
+        caption: caption.value,
+    }
+    console.log("Data to be submitted:", data);
+
+    try {
+        const response = await createPortfolio(data);
+
+        console.log("Response from API:", response);
+        console.log("Response data:", response?.data);
+        
+        closeModal();
+    } catch (error) {
+        if (error.response) {
+            console.error("Response Data:", error.response.data);
+            console.error("Status Code:", error.response.status);
+        } else {
+            console.error("Request never reached the server");
+        }
+    }
 };
 
 const closeOnEscape = (event) => {

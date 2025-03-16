@@ -13,6 +13,7 @@ class Portfolio extends Model
 
     protected $fillable = [
         'p_content',
+        'caption',
         'pilot_id',
     ];
 

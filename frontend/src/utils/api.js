@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: process.env.BACKEND_URL + 'api' });
+const api = axios.create({ baseURL: import.meta.env.VITE_BACKEND_URL + 'api' });
 
 // set auth token
 const authToken = localStorage.getItem('authToken');
-if (authToken) api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+if (authToken) api.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
 
 const handleResponse = (response) => response.data;
 

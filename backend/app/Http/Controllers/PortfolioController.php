@@ -27,18 +27,18 @@ class PortfolioController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'p_content' => 'required|string',
+            'p_content' => 'required|image|mimes:jpg,png,jpeg',
+            'caption' => 'required|string',
         ]);
 
         try {
             //create portfolio
             $portfolio = $this->portfolioService->create($data);
 
-            return $this->successResponse('Portfolio successfully created.',201,['portfolio' => $portfolio]);
-        } catch (ModelNotFoundException $e) {
-            return $this->failedResponse("Error: " . $e->getMessage(),404);
-        } catch (Exception $e) {
-            return $this->failedResponse("Error: " . $e->getMessage(),500);
+            \Log::info('Portfolio Store Method Reached');
+            return response()->json(['message' => 'Portfolio created successfully', 'portfolio' => $portfolio], 201);
+            } catch (Exception $e) {
+            return response()->json(['error' => 'Portfolio creation failed'], 500);
         }
     }
 
