@@ -1,5 +1,6 @@
 <script setup>
 
+import toast from "@/utils/toast.js";
 import { ref, onMounted, onUnmounted } from 'vue';
 import { createPortfolio } from '@/services/portfolio.service';
 
@@ -31,26 +32,24 @@ const handleFileUpload = (event) => {
 const submitForm = async () => {
     if (!file.value) return;
 
-    const data = {
-        p_content: file.value,
-        caption: caption.value,
-    }
-    console.log("Data to be submitted:", data);
+    const originalFile = file.value;
+    const cleanFileName = originalFile.name.replace(/\s+/g, '_');
+
+    const renamedFile = new File([originalFile], cleanFileName, { type: originalFile.type });
+
+
+    const formData = new FormData();
+    formData.append("p_content", renamedFile);
+    formData.append("caption", caption.value);
 
     try {
-        const response = await createPortfolio(data);
+        const response = await createPortfolio(formData);
 
-        console.log("Response from API:", response);
-        console.log("Response data:", response?.data);
-        
+        toast.success("Portfolio item added successfully");
         closeModal();
     } catch (error) {
-        if (error.response) {
-            console.error("Response Data:", error.response.data);
-            console.error("Status Code:", error.response.status);
-        } else {
-            console.error("Request never reached the server");
-        }
+        console.log("Error: ", error);
+        toast.error(`Failed to add portfolio item: ${error.response?.data?.message}`);
     }
 };
 
