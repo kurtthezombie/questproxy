@@ -10,6 +10,7 @@ use Auth;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Log;
 
 class PortfolioController extends Controller
 {
@@ -46,10 +47,12 @@ class PortfolioController extends Controller
      * Display the specified portfolios of pilot
      * Takes pilot_id of the page
      */
-    public function show($pilot_id)
+    public function show($id)
     {
+        \Log::info("Fetching portfolios for pilot_id: " . $id);
+        Log::info("FUCKK " . $id);
         try {
-            $portfolios = $this->portfolioService->findByPilot($pilot_id);
+            $portfolios = $this->portfolioService->findByPilot($id);
 
             $message = $portfolios->isEmpty()
             ? "Pilot has no portfolio items yet."

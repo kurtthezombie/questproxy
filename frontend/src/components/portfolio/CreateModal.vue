@@ -46,6 +46,7 @@ const submitForm = async () => {
         const response = await createPortfolio(formData);
 
         toast.success("Portfolio item added successfully");
+        emit("submit", { file: renamedFile, caption: caption.value });  // Emit the submit event to the parent
         closeModal();
     } catch (error) {
         console.log("Error: ", error);

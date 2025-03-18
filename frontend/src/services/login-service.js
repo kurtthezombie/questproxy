@@ -20,17 +20,16 @@ import axios from 'axios';
     const userStore = useUserStore();
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/login',credentials);
-      console.log(response);
       
       //store user details in userStore
       const { authenticated_user, token } = response.data; //destructure
       userStore.setUser(authenticated_user,token);
 
+      console.log("User data after login:", userStore.userData); // ✅ Verify stored data
+
       localStorage.setItem('authToken', response.data.token);
       localStorage.setItem('tokenType', response.data.token_type);
       
-      console.log('Login successful!', response.data);
-
       return response.data;
     } catch (error) {
       console.log("Loginservice error: ",error.response.data);
@@ -39,7 +38,6 @@ import axios from 'axios';
         message: error.response.data.message,
       }
     }
-      
   }
 
   const updateUser = async ({ id, firstName, lastName, contactNumber, email }) => {

@@ -5,19 +5,35 @@ import NavBar from '@/components/NavBar.vue';
 import CreateModal from "@/components/portfolio/CreateModal.vue";
 import PortfolioCard from '@/components/portfolio/PortfolioCard.vue';
 import toast from '@/utils/toast';
-import { fetchPortolios } from '@/services/portfolio.service';
+import { fetchPortfolios } from '@/services/portfolio.service';
 
 const userStore = useUserStore();
 const userName = userStore.userData?.username;
-const role = computed(() => userStore.userData?.role || '');
 const isModalOpen = ref(false);
 const portfolios = ref([]);
 
-const loadPortfolios = async () => {
-    if (!userStore.userData?.id) return;
+const loadPortfolios = async (isSubmit = false) => {
+    if (!userStore.userData?.pilot_id) return;
+
     try {
-        const response = await fetchPortfolios(userStore.userData.id);
-        portfolios.value = response.data || [];
+        const response = await fetchPortfolios(userStore.userData?.pilot_id);
+        console.log("Response: ", response);
+
+        const baseURL = "http://127.0.0.1:8000/storage/";
+
+        if (response?.length) { 
+            portfolios.value = response.map((portfolio) => ({
+                ...portfolio,
+                p_content: baseURL + portfolio.p_content,
+            }));
+
+            const message = isSubmit ? "Portfolios refreshed" : "Portfolios fetched successfully";
+
+            toast.success(message);
+        } else {
+            portfolios.value = [];
+            toast.info("No portfolios found.");
+        }
     } catch (error) {
         console.error("Failed to fetch portfolios: ", error);
         toast.error("Failed to fetch portfolios");
@@ -25,10 +41,8 @@ const loadPortfolios = async () => {
 }
 
 const handleSubmit = (data) => {
-    console.log("Uploaded file: ", data.file);
-    console.log("Caption: ", data.caption);
-
-    isModalOpen.value = false
+    isModalOpen.value = false;
+    loadPortfolios(true);
 };
 
 const props = defineProps({
@@ -44,7 +58,9 @@ const initials = computed(() => {
         .toUpperCase();
 });
 
-onMounted(loadPortfolios);
+onMounted(() => {
+    loadPortfolios();
+});
 
 </script>
 
@@ -68,20 +84,17 @@ onMounted(loadPortfolios);
             <hr class="w-80 h-1 mx-auto my-4 bg-gray-100 border-0 rounded-sm md:my-10 dark:bg-gray-700">
 
             <div class="mt-10 flex w-100 flex-col bg-blue-200 p-5">
-                <button class="btn btn-circle w-14 h-14 p-2 bg-lime-200" @click="isModalOpen = true">
+                <button class="btn btn-circle w-14 h-14 p-2 bg-lime-200 mx-auto" @click="isModalOpen = true">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
-
                 </button>
-                <div class="flex flex-col items-center">
+                <div class="grid grid-cols-2 gap-5 w-full justify-items-center">
                     <!-- Use PortfolioCard component -->
                     <PortfolioCard 
                         v-for="portfolio in portfolios" 
                         :key="portfolio.id" 
                         :portfolio="portfolio"
-                        :onEdit="editPortfolio"
-                        :onDelete="deletePortfolio" 
                     />
                 </div>
             </div>

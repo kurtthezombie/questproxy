@@ -33,11 +33,14 @@ class LoginController extends Controller
         //set auth info
         Auth::login($user, true);
 
+        $pilot = $user->pilot;
+
         return response()->json([
             'message' => 'Login successful.',
             'token_type' => 'Bearer',
             'token' => $token,
             'authenticated_user' => Auth::user(),
+            'pilot_id' => $pilot ? $pilot->id : null,
             'status' => true,
         ],200);
     }
