@@ -12,4 +12,14 @@ const createPortfolio = async (data) => {
       }
 };
 
-export { createPortfolio };
+const fetchPortolios = async (pilotId) => {
+      try {
+        const response = await api.get(`/portfolios/${pilotId}`);
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching portfolios: ", error);
+        return [];
+      }
+}
+
+export { createPortfolio, fetchPortolios };
