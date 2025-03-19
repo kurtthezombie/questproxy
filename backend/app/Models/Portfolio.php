@@ -17,8 +17,6 @@ class Portfolio extends Model
         'pilot_id',
     ];
 
-    public $timestamps = false;
-
     public function pilot() {
         return $this->belongsTo(Pilot::class, 'pilot_id');
     }

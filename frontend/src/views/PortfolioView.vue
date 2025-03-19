@@ -67,24 +67,23 @@ onMounted(() => {
 <template>
     <NavBar />
     <!--container-->
-    <div class="flex justify-center max-w-full bg-base-100">
+    <div class="flex justify-center max-w-full bg-gray-800">
         <div class="flex w-1/2 flex-col items-center p-10">
             <div class="flex justify-center flex-col items-center">
                 <!-- If image exists, show it -->
                 <img v-if="props.image" :src="props.image" alt="Profile Image"
                     class="w-24 h-24 rounded-full object-cover" />
-
                 <!-- If no image, show default circle with initials -->
                 <div v-else
-                    class="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center text-5xl font-semibold text-white">
+                    class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-5xl font-semibold text-white">
                     {{ initials }}
                 </div>
-                <div class="text-center mt-5 font-bold text-xl">{{ userStore.userData?.username || 'Guest' }}'s portfolio</div>
+                <div class="text-center mt-5 font-bold text-xl text-white">{{ userStore.userData?.username || 'Guest' }}'s portfolio</div>
             </div>
-            <hr class="w-80 h-1 mx-auto my-4 bg-gray-100 border-0 rounded-sm md:my-10 dark:bg-gray-700">
+            <hr class="w-80 h-1 mx-auto my-4 bg-gray-100 border-0 rounded-sm md:my-10 dark:bg-gray-700 w-full">
 
-            <div class="mt-10 flex w-100 flex-col bg-blue-200 p-5">
-                <button class="btn btn-circle w-14 h-14 p-2 bg-lime-200 mx-auto" @click="isModalOpen = true">
+            <div class="flex w-100 flex-col p-5 items-center justify-center">
+                <button class="btn btn-circle w-14 h-14 p-2 mx-auto hover:bg-gray-300 hover:shadow-green-300 hover:shadow-md" @click="isModalOpen = true">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -95,6 +94,7 @@ onMounted(() => {
                         v-for="portfolio in portfolios" 
                         :key="portfolio.id" 
                         :portfolio="portfolio"
+                        class="w-full"
                     />
                 </div>
             </div>
