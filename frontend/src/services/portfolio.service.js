@@ -22,4 +22,14 @@ const fetchPortfolios = async (pilot_id) => {
       }
 }
 
-export { createPortfolio, fetchPortfolios };
+const deletePortfolio = async (id) => {
+      try {
+        const response = await api.delete(`/portfolios/delete/${id}`);
+        return response;
+      } catch (error) {
+        console.error("Error deleting portfolio: ", error);
+        throw error;
+      }
+}
+
+export { createPortfolio, fetchPortfolios, deletePortfolio };

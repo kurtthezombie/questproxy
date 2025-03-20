@@ -58,6 +58,10 @@ const initials = computed(() => {
         .toUpperCase();
 });
 
+const handlePortfolioDeleted = (deletedId) => {
+    portfolios.value = portfolios.value.filter(p => p.id !== deletedId);
+};
+
 onMounted(() => {
     loadPortfolios();
 });
@@ -88,13 +92,14 @@ onMounted(() => {
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                 </button>
-                <div class="grid grid-cols-2 gap-5 w-full justify-items-center">
+                <div class="grid grid-cols-2 gap-y-3 gap-x-0 justify-items-center">
                     <!-- Use PortfolioCard component -->
                     <PortfolioCard 
                         v-for="portfolio in portfolios" 
                         :key="portfolio.id" 
                         :portfolio="portfolio"
                         class="w-full"
+                        @deleted="handlePortfolioDeleted"
                     />
                 </div>
             </div>
