@@ -22,6 +22,18 @@ const fetchPortfolios = async (pilot_id) => {
       }
 }
 
+const updatePortfolio = async(id, data) => {
+      try {
+            const response = await api.post(`/portfolios/edit/${id}`, data, {
+                  headers: { "Content-Type" : "multipart/form-data" }
+            });
+            return response;
+      } catch (error) {
+            console.error("Error updating portfolio: ", error);
+            throw error;
+      }
+}
+
 const deletePortfolio = async (id) => {
       try {
         const response = await api.delete(`/portfolios/delete/${id}`);
@@ -32,4 +44,4 @@ const deletePortfolio = async (id) => {
       }
 }
 
-export { createPortfolio, fetchPortfolios, deletePortfolio };
+export { createPortfolio, fetchPortfolios, updatePortfolio, deletePortfolio };

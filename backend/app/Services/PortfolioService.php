@@ -5,8 +5,11 @@ namespace App\Services;
 use App\Models\Pilot;
 use App\Models\Portfolio;
 use Auth;
+use DB;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class PortfolioService {
     protected $portfolio;
@@ -23,7 +26,6 @@ class PortfolioService {
                 $data['p_content'] = $imagePath;
             }
         } catch (Exception $e) {
-            \Log::error("Image Upload Failed: " . $e->getMessage());
             return response()->json(['error' => 'Image upload failed'], 500);
         }
         
@@ -49,17 +51,34 @@ class PortfolioService {
         return $this->portfolio->findOrFail($id);
     }
 
-    public function update($data,$id){
+    public function update($data, $id)
+    {
         $portfolio = $this->portfolio->findOrFail($id);
 
-        //update p_content
-        $portfolio->p_content = $data['p_content'];
+        DB::beginTransaction();
+        try {
+            if (isset($data['p_content']) && $data['p_content'] instanceof UploadedFile) {
+                //delete old image
+                if ($portfolio->p_content) {
+                    Storage::disk('public')->delete($portfolio->p_content);
+                }
 
-        if(!$portfolio->save()){
-            throw new Exception("Failed to update portfolio record.");
+                $imagePath = $data['p_content']->store('portfolios', 'public');
+                $portfolio->p_content = $imagePath;
+            }
+
+            $portfolio->caption = $data['caption'];
+
+            if (!$portfolio->save()) {
+                throw new Exception("Failed to update portfolio record.");
+            }
+
+            DB::commit();
+            return $portfolio;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
-
-        return $portfolio;
     }
 
     public function delete($id){

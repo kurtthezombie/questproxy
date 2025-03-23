@@ -75,7 +75,7 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('portfolios/{id}', 'show');//
         Route::post('portfolios/create', 'store');//
         Route::get('portfolios/edit/{id}', 'edit');
-        Route::patch('portfolios/edit/{id}', 'update');
+        Route::put('portfolios/edit/{id}', 'update');
         Route::delete('portfolios/delete/{id}', 'destroy');
         Route::delete('portfolios/delete/pilot/{pilot_id}', 'destroyAll');
     });
