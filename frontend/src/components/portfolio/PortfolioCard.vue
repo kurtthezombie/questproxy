@@ -52,9 +52,11 @@ const handleDelete = async (portfolioId) => {
 </script>
 
 <template>
-    <div class="flex justify-center">
+    <div class="flex justify-center ">
         <div
-            class="mt-3 w-3/4 bg-gray-200 p-3 rounded-sm shadow-md hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer rounded-xl hover:shadow-lg hover:shadow-lime-500">
+            class="mt-3 w-3/4 bg-gray-200 p-3 rounded-sm shadow-md hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer rounded-xl hover:shadow-lg hover:shadow-lime-500
+            flex flex-col justify-between min-h-[300px]
+            ">
             <!-- Portfolio Image -->
             <div class="flex justify-center rounded-md">
                 <!-- Edit & Delete Buttons (Top Right of Image) -->
@@ -80,16 +82,20 @@ const handleDelete = async (portfolioId) => {
                     </button>
                 </div>
                 <img v-if="portfolio.p_content" :src="portfolio.p_content"
-                    class="w-full max-h-60 object-cover rounded-md" alt="Portfolio Image"
+                    class="w-full aspect-[4/3] object-cover rounded-md" 
+                    alt="Portfolio Image"
                     @click="openImage(portfolio.p_content)" />
                 <span v-else class="text-white font-semibold">No Image</span>
             </div>
             <hr>
             <!-- Portfolio Caption -->
-            <div class="mt-3 text-start text-xl text-gray-800 font-medium">
+             <div class="mt-auto">
+                <div class="mt-3 text-start text-xl text-gray-800 font-medium">
                 {{ portfolio?.caption || "" }}
-            </div>
-            <div class="mt-1 text-sm text-gray-600">{{ formattedTime }}</div>
+                </div>
+                <div class="mt-1 text-sm text-gray-600">{{ formattedTime }}</div>
+             </div>
+            
         </div>
         <!-- Image Preview Modal -->
         <div v-if="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90 mt-10">
