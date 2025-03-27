@@ -19,7 +19,7 @@
           class="text-white hover:text-green-500 transition-colors duration-300">
           Service
         </router-link>
-        <router-link v-if="role === 'game pilot'" to="/portfolios"
+        <router-link v-if="role === 'game pilot'" to="/myportfolios"
           class="text-white hover:text-green-500 transition-colors duration-300">
           Portfolio
         </router-link>

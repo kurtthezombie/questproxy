@@ -14,6 +14,7 @@ import ServiceView from '@/views/ServiceView.vue'
 import EditServiceView from '@/views/EditServiceView.vue'
 import ServicesHistory from '@/views/ServicesHistory.vue'
 import NotificationsTest from '@/views/NotificationsTest.vue'
+import MyPortfolioView from '@/views/MyPortfolioView.vue'
 import PortfolioView from '@/views/PortfolioView.vue'
 
 const router = createRouter({
@@ -107,8 +108,13 @@ const router = createRouter({
       component: NotificationsTest
     },
     {
-      path: '/portfolios',
-      name: 'Portfolio',
+      path: '/myportfolios',
+      name: 'MyPortfolio',
+      component: MyPortfolioView,
+    },
+    {
+      path: '/portfolio/:username',
+      name: 'PortfolioView',
       component: PortfolioView,
     },
   ]

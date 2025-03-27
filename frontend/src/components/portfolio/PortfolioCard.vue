@@ -1,7 +1,7 @@
 <script setup>
 import dayjs from 'dayjs';
 import toast from '@/utils/toast';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { deletePortfolio } from '@/services/portfolio.service';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
@@ -39,6 +39,12 @@ const closeModal = () => {
     showModal.value = false;
 };
 
+const handleKeydown = (e) => {
+    if (e.key === "Escape") {
+        closeModal();
+    }
+};
+
 const handleDelete = async (portfolioId) => {
     try {
         await deletePortfolio(portfolioId);
@@ -48,6 +54,11 @@ const handleDelete = async (portfolioId) => {
         toast.error("Failed to delete portfolio");
     }
 }
+
+
+onMounted(() => {
+    window.addEventListener("keydown", handleKeydown);
+});
 
 </script>
 

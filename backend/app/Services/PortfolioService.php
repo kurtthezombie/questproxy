@@ -101,9 +101,15 @@ class PortfolioService {
         return true;
     }
 
+    public function getPortfolioByUser($user_id){
+        $pilot = Pilot::where('user_id', $user_id)->firstOrFail();
+        return $this->portfolio->where('pilot_id', $pilot->id)->get();
+    }
+
     private function getPilotByUserId()
     {
         $user_id = Auth::user()->id;
         return Pilot::where('user_id', $user_id)->firstOrFail();
     }
+
 }

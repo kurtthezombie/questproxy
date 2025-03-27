@@ -44,4 +44,22 @@ const deletePortfolio = async (id) => {
       }
 }
 
-export { createPortfolio, fetchPortfolios, updatePortfolio, deletePortfolio };
+const fetchUserByUsername = async (username) => {
+      try {
+            const response = await api.get(`/users/username/${username}`);
+            return response.data || {};
+      } catch (error) {
+            throw error;
+      }
+}
+
+const fetchPortfoliosByUser = async (id) => {
+      try {
+            const response = await api.get(`/portfolios/user/${id}`);
+            return response || {};
+      } catch (error) {
+            throw error;
+      }
+}
+
+export { createPortfolio, fetchPortfolios, updatePortfolio, deletePortfolio, fetchUserByUsername, fetchPortfoliosByUser };

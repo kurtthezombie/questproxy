@@ -131,4 +131,19 @@ class PortfolioController extends Controller
             return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
     }
+
+    public function getPortfolioByUser($user_id)
+    {
+        try {
+            $portfolios = $this->portfolioService->getPortfolioByUser($user_id);
+
+            $message = $portfolios->isEmpty()
+                ? "User has no portfolio items yet."
+                : "Portfolios successfully retrieved.";
+
+            return $this->successResponse($message, 200, ['portfolios' => $portfolios]);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error: " . $e->getMessage(), 500);
+        }
+    }
 }
