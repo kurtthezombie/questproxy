@@ -31,13 +31,12 @@ const getUserDataAndPortfolios = async () => {
             userData.value = user;
 
             const response = await fetchPortfoliosByUser(user.id);
+            const baseURL = "http://127.0.0.1:8000/storage/";
 
-            portfolios.value = response.portfolios;
-
-            console.log("Extracted Portfolios:");
-            portfolios.value.forEach((portfolio, index) => {
-            console.log(`Portfolio ${index + 1}:`, portfolio);
-            });
+            portfolios.value = response.portfolios.map((portfolio) => ({
+                  ...portfolio,
+                  p_content: baseURL + portfolio.p_content,
+            }));
       } catch (error) {
             console.log(error);
             toast.error("Failed to fetch portfolio data");
@@ -52,32 +51,32 @@ onMounted(getUserDataAndPortfolios);
 
 <template>
       <NavBar />
-      <div class="flex justify-center items-center min-h-screen max-w-full bg-gray-800 flex-col space-y-10">
+      <div class="flex justify-center items-center min-h-screen max-w-full bg-gray-800 flex-col space-y-10 py-10">
             <div class="flex justify-center flex-col items-center">
                   <div
                         class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-5xl font-semibold text-white">
                         {{ initials }}
                   </div>
                   <div class="text-center mt-5 font-bold text-5xl text-white">{{ username || 'Guest'
-                        }}</div>
+                  }}</div>
             </div>
             <div class="divider divider-accent text-white px-80">PORTFOLIO</div>
-      </div>
-      <!-- where the cards show -->
-      <div class="flex w-full flex-col p-5 items-center justify-center">
-            <div class="grid grid-cols-2 gap-y-3 gap-x-0 justify-items-center">
-                  <!-- Show skeleton loader when loading -->
-                  <template v-if="isLoading" class="flex justify-center items-center">
-                        <div class="flex justify-center items-center col-span-2 min-h-80">
-                              <span class="loading loading-bars loading-xl text-accent scale-[3]"></span>
-                        </div>
-                  </template>
+            <!-- where the cards show -->
+            <div class="flex w-full flex-col p-5 items-center justify-center">
+                  <div class="grid gap-y-3 gap-x-0 justify-items-center">
+                        <!-- Show skeleton loader when loading -->
+                        <template v-if="isLoading" class="flex justify-center items-center">
+                              <div class="flex justify-center items-center col-span-2 min-h-80">
+                                    <span class="loading loading-bars loading-xl text-accent scale-[3]"></span>
+                              </div>
+                        </template>
 
-                  <!-- Show actual portfolios when loaded -->
-                  <template v-else>
-                        <PortfolioCard v-for="portfolio in portfolios" :key="portfolio.id" :portfolio="portfolio"
-                              class="w-full" />
-                  </template>
+                        <!-- Show actual portfolios when loaded -->
+                        <template v-else>
+                              <PortfolioCard v-for="portfolio in portfolios" :key="portfolio.id" :username="username" :portfolio="portfolio"
+                                    class="w-2/4" />
+                        </template>
+                  </div>
             </div>
       </div>
 </template>

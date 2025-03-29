@@ -119,7 +119,11 @@ onMounted(() => {
 
                     <!-- Show actual portfolios when loaded -->
                     <template v-else>
+<<<<<<< HEAD
+                        <PortfolioCard v-for="portfolio in portfolios" :key="portfolio.id" :username="userName" :portfolio="portfolio"
+=======
                         <PortfolioCard v-for="portfolio in portfolios" :key="portfolio.id" :portfolio="portfolio"
+>>>>>>> origin/develop
                             class="w-full" @deleted="handlePortfolioDeleted" @edit="openEditModal" />
                     </template>
                 </div>

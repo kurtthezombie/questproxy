@@ -4,6 +4,7 @@ import toast from '@/utils/toast';
 import { computed, onMounted, ref } from 'vue';
 import { deletePortfolio } from '@/services/portfolio.service';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { useUserStore } from '@/stores/userStore';
 
 dayjs.extend(relativeTime);
 
@@ -11,6 +12,7 @@ const emit = defineEmits(["deleted","edit"]);
 
 const props = defineProps({
     portfolio: Object,
+    username: String,
 });
 
 const showModal = ref(false);
@@ -18,10 +20,13 @@ const showEditModal = ref(false);
 const selectedImage = ref("");
 const selectedCaption = ref("");
 const selectedPortfolio = ref(null);
+const userStore = useUserStore();
 
 const formattedTime = computed(() =>
     props.portfolio?.created_at ? dayjs(props.portfolio.created_at).fromNow() : "Unknown time"
 );
+
+const isOwner = computed(() => userStore.userData?.username === props.username);
 
 const openImage = (imageSrc) => {
     selectedImage.value = imageSrc;
@@ -63,15 +68,15 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="flex justify-center ">
+    <div class="flex justify-center">
         <div
             class="mt-3 w-3/4 bg-gray-200 p-3 rounded-sm shadow-md hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer rounded-xl hover:shadow-lg hover:shadow-lime-500
-            flex flex-col justify-between min-h-[300px]
+            flex flex-col justify-between 
             ">
             <!-- Portfolio Image -->
             <div class="flex justify-center rounded-md">
                 <!-- Edit & Delete Buttons (Top Right of Image) -->
-                <div class="absolute top-2 right-2 flex space-x-2">
+                <div v-if="isOwner" class="absolute top-2 right-2 flex space-x-2">
                     <button 
                         class="p-2 bg-gray-400 text-white rounded-md shadow-md hover:bg-blue-700 transition"
                         @click="openEditModal(portfolio)"
