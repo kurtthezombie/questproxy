@@ -21,8 +21,6 @@ return new class extends Migration
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('rank_id')->references('id')->on('ranking');
-
-            $table->unique('rank_id');
         });
     }
 
