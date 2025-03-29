@@ -29,8 +29,8 @@ class BookingService
     {
         //create booking
         $booking = new Booking();
-        $booking->client_id = $data->client_id;
-        $booking->service_id = $data->service_id;
+        $booking->client_id = $data['client_id'];
+        $booking->service_id = $data['service_id'];
 
         if (!$booking->save()){
             throw new Exception('Failed to create booking.');
