@@ -91,6 +91,7 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { ref, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useServiceStore } from '@/stores/serviceStore';
@@ -147,11 +148,6 @@ const submitService = async () => {
   }
 };
 
-const checkAuth = () => {
-  if (!localStorage.getItem('authToken')) {
-    router.push({ name: 'login' });
-  }
-};
 
 const callLogout = () => {
   userStore.clearUser();

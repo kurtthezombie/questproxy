@@ -9,8 +9,6 @@ export const useServiceStore = defineStore('service', () => {
     const loading = ref(false);
     const error = ref(null);
     const message = ref('');
-    const service = ref(null);
-    const pilots = ref([]);
 
     const hasServices = computed(() => services.value.length > 0);
     const categoriesLoaded = computed(() => categories.value.length > 0);
@@ -21,7 +19,6 @@ export const useServiceStore = defineStore('service', () => {
         error.value = null;
         message.value = '';
     };
-    
 
     const fetchCategories = async () => {
         loading.value = true;
@@ -37,6 +34,40 @@ export const useServiceStore = defineStore('service', () => {
             loading.value = false;
         }
     };
+
+    const submitBooking = async (serviceId, additionalNotes, credentialsUsername, credentialsPassword) => {
+        try {
+          const userStore = useUserStore();
+          const authToken = localStorage.getItem('authToken'); 
+      
+          if (!authToken) {
+            console.error('Authentication token missing.');
+            return;
+          }
+      
+          const response = await axios.post(
+            'http://127.0.0.1:8000/api/bookings/store',
+            {
+              client_id: userStore.userData.id,
+              service_id: serviceId,
+              additional_notes: additionalNotes,
+              credentials_username: credentialsUsername,
+              credentials_password: credentialsPassword,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+      
+          return response.data;
+        } catch (error) {
+          console.error('Booking submission error:', error);
+          throw error;
+        }
+      };
 
     const createService = async (serviceData) => {
         loading.value = true;
@@ -91,18 +122,31 @@ export const useServiceStore = defineStore('service', () => {
     };
 
     const fetchServiceById = async (serviceId) => {
+        if (!serviceId) {
+            error.value = "Service ID is required.";
+            return;
+        }
+
         loading.value = true;
         try {
             const response = await axios.get(`http://127.0.0.1:8000/api/services/${serviceId}`, {
                 headers: {
-                    Authorization: `${localStorage.getItem('tokenType')} ${localStorage.getItem('authToken')}`,
-                },
+                    Authorization: `${localStorage.getItem('tokenType')} ${localStorage.getItem('authToken')}`
+                }
             });
-            service.value = response.data.service; 
-            error.value = null;
+
+            console.log("Fetched service by ID:", response.data);
+
+            if (response.data.service) {
+                service.value = response.data.service;
+            } else if (response.data.data && response.data.data.service) {
+                service.value = response.data.data.service;
+            } else {
+                error.value = "Invalid service data received.";
+            }
         } catch (err) {
-            error.value = err.message || 'Error fetching service';
-            console.error('Error fetching service:', err);
+            error.value = err.message || "Error fetching service details.";
+            console.error("Error fetching service:", err);
         } finally {
             loading.value = false;
         }
@@ -111,42 +155,24 @@ export const useServiceStore = defineStore('service', () => {
     const fetchServicesByPilot = async (pilot_id) => {
         loading.value = true;
         try {
-            const response = await axios.get(
-                `http://127.0.0.1:8000/api/pilots/${pilot_id}/services`,
-                {
-                    headers: {
-                        Authorization: `${localStorage.getItem('tokenType')} ${localStorage.getItem('authToken')}`
-                    }
-                }
-            );
-            services.value = response.data.services;
-            console.log("Fetched services:", services.value); 
-            error.value = null; 
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/pilots/${pilot_id}/services`,
+            {
+              headers: {
+                Authorization: `${localStorage.getItem('tokenType')} ${localStorage.getItem('authToken')}`
+              }
+            }
+          );
+          services.value = response.data.services;
+          error.value = null; 
         } catch (err) {
-            error.value = err.message || 'Failed to fetch services for pilot.';
-            console.error('Error fetching services for pilot:', err);
+          error.value = err.message || 'Failed to fetch services for pilot.';
+          console.error('Error fetching services for pilot:', err);
         } finally {
-            loading.value = false;
+          loading.value = false;
         }
-    };
-
-     const fetchPilots = async () => { 
-        loading.value = true; 
-        try { 
-            const response = await axios.get('http://127.0.0.1:8000/api/pilots', 
-                { 
-                    headers: { 
-                        Authorization: `Bearer ${localStorage.getItem('authToken')}` 
-                    } 
-                }); 
-            pilots.value = response.data.pilots; error.value = null; 
-        } catch (err) { error.value = err.message || 'Error fetching pilots'; 
-        } finally { 
-            loading.value = false;
-        }
-    };
+      };
       
-    
 
     const updateService = async (serviceId, serviceData) => {
         loading.value = true;
@@ -178,6 +204,8 @@ export const useServiceStore = defineStore('service', () => {
             loading.value = false;
         }
     };
+
+    
     
     const deleteService = async (serviceId) => {
         loading.value = true;
@@ -204,10 +232,10 @@ export const useServiceStore = defineStore('service', () => {
         }
     };
 
+
+
     return {
         services,
-        service,
-        pilots,
         categories,
         loading,
         error,
@@ -223,6 +251,7 @@ export const useServiceStore = defineStore('service', () => {
         updateService,
         deleteService,
         fetchServicesByPilot,
-        fetchPilots,
+        submitBooking
+        
     };
 });

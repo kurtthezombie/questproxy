@@ -113,7 +113,7 @@ const confirmDelete = async () => {
     }
   }
 };
-
+//hehe
 const getInitials = (username) => {
   if (!username) return 'U'; 
   const nameParts = username.split(' ');
@@ -126,5 +126,4 @@ watchEffect(() => {
   console.log("Pilot data:", pilot.value);
   console.log("Username:", pilot.value?.user?.username || 'Unknown User');
 });
-
 </script>

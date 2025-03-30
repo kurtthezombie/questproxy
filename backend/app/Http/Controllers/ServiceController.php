@@ -140,11 +140,13 @@ class ServiceController extends Controller
     }
 
     public function getServicesByPilot($pilot_id){
-        $services = Service::where('pilot_id',$pilot_id)->get();
-        
+        try {
+            $services = $this->listingService->serviceByPilot($pilot_id);
+            $message = $services->isEmpty() ? 'No services found for this pilot.' : 'All services retrieved.';
 
-        if($services->isEmpty()) {
-            return $this->successResponse('No services found for this pilot.',404);
+            return $this->successResponse($message,200,['services' => $services]);
+        } catch (QueryException $e) { // Specific exception for DB errors
+            return $this->failedResponse("Database error: " . $e->getMessage(), 500);
         }
         catch (Exception $e){
             return $this->failedResponse("Error: " . $e->getMessage(),500);

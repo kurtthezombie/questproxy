@@ -16,6 +16,7 @@ import ServicesHistory from '@/views/ServicesHistory.vue'
 import PaymentView from '@/views/PaymentView.vue'
 import PaymentHistoryView from '@/views/PaymentHistoryView.vue'
 import BookingView from '@/components/BookingView.vue'
+import PaymentResult from '@/components/PaymentResult.vue' 
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,9 +29,6 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
     },
     {
@@ -112,18 +110,19 @@ const router = createRouter({
       name: 'PaymentHistory',
       component: PaymentHistoryView,
     },
-   /*  {
-      path: '/transactions/:paymentId',
-      name: 'TransactionView',
-      component: TransactionView,
-    }, */
     {
       path: '/bookings/:serviceId',
       name: 'BookingView',
       component: BookingView,
     },
+    // Add the new route for PaymentResult
+    {
+      path: '/payment-result',
+      name: 'PaymentResult',
+      component: PaymentResult,
+    },
   ]
-})
+});
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('authToken');
@@ -134,7 +133,6 @@ router.beforeEach((to, from, next) => {
       next({ name: 'login' });
     } else {
       if (to.name === 'dashboard') {
-        
         if (userRole === 'gamer' || userRole === 'pilot') {
           next({ name: 'home' });
         } else {
@@ -149,4 +147,4 @@ router.beforeEach((to, from, next) => {
   }
 });
 
-export default router
+export default router;
