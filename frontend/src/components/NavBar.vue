@@ -33,6 +33,8 @@
         @logout="callLogout"
       />
     </nav>
+  </div>
+  
   </header>
 </template>
 
