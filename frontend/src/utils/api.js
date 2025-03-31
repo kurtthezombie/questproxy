@@ -1,10 +1,16 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: process.env.BACKEND_URL + 'api' });
+const api = axios.create({ baseURL: import.meta.env.VITE_BACKEND_URL + 'api' });
 
 // set auth token
-const authToken = localStorage.getItem('authToken');
-if (authToken) api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('authToken'); // Get token from storage
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`; // Attach token to headers
+  }
+  return config; // Return updated request config
+});
+
 
 const handleResponse = (response) => response.data;
 

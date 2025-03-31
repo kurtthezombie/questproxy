@@ -109,6 +109,17 @@ class UserController extends Controller
         }
     }
 
+    public function showByUsername(string $username)
+    {
+        try {
+            $user = $this->userService->getUserByUsername($username);
+
+            return $this->successResponse("User {$username} found.",200,['data' => $user]);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error {$e->getMessage()}",500);
+        } 
+    }
+
     public function requestAccountDeletion(Request $request )
     {
         try {

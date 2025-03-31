@@ -13,10 +13,9 @@ class Portfolio extends Model
 
     protected $fillable = [
         'p_content',
+        'caption',
         'pilot_id',
     ];
-
-    public $timestamps = false;
 
     public function pilot() {
         return $this->belongsTo(Pilot::class, 'pilot_id');

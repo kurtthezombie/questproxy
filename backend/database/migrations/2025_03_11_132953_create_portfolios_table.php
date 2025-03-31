@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('portfolios', function (Blueprint $table) {
             $table->id();
             $table->string('p_content');
+            $table->string('caption');
             $table->unsignedBigInteger('pilot_id');
             $table->timestamps();
 

@@ -55,6 +55,7 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         //delete user
         Route::get('users', 'index');
         Route::get('users/{id}', 'show');
+        Route::get('users/username/{username}', 'showByUsername');
         Route::post('users/delete-email', 'requestAccountDeletion');
         Route::delete('users/delete/{id}', 'destroy');
         Route::get('check_login', 'checklogin'); //just for checking
@@ -75,9 +76,10 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('portfolios/{id}', 'show');//
         Route::post('portfolios/create', 'store');//
         Route::get('portfolios/edit/{id}', 'edit');
-        Route::patch('portfolios/edit/{id}', 'update');
+        Route::put('portfolios/edit/{id}', 'update');
         Route::delete('portfolios/delete/{id}', 'destroy');
         Route::delete('portfolios/delete/pilot/{pilot_id}', 'destroyAll');
+        Route::get('portfolios/user/{user_id}', 'getPortfolioByUser');
     });
 
     Route::controller(GamerController::class)->group(function () {

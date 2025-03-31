@@ -35,6 +35,12 @@ class User extends Authenticatable
     public function payments(){
         return $this->hasMany(Payment::class,'payer_id');
     }
+
+    public function pilot()
+    {
+        return $this->hasOne(Pilot::class, 'user_id');
+    }
+    
     /**
      * The attributes that should be hidden for serialization.
      *

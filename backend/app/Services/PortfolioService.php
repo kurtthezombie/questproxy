@@ -5,8 +5,11 @@ namespace App\Services;
 use App\Models\Pilot;
 use App\Models\Portfolio;
 use Auth;
+use DB;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class PortfolioService {
     protected $portfolio;
@@ -15,19 +18,21 @@ class PortfolioService {
         $this->portfolio = $portfolio;
     }
 
-    public function create($data){
-        //retrieve pilot thru user id
-        $user_id = Auth::user()->id;
-
-        //retrieve pilot associated with the authenticated user
-        $pilot = Pilot::where('user_id',$user_id)->first();
-
-        if(!$pilot){
-            throw new ModelNotFoundException("Pilot not found.");
+    public function create(array $data){
+        $pilot = $this->getPilotByUserId();
+        try {
+            if (isset($data['p_content'])) {
+                $imagePath = $data['p_content']->store('portfolios', 'public');
+                $data['p_content'] = $imagePath;
+            }
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Image upload failed'], 500);
         }
+        
 
         $created = $this->portfolio->create([
             'p_content' => $data['p_content'],
+            'caption' => $data['caption'],
             'pilot_id' => $pilot->id,
         ]);
 
@@ -46,17 +51,34 @@ class PortfolioService {
         return $this->portfolio->findOrFail($id);
     }
 
-    public function update($data,$id){
+    public function update($data, $id)
+    {
         $portfolio = $this->portfolio->findOrFail($id);
 
-        //update p_content
-        $portfolio->p_content = $data['p_content'];
+        DB::beginTransaction();
+        try {
+            if (isset($data['p_content']) && $data['p_content'] instanceof UploadedFile) {
+                //delete old image
+                if ($portfolio->p_content) {
+                    Storage::disk('public')->delete($portfolio->p_content);
+                }
 
-        if(!$portfolio->save()){
-            throw new Exception("Failed to update portfolio record.");
+                $imagePath = $data['p_content']->store('portfolios', 'public');
+                $portfolio->p_content = $imagePath;
+            }
+
+            $portfolio->caption = $data['caption'];
+
+            if (!$portfolio->save()) {
+                throw new Exception("Failed to update portfolio record.");
+            }
+
+            DB::commit();
+            return $portfolio;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
-
-        return $portfolio;
     }
 
     public function delete($id){
@@ -78,4 +100,16 @@ class PortfolioService {
 
         return true;
     }
+
+    public function getPortfolioByUser($user_id){
+        $pilot = Pilot::where('user_id', $user_id)->firstOrFail();
+        return $this->portfolio->where('pilot_id', $pilot->id)->get();
+    }
+
+    private function getPilotByUserId()
+    {
+        $user_id = Auth::user()->id;
+        return Pilot::where('user_id', $user_id)->firstOrFail();
+    }
+
 }

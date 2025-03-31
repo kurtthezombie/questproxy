@@ -13,6 +13,9 @@ import OtpEmailVerification from '@/views/OtpEmailVerification.vue'
 import ServiceView from '@/views/ServiceView.vue'
 import EditServiceView from '@/views/EditServiceView.vue'
 import ServicesHistory from '@/views/ServicesHistory.vue'
+import NotificationsTest from '@/views/NotificationsTest.vue'
+import MyPortfolioView from '@/views/MyPortfolioView.vue'
+import PortfolioView from '@/views/PortfolioView.vue'
 import PaymentView from '@/views/PaymentView.vue'
 import PaymentHistoryView from '@/views/PaymentHistoryView.vue'
 import BookingView from '@/components/BookingView.vue'
@@ -120,6 +123,16 @@ const router = createRouter({
       path: '/payment-result',
       name: 'PaymentResult',
       component: PaymentResult,
+    },
+    {
+      path: '/myportfolios',
+      name: 'MyPortfolio',
+      component: MyPortfolioView,
+    },
+    {
+      path: '/portfolio/:username',
+      name: 'PortfolioView',
+      component: PortfolioView,
     },
   ]
 });

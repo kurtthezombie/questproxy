@@ -39,8 +39,11 @@ const submitForm = async () => {
       password.value = '';
 
       const userRole = response.authenticated_user.role;
+      console.log("User role:", userRole);
+
       if (userRole === 'gamer' || userRole === 'game pilot') {
-        router.push({ name: 'homepage' });  
+        console.log("Navigating to homepage..")
+        await router.push({ name: 'homepage' });  
       }
 
       message.value = response.message;

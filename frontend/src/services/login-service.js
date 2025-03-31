@@ -16,30 +16,36 @@ const register = async (user) => {
   }
 }
 
-const login = async (credentials) => {
-  const userStore = useUserStore();
-  try {
-    const response = await axios.post('http://127.0.0.1:8000/api/login', credentials);
-    console.log(response);
+  const login = async (credentials) => {
+    const userStore = useUserStore();
+  
+    return axios.get('http://127.0.0.1:8000/sanctum/csrf-cookie', { withCredentials: true })
+      .then(() => {
+        console.log("CSRF cookie set.");
+        return axios.post(
+          'http://127.0.0.1:8000/api/login',
+          credentials,
+          { withCredentials: true } // Ensures cookies are included
+        );
+      })
+      .then((response) => {
+        const { authenticated_user, token, token_type } = response.data;
 
-    // Store user details in userStore
-    const { authenticated_user, token } = response.data; // Destructure
-    userStore.setUser(authenticated_user, token);
-
-    localStorage.setItem('authToken', response.data.token);
-    localStorage.setItem('tokenType', response.data.token_type);
-
-    console.log('Login successful!', response.data);
-
-    return response.data;
-  } catch (error) {
-    console.log("Login service error: ", error.response.data);
-    return {
-      status: error.response.data.status,
-      message: error.response.data.message,
-    }
-  }
-}
+        userStore.setUser(authenticated_user);
+        localStorage.setItem('authToken', token);
+        localStorage.setItem('tokenType', token_type);
+  
+        console.log("User data after login:", userStore.userData);
+        return response.data;
+      })
+      .catch((error) => {
+        console.log("Login error:", error.response?.data || error.message);
+        return {
+          status: error.response?.data?.status || 500,
+          message: error.response?.data?.message || "An error occurred.",
+        };
+      });
+  };
 
 const updateUser = async ({ id, firstName, lastName, contactNumber, email }) => {
   try {
