@@ -6,19 +6,25 @@ use App\Exports\TransactionsExport;
 use App\Models\TransactionHistory;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class TransactionController extends Controller
 {
     use ApiResponseTrait;
 
-    public function transactionByUser($user_id) {
+    public function transactionByUser() {
+        //get logged in user id
+        $user_id = $this->getUserId();
+
         $transactions = TransactionHistory::whereHas('payment', function ($query) use ($user_id) {
             $query->where('payer_id', $user_id);
-        })->get();
+        })
+        ->orderBy('updated_at','desc')
+        ->paginate(10);
 
         if($transactions->isEmpty()){
-            return $this->successResponse('No transactions found for this user.',204);
+            return $this->successResponse('No transactions found for this user.',200,['$user_id' => $user_id]);
         }
 
         return $this->successResponse('Transactions retrieved.',200,['transactions' => $transactions]);
@@ -30,7 +36,17 @@ class TransactionController extends Controller
         return $this->successResponse('Transactions by payment retrieved.',200,['transactions' => $transactions]);
     }
 
-    public function exportTransactionHistory($user_id){
-        return Excel::download(new TransactionsExport($user_id), 'transaction_history.csv');
+    public function exportTransactionHistory(){
+        $user_id = $this->getUserId();
+
+        return Excel::download(new TransactionsExport($user_id), 'transaction_history.xlsx');
+    }
+
+    private function getUserId(){
+        $user = auth()->user();
+        if(!$user){
+            return null;
+        }
+        return $user->id;
     }
 }

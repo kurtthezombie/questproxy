@@ -1,44 +1,67 @@
 <script setup>
 import NavBar from '@/components/NavBar.vue';
-import { ref, computed } from 'vue';
+import { ref, onMounted } from 'vue';
+import { fetchTransactions, exportTransactions } from '@/services/transaction.service';
+import toast from '@/utils/toast';
+import dayjs from 'dayjs';
 
-const transactions = ref([
-  { id: 1, payment_id: "PAY12345", status: "Completed", created_at: "2025-03-30 10:15:00", updated_at: "2025-03-30 12:00:00" },
-  { id: 2, payment_id: "PAY12346", status: "Pending", created_at: "2025-03-30 11:00:00", updated_at: "2025-03-30 11:30:00" },
-  { id: 3, payment_id: "PAY12347", status: "Failed", created_at: "2025-03-30 09:45:00", updated_at: "2025-03-30 10:00:00" },
-  { id: 4, payment_id: "PAY12348", status: "Completed", created_at: "2025-03-29 14:20:00", updated_at: "2025-03-29 15:10:00" },
-  { id: 5, payment_id: "PAY12349", status: "Refunded", created_at: "2025-03-28 16:40:00", updated_at: "2025-03-28 17:05:00" },
-  { id: 6, payment_id: "PAY12350", status: "Completed", created_at: "2025-03-27 09:10:00", updated_at: "2025-03-27 09:55:00" },
-  { id: 7, payment_id: "PAY12351", status: "Pending", created_at: "2025-03-26 12:30:00", updated_at: "2025-03-26 13:00:00" },
-  { id: 8, payment_id: "PAY12352", status: "Failed", created_at: "2025-03-25 18:15:00", updated_at: "2025-03-25 18:45:00" },
-  { id: 9, payment_id: "PAY12353", status: "Completed", created_at: "2025-03-24 07:20:00", updated_at: "2025-03-24 08:00:00" },
-  { id: 10, payment_id: "PAY12354", status: "Pending", created_at: "2025-03-23 21:45:00", updated_at: "2025-03-23 22:15:00" }
-]);
-
-
-const currentPage = ref(1);
-const itemsPerPage = 5;
-
-const paginatedTransactions = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return transactions.value.slice(start, start + itemsPerPage);
+const transactions = ref([]);
+const isLoading = ref(false);
+const pagination = ref({ 
+  current_page: 1, 
+  last_page: 1, 
 });
 
-const totalPages = computed(() => Math.ceil(transactions.value.length / itemsPerPage));
-
 const setPage = (page) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
+  if (page !== pagination.value.current_page) {
+    handleFetch(page);
   }
 };
+
+const handleExport = async () => {
+  try {
+    isLoading.value = true;
+    await exportTransactions()
+  } catch (error) {
+    console.log("Error exporting transactions: ", error);
+    toast.error(error.message);
+  } finally {
+    isLoading.value = false;
+    toast.success("Transactions exported successfully!");
+  }
+};
+
+const handleFetch = async (page = 1) => {
+  try {
+    isLoading.value = true;
+    const data = await fetchTransactions(page);
+    console.log("Fetched transactions: ", data);
+
+    transactions.value = data.data;
+    pagination.value = {
+      current_page: data.current_page,
+      last_page: data.last_page,
+      next_page_url: data.next_page_url
+    };
+  } catch (error) {
+    console.error("Error fetching transactions: ", error);
+    toast.error(error.message);
+  } finally {
+    isLoading.value = false;
+    toast.success("Transactions fetched successfully!");
+  }
+}
+
+onMounted(() => {
+  handleFetch();
+})
 </script>
 
 <template>
   <NavBar />
-
   <div class="flex justify-center mt-6">
     <div class="w-full max-w-3xl">
-      <h2 class="text-2xl font-bold mb-4 text-center">My Transaction History</h2>
+      <h2 class="text-3xl font-bold mb-4 text-left text-gray-600">My Transaction History</h2>
 
       <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4">
         <table class="table w-full">
@@ -122,28 +145,43 @@ const setPage = (page) => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="transaction in paginatedTransactions" :key="transaction.id" class="hover:bg-base-300">
+            <!-- Show skeleton rows when loading -->
+            <tr v-if="isLoading" v-for="n in 5" :key="n">
+              <td v-for="i in 5" :key="i">
+                <div class="skeleton h-6 w-24"></div>
+              </td>
+            </tr>
+
+            <tr v-for="transaction in transactions" v-if="!isLoading" :key="transaction.id" class="hover:bg-base-300 hover:cursor-pointer duration-200 transition-all">
               <td>{{ transaction.id }}</td>
               <td>{{ transaction.payment_id }}</td>
               <td>{{ transaction.status }}</td>
-              <td>{{ transaction.created_at }}</td>
-              <td>{{ transaction.updated_at }}</td>
+              <td>{{ dayjs(transaction.created_at).format('MMMM D, YYYY h:mm A') }}</td>
+              <td>{{ dayjs(transaction.created_at).format('MMMM D, YYYY h:mm A') }}</td>
             </tr>
           </tbody>
         </table>
         <!-- Pagination -->
         <div class="flex justify-between mt-4">
           <div class="join flex justify-center">
-            <button v-for="page in totalPages" :key="page" class="join-item btn"
-              :class="{ 'btn-active': page === currentPage }" @click="setPage(page)">
-              {{ page }}
-            </button>
+            <template v-if="isLoading">
+              <div v-for="n in 3" :key="n" class="skeleton h-10 w-10 rounded-lg mx-1"></div>
+            </template>
+            <template v-if="!isLoading">
+              <button v-for="page in pagination.last_page" :key="page" class="join-item btn"
+                :class="{ 'btn-active': page === currentPage }" @click="setPage(page)">
+                {{ page }}
+              </button>
+            </template>
+
           </div>
           <div>
-            <button class="btn">Export</button>
+            <button class="btn" :disabled="isLoading" @click="handleExport">
+              <span v-if="isLoading" class="loading loading-spinner"></span>
+              <span v-else>Export</span>
+            </button>
           </div>
         </div>
-
       </div>
     </div>
   </div>
