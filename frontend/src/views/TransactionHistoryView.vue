@@ -11,11 +11,16 @@ const pagination = ref({
   current_page: 1, 
   last_page: 1, 
 });
+const searchQuery = ref('');
 
 const setPage = (page) => {
   if (page !== pagination.value.current_page) {
     handleFetch(page);
   }
+};
+
+const handleSearch = () => {
+  handleFetch(pagination.value.current_page, searchQuery.value);
 };
 
 const handleExport = async () => {
@@ -31,11 +36,10 @@ const handleExport = async () => {
   }
 };
 
-const handleFetch = async (page = 1) => {
+const handleFetch = async (page = 1, searchQuery = '') => {
   try {
     isLoading.value = true;
-    const data = await fetchTransactions(page);
-    console.log("Fetched transactions: ", data);
+    const data = await fetchTransactions(page, searchQuery);
 
     transactions.value = data.data;
     pagination.value = {
@@ -52,6 +56,11 @@ const handleFetch = async (page = 1) => {
   }
 }
 
+const handleReset = () => {
+  searchQuery.value = '';
+  handleFetch(pagination.value.current_page, '');
+}
+
 onMounted(() => {
   handleFetch();
 })
@@ -64,12 +73,31 @@ onMounted(() => {
       <h2 class="text-3xl font-bold mb-4 text-left text-gray-600">My Transaction History</h2>
 
       <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4">
+        <!--search bar-->
+        <label class="input">
+          <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
+          <input 
+            type="search" 
+            v-model="searchQuery"
+            @keyup.enter="handleSearch"
+            required 
+            placeholder="Search by Transaction ID"
+            />
+        </label>
+        
+        <!--reset btn-->
+        <button class="btn btn-square btn-sm ml-3" @click="handleReset">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+          </svg>
+        </button>
+        
         <table class="table w-full">
           <thead>
             <tr>
               <th>
                 <button @click="sortTable('id')" class="flex items-center gap-1">
-                  ID
+                  Transaction ID
                   <span v-if="sortBy === 'id'">
                     <svg v-if="sortOrder === 1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                       stroke-width="1.5" stroke="currentColor" class="size-4">

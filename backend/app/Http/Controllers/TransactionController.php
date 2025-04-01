@@ -13,20 +13,27 @@ class TransactionController extends Controller
 {
     use ApiResponseTrait;
 
-    public function transactionByUser() {
+    public function transactionByUser(Request $request) {
         //get logged in user id
         $user_id = $this->getUserId();
 
-        $transactions = TransactionHistory::whereHas('payment', function ($query) use ($user_id) {
+        $query = TransactionHistory::whereHas('payment', function ($query) use ($user_id) {
             $query->where('payer_id', $user_id);
-        })
-        ->orderBy('updated_at','desc')
-        ->paginate(10);
+        });
 
-        if($transactions->isEmpty()){
-            return $this->successResponse('No transactions found for this user.',200,['$user_id' => $user_id]);
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($query) use ($search) {
+                $query->where('id', 'LIKE', "%$search%");
+            });
         }
 
+        $transactions = $query->orderBy('updated_at', 'desc')->paginate(10);
+
+        if ($transactions->isEmpty()) {
+            return $this->successResponse('No transactions found for this user.', 200, ['user_id' => $user_id]);
+        }
+        
         return $this->successResponse('Transactions retrieved.',200,['transactions' => $transactions]);
     }
 
