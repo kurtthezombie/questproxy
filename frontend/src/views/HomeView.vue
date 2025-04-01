@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100 text-white">
-    <header class="bg-black sticky top-0 z-50 p-4">
+    <header class="bg-gray-950 sticky top-0 z-50 p-4">
       <div class="container mx-auto flex justify-between items-center px-4">
         <div class="flex items-center">
           <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
@@ -23,10 +23,12 @@
     />
 
     <!-- About Section -->
-    <section id="about" class="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32">
-      <img src="@/assets/img/gaming1.jpg" alt="" class="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center">
+    <section id="about" class="relative isolate overflow-hidden relative pt-36 lg:pb-14 overflow-hidden bg-black py-24 sm:py-32 border-b border-white">
+      <div class="absolute inset-0 flex justify-center items-center " >
+        <div class="gradient-circle"></div>
+      </div> 
       <div class="mx-auto max-w-7xl px-6 lg:px-8 lg:px-8 flex flex-col items-center text-center">
-        <div class="p-20 bg-black bg-opacity-30 backdrop-blur-md max-w-7xl w-full min-h-[600px] flex flex-col justify-center">
+        <div class="p-20 bg-black bg-opacity-20 backdrop-blur-md max-w-7xl w-full min-h-[600px] flex flex-col justify-center">
           <h2 class="text-5xl font-bold tracking-tight text-white sm:text-7xl">About QuestProxy</h2>     
           <div class="mt-10 flex flex-col space-y-8 items-center w-full">
             <div class="flex justify-center w-full">

@@ -84,10 +84,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-900 via-purple-900 to-black">
+  <div class="min-h-screen flex items-center justify-center bg-black">
+    <div class="absolute inset-0 flex justify-center items-center " >
+      <div class="gradient-circle-sign-up"></div>
+    </div> 
     <div class="bg-black bg-opacity-60 backdrop-blur-md p-8 rounded-lg shadow-2xl max-w-3xl w-full border-lime-300">
       <div class="text-center mb-6">
-        <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
+        <router-link to="/" class="block">
+          <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
+        </router-link>
         <h1 class="text-3xl font-semibold text-white mt-4">Signup</h1>
       </div>
 

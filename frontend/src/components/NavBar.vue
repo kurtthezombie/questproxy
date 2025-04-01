@@ -1,6 +1,6 @@
 <template>
   <header
-    class="bg-gray-800 sticky top-0 z-50 flex justify-between items-center  px-32 py-4 shadow-lg border-b-4 border-green-500">
+    class="bg-gray-950 sticky top-0 z-50 flex justify-between items-center  px-32 py-4">
     <div class="flex items-center">
       <router-link to="/home" class="flex flex-row items-center">
         <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">

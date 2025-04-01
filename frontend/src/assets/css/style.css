@@ -49,6 +49,51 @@ nav a.router-link-exact-active {
   border-bottom: 2px solid #42b983;
 }
 
+.gradient-circle {
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(23, 214, 102, 0.6) 0%, rgba(0,0,0,0) 70%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.gradient-circle-sign-up {
+  width: 1100px;
+  height: 900px;
+  background: radial-gradient(circle, rgba(23, 214, 102, 0.6) 0%, rgba(0,0,0,0) 70%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.gradient-circle-big {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, 
+    #005713,
+    #04b648 40%, 
+    #a3d6a7 60%,
+    #f8fffb 80%,
+    transparent 100%);
+  filter: blur(100px);
+  opacity: 0.8;
+  z-index: -1; /* Ensure it's behind content but above the background */
+}
+
+.relative-container {
+  position: relative;
+  z-index: 1; /* Allow the circle to be placed behind content */
+}
+
 /* Responsive Media Queries */
 @media (min-width: 1024px) {
   header {
@@ -78,4 +123,5 @@ nav a.router-link-exact-active {
   nav a {
     font-size: 1rem;
   }
+  
 }

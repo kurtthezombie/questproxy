@@ -1,7 +1,10 @@
 <template>
   <!-- Header -->
   <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
-  <div class="min-h-screen bg-gray-900 text-white p-5">
+  <div class="relative-container min-h-screen bg-black text-white p-5">
+    <div class="absolute inset-0 -z-10">
+      <div class="gradient-circle-big"></div>
+    </div>
 
     <!-- Main Dashboard -->
     <div class="container mx-auto py-10">

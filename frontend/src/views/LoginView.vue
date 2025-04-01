@@ -71,11 +71,14 @@ const submitForm = async () => {
 
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-900 via-purple-900 to-black">
+  <div class="min-h-screen flex items-center justify-center bg-black">
+    <div class="absolute inset-0 flex justify-center items-center " >
+      <div class="gradient-circle"></div>
+    </div> 
     <div class="bg-black bg-opacity-60 backdrop-blur-md p-8 rounded-lg shadow-lg max-w-md w-full">
       <div class="text-center mb-6">
         <router-link to="/" class="block">
-        <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
+          <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
         </router-link>
         <h1 class="text-2xl font-bold text-green-500 mt-4">QuestProxy</h1>
         
