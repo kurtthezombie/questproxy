@@ -12,6 +12,8 @@ const pagination = ref({
   last_page: 1, 
 });
 const searchQuery = ref('');
+const sortBy = ref('updated_at');
+const sortOrder = ref(1);
 
 const setPage = (page) => {
   if (page !== pagination.value.current_page) {
@@ -60,6 +62,17 @@ const handleReset = () => {
   searchQuery.value = '';
   handleFetch(pagination.value.current_page, '');
 }
+
+const sortTable = (column) => {
+  // Toggle sort order if the same column is clicked
+  if (sortBy.value === column) {
+    sortOrder.value = sortOrder.value === 1 ? -1 : 1;  // Toggle between 1 and -1
+  } else {
+    sortBy.value = column;  // Update column for sorting
+    sortOrder.value = 1;  // Default to ascending order
+  }
+  handleFetch(pagination.value.current_page, searchQuery.value);  // Fetch sorted data
+};
 
 onMounted(() => {
   handleFetch();
@@ -114,6 +127,21 @@ onMounted(() => {
                 <button @click="sortTable('payment_id')" class="flex items-center gap-1">
                   Payment ID
                   <span v-if="sortBy === 'payment_id'">
+                    <svg v-if="sortOrder === 1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                      stroke-width="1.5" stroke="currentColor" class="size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                    </svg>
+                    <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </span>
+                </button>
+              </th>
+              <th>
+                <button @click="sortTable('amount')" class="flex items-center gap-1">
+                  Amount
+                  <span v-if="sortBy === 'amount'">
                     <svg v-if="sortOrder === 1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                       stroke-width="1.5" stroke="currentColor" class="size-4">
                       <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
@@ -183,6 +211,7 @@ onMounted(() => {
             <tr v-for="transaction in transactions" v-if="!isLoading" :key="transaction.id" class="hover:bg-base-300 hover:cursor-pointer duration-200 transition-all">
               <td>{{ transaction.id }}</td>
               <td>{{ transaction.payment_id }}</td>
+              <td>{{ transaction.payment?.amount }}</td>
               <td>{{ transaction.status }}</td>
               <td>{{ dayjs(transaction.created_at).format('MMMM D, YYYY h:mm A') }}</td>
               <td>{{ dayjs(transaction.created_at).format('MMMM D, YYYY h:mm A') }}</td>

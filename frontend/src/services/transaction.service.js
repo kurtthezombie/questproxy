@@ -5,6 +5,8 @@ const fetchTransactions = async (page = 1, searchQuery = '') => {
       try {
             const response = await api.get(`/transactions?page=${page}&search=${searchQuery}`);
 
+            console.log(response.transactions);
+            
             return response.transactions || {};
       } catch (error) {
             console.error("Error fetching transactions: ", error);

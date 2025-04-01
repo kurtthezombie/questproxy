@@ -17,14 +17,19 @@ class TransactionController extends Controller
         //get logged in user id
         $user_id = $this->getUserId();
 
-        $query = TransactionHistory::whereHas('payment', function ($query) use ($user_id) {
-            $query->where('payer_id', $user_id);
-        });
+        $query = TransactionHistory::with('payment') // Eager load the payment relation
+            ->whereHas('payment', function ($query) use ($user_id) {
+                $query->where('payer_id', $user_id);
+            });
 
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function ($query) use ($search) {
-                $query->where('id', 'LIKE', "%$search%");
+                $query->where('id', 'LIKE', "%$search%")
+                        ->orWhere('status', 'LIKE', "%$search%")
+                        ->orWhereHas('payment', function ($query) use ($search) {
+                            $query->where('amount', 'LIKE', "%$search%");  // Searching amount in payment
+                        });
             });
         }
 
