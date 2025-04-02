@@ -1,19 +1,28 @@
 <template>
   <div class="min-h-screen bg-gray-100 text-white">
     <header class="bg-gray-950 sticky top-0 z-50 p-4">
-      <div class="container mx-auto flex justify-between items-center px-4">
+      <div class="container mx-auto flex justify-between items-center px-20">
         <div class="flex items-center">
-          <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
-          <span class="text-2xl font-bold text-green-500">QuestProxy</span>
+          <router-link to="/" class="flex flex-row items-center">
+            <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
+            <span class="text-2xl font-bold text-green-500">QuestProxy</span>
+          </router-link>
         </div>
+
         <nav class="space-x-6">
           <a href="/" class="hover:text-green-400 text-white">Home</a>
           <a href="#about" class="scroll-link hover:text-green-400 text-white">About</a>
-          <RouterLink to="/signup" class="hover:text-green-400 text-white">Register</RouterLink>
-          <RouterLink to="/login" class="hover:text-green-400 text-white">Login</RouterLink>
+          <!-- Register & Login combined button with divider -->
+          <div class="button-container relative inline-flex space-x-0">
+            <RouterLink to="/signup" class="flex justify-center items-center border- border-green-500 text-white hover:bg-green-500 hover:text-white py-2 px-4 text-sm transition-all block">Register</RouterLink>
+            <div class="divider"></div>
+            <RouterLink to="/login" class="flex justify-center items-center border-1 border-green-500 text-white hover:bg-green-500 hover:text-white py-2 px-4 text-sm transition-all block">Login</RouterLink>
+          </div>
         </nav>
+
       </div>
     </header>
+
     <!-- Comparison Slider -->
     <ComparisonSlider 
       :leftImage="gamerImage"
@@ -41,6 +50,7 @@
         </div>
       </div>
     </section>
+
     <section id="join" class="bg-black py-24 sm:py-32">
       <div class="container mx-auto px-6 lg:px-8 flex flex-col items-center text-center">
         <h2 class="text-5xl font-bold text-white">Join QuestProxy Today!</h2>
@@ -50,6 +60,7 @@
         </div>
       </div>
     </section>
+
     <RouterView />
   </div>
 </template>
@@ -59,6 +70,7 @@ import { ref } from 'vue';
 import ComparisonSlider from '@/components/ComparisonSlider.vue';
 import gamerImage from '@/assets/img/Gamers.jpg';
 import chadImage from '@/assets/img/Pilots.jpg';
+import '@/assets/css/style.css'; 
 
 export default {
   components: {

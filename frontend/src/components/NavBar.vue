@@ -1,14 +1,14 @@
 <template>
-  <header
-    class="bg-gray-950 sticky top-0 z-50 flex justify-between items-center  px-32 py-4">
-    <div class="flex items-center">
-      <router-link to="/home" class="flex flex-row items-center">
-        <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
-        <span class="text-2xl font-bold text-green-500">QuestProxy</span>
-      </router-link>
-    </div>
-    <div>
-      <nav class="flex space-x-6">
+  <header class="bg-gray-950 sticky top-0 z-50 p-4">
+    <div class="container mx-auto flex justify-between items-center px-20">
+      <div class="flex items-center">
+        <router-link to="/home" class="flex flex-row items-center">
+          <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
+          <span class="text-2xl font-bold text-green-500">QuestProxy</span>
+        </router-link>
+      </div>
+      
+      <nav class="space-x-6">
         <router-link to="/home" class="text-white hover:text-green-500 transition-colors duration-300">
           Home
         </router-link>
@@ -28,7 +28,6 @@
         <UserDropdown :username="username" :email="email" :role="role" @logout="callLogout" />
       </nav>
     </div>
-
   </header>
 </template>
 
