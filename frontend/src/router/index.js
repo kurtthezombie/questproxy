@@ -123,7 +123,7 @@ const router = createRouter({
       path: '/transaction-history',
       name: 'TransactionHistory',
       component: TransactionHistoryView,
-    }
+    },
     {
       path: '/report/:username',
       name: 'ReportView',
