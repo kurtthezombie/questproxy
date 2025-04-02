@@ -16,6 +16,7 @@ import ServicesHistory from '@/views/ServicesHistory.vue'
 import NotificationsTest from '@/views/NotificationsTest.vue'
 import MyPortfolioView from '@/views/MyPortfolioView.vue'
 import PortfolioView from '@/views/PortfolioView.vue'
+import TransactionHistoryView from '@/views/TransactionHistoryView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -117,6 +118,11 @@ const router = createRouter({
       name: 'PortfolioView',
       component: PortfolioView,
     },
+    {
+      path: '/transaction-history',
+      name: 'TransactionHistory',
+      component: TransactionHistoryView,
+    }
   ]
 })
 
