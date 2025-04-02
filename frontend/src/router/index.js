@@ -17,6 +17,7 @@ import ConfirmDeleteUser from '@/views/ConfirmDeleteUser.vue'
 import NotificationsTest from '@/views/NotificationsTest.vue'
 import AccountSettingview from '@/views/AccountSettingView.vue'
 import OtpEmailVerification from '@/views/OtpEmailVerification.vue'
+import TransactionHistoryView from '@/views/TransactionHistoryView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -118,6 +119,11 @@ const router = createRouter({
       name: 'PortfolioView',
       component: PortfolioView,
     },
+    {
+      path: '/transaction-history',
+      name: 'TransactionHistory',
+      component: TransactionHistoryView,
+    }
     {
       path: '/report/:username',
       name: 'ReportView',
