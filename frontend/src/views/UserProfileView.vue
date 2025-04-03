@@ -23,16 +23,24 @@ import { ref, onMounted } from 'vue';
 import UserProfile from '@/components/UserProfile.vue';
 import UserDropdown from '@/components/UserDropdown.vue';
 import loginService from '@/services/login-service';
+import { useLoader } from '@/services/loader-service';
+
+const { loadShow, loadHide } = useLoader();
 
 const username = ref('');
 const email = ref('');
 const role = ref('');
 
 const callLogout = () => {
-  localStorage.removeItem('token');
+  userStore.clearUser();
+  serviceStore.clearServices();
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('tokenType');
+  router.push({ name: 'login' });
 };
 
 const fetchUserData = async () => {
+  const loader = loadShow();
   try {
     const userData = await loginService.fetchUserData();
     username.value = userData.username;
@@ -40,6 +48,8 @@ const fetchUserData = async () => {
     role.value = userData.role;
   } catch (error) {
     console.error('Error fetching user data:', error);
+  } finally {
+    loadHide(loader);
   }
 };
 

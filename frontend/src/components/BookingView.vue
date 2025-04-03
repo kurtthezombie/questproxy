@@ -34,7 +34,7 @@
       <!-- Submit Booking and Payment Button -->
       <button
         :disabled="isLoading"
-        :class="{'opacity-50 cursor-not-allowed': isLoading}"
+        :class="{ 'opacity-50 cursor-not-allowed': isLoading }"
         class="w-full bg-green-500 text-white py-2 rounded-lg"
         @click="submitBooking"
       >
@@ -82,12 +82,13 @@ const submitBooking = async () => {
   try {
     const authToken = userStore.token || localStorage.getItem('authToken');
 
-    await axios.post(
+    // Step 1: Create the booking
+    const bookingResponse = await axios.post(
       'http://127.0.0.1:8000/api/bookings/store',
       {
         client_id: userStore.userData.id,
         service_id: props.serviceId,
-        additional_notes: additionalNotes.value,
+        additional_notes: additionalNotes.value || "", // Ensure it's sent even if empty
         credentials_username: credentialsUsername.value,
         credentials_password: credentialsPassword.value,
       },
@@ -98,6 +99,15 @@ const submitBooking = async () => {
       }
     );
 
+    // Step 2: Get the booking ID
+    if (!bookingResponse.data || !bookingResponse.data.data || !bookingResponse.data.data.booking) {
+      throw new Error("Booking response is invalid or missing booking ID.");
+    }
+    
+    const bookingId = bookingResponse.data.data.booking.id;
+    console.log("Created Booking ID:", bookingId);
+
+    // Step 3: Create the payment
     const paymentResponse = await axios.post(
       `http://127.0.0.1:8000/api/payments/${props.serviceId}`, 
       {
@@ -111,16 +121,20 @@ const submitBooking = async () => {
       }
     );
 
-    // Step 3: Redirect to PayMongo checkout URL
+    // Step 4: Redirect to PayMongo checkout URL
     if (paymentResponse.data && paymentResponse.data.data && paymentResponse.data.data.checkout_url) {
       window.location.href = paymentResponse.data.data.checkout_url;
     } else {
       console.error('Invalid payment response structure:', paymentResponse.data);
     }
+
   } catch (err) {
-    console.error('Booking submission error:', err);
+    console.error("Booking or payment error:", err);
   } finally {
     isLoading.value = false;
   }
 };
+
+
+
 </script>

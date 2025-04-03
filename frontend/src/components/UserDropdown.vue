@@ -1,14 +1,12 @@
 <template>
   <div class="relative inline-block text-left">
     <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-      <img 
+      <div 
         id="avatarButton" 
         @click="toggleDropdown" 
-        class="w-10 h-10 rounded-full cursor-pointer object-cover"
-        :src="userAvatar"
-        @error="handleAvatarError"
-        :alt="username || 'User avatar'"
-      >
+        class="w-10 h-10 rounded-full cursor-pointer bg-green-500 flex items-center justify-center text-white text-lg font-semibold">
+        {{ initials }}
+      </div>
     </div>
     <!-- Dropdown menu -->
     <div 
@@ -42,9 +40,6 @@
           <router-link v-if="role === 'game pilot'" 
         to="/services-history" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Services</router-link>        
         </li>
-        <li>
-          <router-link to="/payment-history" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">Account History</router-link>
-        </li>
       
       <div class="py-0">
         <button 
@@ -68,11 +63,12 @@ const isDropdownOpen = ref(false);
 const username = ref('');
 const email = ref('');
 const role = ref('');
-const userAvatar = ref('');
+const fName = ref('');
 const userId = ref(''); 
 
 const props = defineProps({
-  username: String
+  username: String,
+  fName: String,
 });
 
 const navigateToProfile = () => {
@@ -85,11 +81,10 @@ const navigateToProfile = () => {
   }
 };
 
-const generateUserAvatar = (userId) => {
-  const avatarNumber = (userId % 6) + 1;
-  return `src/assets/avatarimg/avatar${avatarNumber}.png`;
-};
 
+const generateUserAvatar = (fName) => {
+  return fName.charAt(0).toUpperCase();
+};
 
 const fetchUserData = async () => {
   try {
@@ -97,8 +92,8 @@ const fetchUserData = async () => {
     username.value = userData.username;
     email.value = userData.email;
     role.value = userData.role || 'User';
-    userId.value = userData.id; // Set userId
-    userAvatar.value = userData.avatar || generateUserAvatar(userId.value); // Use userId for avatar generation
+    userId.value = userData.id; 
+    fName.value = userData.f_name || '';
   } catch (error) {
     console.error('Error fetching user data:', error);
     userAvatar.value = generateUserAvatar(userId.value);
@@ -120,6 +115,10 @@ const capitalizedRole = computed(() => {
     .map(word => word.trim())
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(', ');
+});
+
+const initials = computed(() => {
+  return fName.value ? fName.value.charAt(0).toUpperCase() : '?';
 });
 
 // Handle logout

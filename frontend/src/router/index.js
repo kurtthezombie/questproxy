@@ -17,7 +17,6 @@ import NotificationsTest from '@/views/NotificationsTest.vue'
 import MyPortfolioView from '@/views/MyPortfolioView.vue'
 import PortfolioView from '@/views/PortfolioView.vue'
 import PaymentView from '@/views/PaymentView.vue'
-import PaymentHistoryView from '@/views/PaymentHistoryView.vue'
 import BookingView from '@/components/BookingView.vue'
 import PaymentResult from '@/components/PaymentResult.vue' 
 
@@ -107,11 +106,6 @@ const router = createRouter({
       path: '/payment/:serviceId',
       name: 'PaymentView',
       component: PaymentView,
-    },
-    {
-      path: '/payment-history/',
-      name: 'PaymentHistory',
-      component: PaymentHistoryView,
     },
     {
       path: '/bookings/:serviceId',

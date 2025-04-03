@@ -7,7 +7,7 @@
         <span class="text-2xl font-bold text-green-500">QuestProxy</span>
       </router-link>
     </div>
-    <div>
+    <div>   
       <nav class="flex space-x-6">
         <router-link to="/home" class="text-white hover:text-green-500 transition-colors duration-300">
           Home
@@ -25,13 +25,7 @@
         </router-link>
 
       <!-- Avatar Dropdown Component -->
-      <UserDropdown 
-        :username="username" 
-        :email="email" 
-        :role="role"
-        :avatar="avatar"
-        @logout="callLogout"
-      />
+      <UserDropdown :username="username" :email="email" :role="role"@logout="callLogout" />
     </nav>
   </div>
   

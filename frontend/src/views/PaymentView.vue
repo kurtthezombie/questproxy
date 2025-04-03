@@ -153,12 +153,15 @@ const handleBookingSubmit = async (bookingData) => {
   try {
     loading.value = true;
 
+    const successUrl = `${window.location.origin}/payments/success`;
+    const cancelUrl = `${window.location.origin}/payments/cancel`;
+
     // Send payment request to the backend
     const paymentResponse = await axios.post(
       `http://127.0.0.1:8000/api/payments/${bookingData.bookingId}`,
       {
-        amount: serviceStore.service.price,
-        transaction_data: bookingData.transactionData,
+        success_url: successUrl,
+        cancel_url: cancelUrl,
       },
       {
         headers: {
@@ -167,13 +170,13 @@ const handleBookingSubmit = async (bookingData) => {
       }
     );
 
-    if (paymentResponse.data) {
-      alert('Payment completed successfully!');
-      closeBookingModal();
-      router.push({
-        name: 'TransactionView',
-        params: { transactionId: paymentResponse.data.transaction_id },
-      });
+    if (paymentResponse.data && paymentResponse.data.data) {
+      const checkoutUrl = paymentResponse.data.data.checkout_url;
+
+      // Redirect to PayMongo payment link
+      window.location.href = checkoutUrl;
+    } else {
+      alert('Payment failed. Please try again.');
     }
   } catch (err) {
     console.error('Error completing payment:', err);

@@ -1,16 +1,10 @@
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import loginservice from '@/services/login-service';
 import { useLoader } from '@/services/loader-service';
 
-// Generate random avatar function based on user ID
-const generateUserAvatar = (userId) => {
-  const avatarNumber = (userId % 6) + 1; // Generates a number between 1 and 6
-  return `/assets/avatarimg/avatar${avatarNumber}.png`; // Ensure this path is correct
-};
-
-// Form data
+//form
 const form = reactive({
   username: '',
   email: '',
@@ -19,38 +13,17 @@ const form = reactive({
   password: '',
   confirmPassword: '',
   contact_number: '',
-  role: '', 
-  captcha_input: '',
-  captchaKey: '',
-  avatar: '' 
+  role: '',
 });
 
-
-watch(() => form.username, (newUsername) => {
-  if (newUsername) {
-    const userId = newUsername.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0); // Generate a pseudo user ID based on username
-    form.avatar = generateUserAvatar(userId); 
-  }
-});
-
-
-const captchaImg = ref('');
-
-
+//message variables
 const message = reactive({
   success: null,
   error: null
-});
+})
 
 const { loadShow, loadHide } = useLoader();
 const router = useRouter();
-
-// Handle captcha reload
-const handleReload = () => {
-  form.captcha_input = '';
-  form.captchaKey = '';
-  
-};
 
 const submitForm = async () => {
   message.error = '';
@@ -62,12 +35,6 @@ const submitForm = async () => {
   }
 
   const loader = loadShow();
-
-  // Generate user ID and avatar URL
-  const userId = form.username.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0); 
-  form.avatar = generateUserAvatar(userId); 
-
-  // Prepare form data
   const formData = {
     username: form.username,
     email: form.email,
@@ -76,41 +43,34 @@ const submitForm = async () => {
     password: form.password,
     contact_number: form.contact_number,
     role: form.role,
-    captcha: form.captcha_input,
-    key: form.captchaKey,
-    avatar: form.avatar 
   };
 
   try {
     const response = await loginservice.register(formData);
     if (response.status) {
+      //message
       message.success = 'Registration successful!';
-      // Log in the user
-      await loginservice.login({
+      //login
+      loginservice.login({
         username: formData.username,
         password: formData.password
       });
-      // Redirect to OTP verification
+      //push to otp
       router.push({ path: '/otp-verification', query: { email: form.email } });
+      //router.push({ path: '/login', query: { message: 'Registration successful!' } });
     } else {
       message.error = response.message;
-      handleReload(); 
+      handleReload();
     }
   } catch (error) {
-    // Handle errors
     message.error = 'An error occurred during registration. Please try again.';
   } finally {
     loadHide(loader);
   }
 };
 
-// On component mount
 onMounted(() => {
-  handleReload();  
-  if (form.username) {
-    const userId = form.username.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0); 
-    form.avatar = generateUserAvatar(userId); 
-  }
+  //removed captcha
 });
 </script>
 
