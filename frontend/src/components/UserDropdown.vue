@@ -6,7 +6,7 @@
       @click="toggleDropdown"
       :style="{ backgroundColor: avatarColor }"
     >
-      <span class="text-xl font-bold text-white">{{ avatarLetter }}</span>
+      <span class="text-xl font-normal text-white">{{ avatarLetter }}</span>
     </div>
     
     <!-- Dropdown menu -->
@@ -120,7 +120,7 @@ const avatarColor = computed(() => {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const index = letters.indexOf(avatarLetter.value) % 6; // Limit to 6 colors
   const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A6', '#F1C40F', '#9B59B6'];
-  return colors[index] || '#FF5733'; // Default fallback color
+  return '#22c55e';
 });
 
 const props = defineProps({

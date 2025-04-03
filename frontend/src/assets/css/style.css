@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -80,6 +81,10 @@ nav a.router-link-exact-active {
 .relative-container {
   position: relative;
   z-index: 1; /* Allow the circle to be placed behind content */
+}
+
+.font-poppins {
+  font-family: 'Poppins', sans-serif !important;
 }
 
 /* Responsive Media Queries */

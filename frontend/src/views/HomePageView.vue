@@ -1,26 +1,34 @@
 <template>
   <!-- Header -->
   <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
-  <div class="relative-container min-h-screen bg-black text-white p-5">
+  <div class="relative-container min-h-screen bg-gray-900 text-white p-5">
 
     <!-- Main Dashboard -->
     <div class="container mx-auto py-5 max-w-7xl">
-      <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">Welcome, {{ username }}</h1>
-      </div>
+      <!-- Header Section -->
+      <div class="flex flex-col mb-8">
+        <h1 class="text-3xl font-bold mb-4">Welcome, {{ username }}</h1>
 
-      <!-- Search Bar -->
-      <div class="relative w-full mx-auto">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search game"
-          class="bg-white text-black rounded-full px-6 py-5 h-15 shadow-md w-full pl-12 focus:outline-none"
-        />
-        <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m8 0l-3-3 3-3M9 19l3-3-3-3m8 0l-3 3 3 3M19 9l3 3-3 3M21 21v-3h-6v3h6z" />
-          </svg>
+        <!-- Search Bar -->
+        <div class="relative w-full max-w-7xl">
+          <div class="absolute left-2 top-1/2 -translate-y-1/2 bg-green-500 rounded-full p-2">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              class="h-7 w-7 text-white"
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M10 3a7 7 0 015.65 11.35l4.35 4.35M15 10a5 5 0 10-10 0 5 5 0 0010 0z" />
+            </svg>
+          </div>
+
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search game"
+            class="bg-transparent text-gray-400 border border-gray-400 rounded-full pl-16 pr-4 py-5 h-15 shadow-md w-full focus:outline-none focus:border-gray-600 focus:text-gray-400"
+            />
         </div>
       </div>
 
@@ -36,14 +44,13 @@
             <div 
               v-for="category in filteredCategories" 
               :key="category.id"
-              class="bg-gray-900 p-6 rounded-xl shadow-lg hover:shadow-green-500/50 hover:-translate-y-2 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center w-64 h-55"
+              class="bg-gray-700 p-6 rounded-xl shadow-lg hover:shadow-green-500/50 hover:-translate-y-2 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center w-64 h-55"
               @click="$router.push({ name: 'ServiceView', params: { title: category.game } })">
               <h3 class="text-lg font-semibold text-white text-center">{{ category.title }}</h3>
             </div>
           </div>
         </section>
       </div>
-
     </div>
   </div>
 </template>

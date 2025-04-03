@@ -9,7 +9,7 @@
           </router-link>
         </div>
 
-        <nav class="space-x-6">
+        <nav class="flex items-center gap-0">
           <a href="/" class="hover:text-green-400 text-white">Home</a>
           <a href="#about" class="scroll-link hover:text-green-400 text-white">About</a>
           <!-- Register & Login combined button with divider -->

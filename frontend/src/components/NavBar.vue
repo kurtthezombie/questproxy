@@ -8,7 +8,7 @@
         </router-link>
       </div>
       
-      <nav class="space-x-6">
+      <nav class="flex items-center gap-0">
         <router-link to="/home" class="text-white hover:text-green-500 transition-colors duration-300">
           Home
         </router-link>
