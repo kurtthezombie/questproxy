@@ -9,25 +9,29 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const usernameToReport = ref(route.params.username);
 const reason = ref('');
+const loading = ref(false);
 
 console.log(usernameToReport.value);
 
 const handleSubmitReport = async () => {
   try {
+    loading.value = true;
+
     const reportData = {
       reason: reason.value,
       reported_user: usernameToReport.value,
     };
 
-    console.log("Report Data: ", reportData);
-
     const result = await submitReport(reportData);
-    console.log("Report Result: ", result);
-
+    reason.value = '';
     toast.success('Report submitted successfully!');
   } catch (error) {
+    loading.value = false;
+
     console.error('Error submitting report:', error);
     toast.error('Failed to submit report. Please try again later.');
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -60,8 +64,11 @@ const handleSubmitReport = async () => {
           </p>
 
           <button type="submit"
-            class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-md transition duration-200 text-base">
-            Submit Report
+            :class="['w-full', 'bg-red-600', 'hover:bg-red-700', 'text-white', 'font-medium', 'py-3', 'px-4', 'rounded-md', 'transition', 'duration-200', 'text-base']"
+            :disabled="loading"
+            >
+            <span v-if="loading" class="loading loading-spinner"></span>
+            <span v-else>Submit Report</span>
           </button>
         </div>
       </form>

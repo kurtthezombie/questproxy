@@ -20,6 +20,22 @@ class ReportService {
         return $this->report->findOrFail($id);
     }
 
+    public function fetchReportsByUser($user_id) {
+        return $this->report->where('reporting_user_id', $user_id)
+        ->with(['reportingUser', 'reportedUser'])
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(function ($report) {
+            return [
+                'id' => $report->id,
+                'reportedUser' => $report->reportedUser->username,
+                'status' => $report->status,
+                'reason' => $report->reason,
+                'dateReported' => $report->created_at
+            ];
+        });
+    }
+
     public function create($data){
         //get user id from the username
         $reported_user = $this->getUserIdByUsername($data['reported_user']);
@@ -32,8 +48,9 @@ class ReportService {
 
         $formData = [
             'reason' => $data['reason'],
-            'reported_user' => $reported_user,
-            'reporter_user' => $reporting_user,
+            'reported_user_id' => $reported_user,
+            'reporting_user_id' => $reporting_user,
+            'status' => 'pending'
         ];
 
         $created = $this->report->create($formData);

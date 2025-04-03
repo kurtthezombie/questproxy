@@ -19,6 +19,30 @@ class ReportController extends Controller
         $this->reportService = $reportService;
     }
 
+    public function index()
+    {
+        try {
+            $user_id = auth()->user()->id;
+            $reports = $this->reportService->fetchReportsByUser($user_id);
+
+            if ($reports->isEmpty()) {
+                return $this->successResponse(
+                    'No reports found.',
+                    200,
+                    ['reports' => []]
+                );
+            }
+
+            return $this->successResponse(
+                'Reports retrieved.',
+                200,
+                ['reports' => $reports]
+            );
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */
