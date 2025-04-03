@@ -16,6 +16,7 @@ import ServicesHistory from '@/views/ServicesHistory.vue'
 import NotificationsTest from '@/views/NotificationsTest.vue'
 import MyPortfolioView from '@/views/MyPortfolioView.vue'
 import PortfolioView from '@/views/PortfolioView.vue'
+import TransactionHistoryView from '@/views/TransactionHistoryView.vue'
 import PaymentView from '@/views/PaymentView.vue'
 import BookingView from '@/components/BookingView.vue'
 import PaymentResult from '@/components/PaymentResult.vue' 
@@ -128,6 +129,11 @@ const router = createRouter({
       name: 'PortfolioView',
       component: PortfolioView,
     },
+    {
+      path: '/transaction-history',
+      name: 'TransactionHistory',
+      component: TransactionHistoryView,
+    }
   ]
 });
 
