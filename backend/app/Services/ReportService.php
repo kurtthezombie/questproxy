@@ -24,8 +24,8 @@ class ReportService {
         return $this->report->where('reporting_user_id', $user_id)
         ->with(['reportingUser', 'reportedUser'])
         ->orderBy('created_at', 'desc')
-        ->get()
-        ->map(function ($report) {
+        ->paginate(3)
+        ->through(function ($report) {
             return [
                 'id' => $report->id,
                 'reportedUser' => $report->reportedUser->username,
@@ -71,5 +71,5 @@ class ReportService {
         }
 
         return $user->id;
-    }
+    } 
 }

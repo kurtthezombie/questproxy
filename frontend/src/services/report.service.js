@@ -10,10 +10,10 @@ const submitReport = async (report) => {
   }
 };
 
-const fetchMyReports = async () => {
+const fetchMyReports = async (page = 1) => {
   try {
     console.log("reached in service");
-    const response = await api.get("/reports/");
+    const response = await api.get(`/reports?page=${page}`);
     console.log("The data: ",response);
     return response.reports || [];
   } catch (error) {
