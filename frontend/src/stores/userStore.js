@@ -10,8 +10,10 @@ export const useUserStore = defineStore('user', () => {
 
     //actions
     const setUser = (data,authToken) => {
-        userData.value = data
-        token.value = authToken
+        userData.value = { ...data, pilot_id: data.pilot_id || data.pilot?.id || null };
+        token.value = authToken;
+
+        console.log('Stored user data: ', userData.value);
     }
 
     const clearUser = () => {

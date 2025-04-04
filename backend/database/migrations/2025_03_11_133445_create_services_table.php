@@ -11,13 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('game')->nullable(false);
-            $table->string('title');
-            $table->string('category_type');
-        });
-
         Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->string('game');
@@ -25,10 +18,11 @@ return new class extends Migration
             $table->float('price');
             $table->dateTime('duration');
             $table->boolean('availability');
-            $table->timestamps();
 
             $table->unsignedBigInteger('pilot_id');
             $table->unsignedBigInteger('category_id')->nullable();
+
+            $table->timestamps();
 
             $table->foreign('pilot_id')->references('id')->on('pilots')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
@@ -40,12 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('services', function (Blueprint $table) {
-            $table->dropForeign(['pilot_id']);
-            $table->dropForeign(['category_id']);
-        });
-
         Schema::dropIfExists('services');
-        Schema::dropIfExists('categories');   
     }
 };

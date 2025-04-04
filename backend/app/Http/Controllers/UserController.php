@@ -46,18 +46,18 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
-        //validate inputs
-        $data = $request->validate([
-            'username' => 'required|string|unique:users,username',
-            'email' => 'required|string|email',
-            'password' => 'required|string|min:8',
-            'f_name' => 'required|string',
-            'l_name' => 'required|string',
-            'contact_number' => 'required|string|max:15',
-            'role' => 'required|string',
-        ]);
-
         try {
+            //validate inputs
+            $data = $request->validate([
+                'username' => 'required|string|unique:users,username',
+                'email' => 'required|string|email|unique:users,email',
+                'password' => 'required|string|min:8',
+                'f_name' => 'required|string',
+                'l_name' => 'required|string',
+                'contact_number' => 'required|string|max:15',
+                'role' => 'required|string',
+            ]);
+
             //call service
             $user = $this->userService->create($data);
 
@@ -107,6 +107,17 @@ class UserController extends Controller
         } catch (Exception $e){
             return $this->failedResponse("Error {$e->getMessage()}",500);
         }
+    }
+
+    public function showByUsername(string $username)
+    {
+        try {
+            $user = $this->userService->getUserByUsername($username);
+
+            return $this->successResponse("User {$username} found.",200,['data' => $user]);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error {$e->getMessage()}",500);
+        } 
     }
 
     public function requestAccountDeletion(Request $request )

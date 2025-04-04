@@ -33,11 +33,14 @@ class LoginController extends Controller
         //set auth info
         Auth::login($user, true);
 
+        $pilot = $user->pilot;
+
         return response()->json([
             'message' => 'Login successful.',
             'token_type' => 'Bearer',
             'token' => $token,
             'authenticated_user' => Auth::user(),
+            'pilot_id' => $pilot ? $pilot->id : null,
             'status' => true,
         ],200);
     }
@@ -47,6 +50,7 @@ class LoginController extends Controller
         try {
             $logout = $request->user()->currentAccessToken()->delete();
             $request->user()->tokens()->delete(); //use if u wanna delete all tokens hehe
+            Auth::logout();
             //if logout successful
             if ($logout) {
                 return response()->json([

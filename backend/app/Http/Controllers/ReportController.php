@@ -19,27 +19,46 @@ class ReportController extends Controller
         $this->reportService = $reportService;
     }
 
+    public function index()
+    {
+        try {
+            $user_id = auth()->user()->id;
+            $reports = $this->reportService->fetchReportsByUser($user_id);
+
+            if ($reports->isEmpty()) {
+                return $this->successResponse(
+                    'No reports found.',
+                    200,
+                    ['reports' => []]
+                );
+            }
+
+            return $this->successResponse(
+                'Reports retrieved.',
+                200,
+                ['reports' => $reports]
+            );
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //validate the form
-        $validatedData = $request->validate([
-            'reason' => 'required|string',
-            'reported_user_id' => 'required'
-        ]);
-
-        //add authenticated user's id
-        $validatedData['reporting_user_id'] = $request->user()->id;
-
-        //insert in reports table
         try {
-            $reported =  $this->reportService->create($validatedData);
+            //validate the form
+            $validatedData = $request->validate([
+                'reason' => 'required|string',
+                'reported_user' => 'required|string|exists:users,username',
+            ]);
+            $reported = $this->reportService->create($validatedData);
 
-            return $this->successResponse('Report submitted.',201,['report' => $reported]);
-        } catch (Exception $e){
-            return $this->failedResponse($e->getMessage(),500);
+            return $this->successResponse('Report submitted.', 201, ['report' => $reported]);
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
         }
     }
 

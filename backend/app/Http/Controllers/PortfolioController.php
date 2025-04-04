@@ -11,6 +11,7 @@ use Auth;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Log;
 
 class PortfolioController extends Controller
 {
@@ -30,18 +31,16 @@ class PortfolioController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'p_content' => 'required|string',
+            'p_content' => 'required|image|mimes:jpg,png,jpeg',
+            'caption' => 'required|string',
         ]);
 
         try {
             //create portfolio
             $portfolio = $this->portfolioService->create($data);
-
-            return $this->successResponse('Portfolio successfully created.',201,['portfolio' => $portfolio]);
-        } catch (ModelNotFoundException $e) {
-            return $this->failedResponse("Error: " . $e->getMessage(),404);
+            return response()->json(['message' => 'Portfolio created successfully', 'portfolio' => $portfolio], 201);
         } catch (Exception $e) {
-            return $this->failedResponse("Error: " . $e->getMessage(),500);
+            return response()->json(['error' => 'Portfolio creation failed'], 500);
         }
     }
 
@@ -49,17 +48,17 @@ class PortfolioController extends Controller
      * Display the specified portfolios of pilot
      * Takes pilot_id of the page
      */
-    public function show($pilot_id)
+    public function show($id)
     {
         try {
-            $portfolios = $this->portfolioService->findByPilot($pilot_id);
+            $portfolios = $this->portfolioService->findByPilot($id);
 
             $message = $portfolios->isEmpty()
-            ? "Pilot has no portfolio items yet."
-            : "Portfolios successfully retrieved.";
+                ? "Pilot has no portfolio items yet."
+                : "Portfolios successfully retrieved.";
 
             return $this->successResponse($message, 200, ['portfolios' => $portfolios]);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
     }
@@ -72,11 +71,11 @@ class PortfolioController extends Controller
         try {
             $portfolio = $this->portfolioService->findPortfolio($id);
 
-            return $this->successResponse("Portfolio successfully retrieved.",200,['portfolio' => $portfolio]);
+            return $this->successResponse("Portfolio successfully retrieved.", 200, ['portfolio' => $portfolio]);
         } catch (ModelNotFoundException $e) {
             return $this->failedResponse("Error: " . $e->getMessage(), 404);
         } catch (Exception $e) {
-            return $this->failedResponse("Error: " . $e->getMessage(),500);
+            return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
     }
 
@@ -85,16 +84,20 @@ class PortfolioController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = $request->validate(['p_content'=>'required|string']);
+        //validate p_content and caption
+        $data = $request->validate([
+            'caption' => 'required|string|max:60',
+            'p_content' => 'nullable|image|mimes:jpg,png,jpeg,gif',
+        ]);
 
         try {
-            $this->portfolioService->update($data,$id);
+            $this->portfolioService->update($data, $id);
 
-            return $this->successResponse("Portfolio record {$id} successfully updated.",200);
+            return $this->successResponse("Portfolio record {$id} successfully updated.", 200);
         } catch (ModelNotFoundException $e) {
             return $this->failedResponse("Portfolio {$id} not found.", 404);
-        } catch (Exception $e){
-            return $this->failedResponse("Error: " . $e->getMessage(),500);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
     }
 
@@ -108,13 +111,14 @@ class PortfolioController extends Controller
 
             return $this->successResponse("Successfully deleted portfolio {$id}.", 200);
         } catch (ModelNotFoundException $e) {
-            return $this->failedResponse("Portfolio {$id} not found.",404);
-        } catch (Exception $e){
-            return $this->failedResponse("Error: " . $e->getMessage(),500);
+            return $this->failedResponse("Portfolio {$id} not found.", 404);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
     }
 
-    public function destroyAll() {
+    public function destroyAll()
+    {
         try {
             //find pilot id
             $user_id = Auth::user()->id;
@@ -122,11 +126,26 @@ class PortfolioController extends Controller
 
             $this->portfolioService->deleteAll($pilot->id);
 
-            return $this->successResponse("Portfolios of {$pilot->id} successfully deleted.",200);
-        }  catch (ModelNotFoundException $e) {
+            return $this->successResponse("Portfolios of {$pilot->id} successfully deleted.", 200);
+        } catch (ModelNotFoundException $e) {
             return $this->failedResponse("Error: " . $e->getMessage(), 404);
-        } catch (Exception $e){
-            return $this->failedResponse("Error: " . $e->getMessage(),500);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error: " . $e->getMessage(), 500);
+        }
+    }
+
+    public function getPortfolioByUser($user_id)
+    {
+        try {
+            $portfolios = $this->portfolioService->getPortfolioByUser($user_id);
+
+            $message = $portfolios->isEmpty()
+                ? "User has no portfolio items yet."
+                : "Portfolios successfully retrieved.";
+
+            return $this->successResponse($message, 200, ['portfolios' => $portfolios]);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
     }
 }

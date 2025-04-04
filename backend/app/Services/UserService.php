@@ -51,4 +51,8 @@ class UserService
         return $user->delete();
     }
 
+    public function getUserByUsername($username) {
+        return $this->user->where('username', $username)->first();
+    }
+
 }
