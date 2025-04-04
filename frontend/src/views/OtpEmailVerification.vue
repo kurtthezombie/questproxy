@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import router from '@/router';
@@ -9,6 +9,7 @@ const email = ref('');
 const otp = ref('');
 const message = ref('');
 const { loadShow, loadHide } = useLoader();
+const maskedEmail = computed(() => maskEmail(email.value));
 
 const route = useRoute();
 email.value = route.query.email;
@@ -37,6 +38,20 @@ const submitOtp = async () => {
         loadHide(loader);
     }
 };
+
+const maskEmail = (email) => {
+    if (!email.includes('@')) return email;
+
+    const [username, domain] = email.split('@');
+    const domainParts = domain.split('.');
+
+    if (username.length < 2 || domainParts.length < 2) return email;
+    const maskedUsername = username[0] + '***';
+    const maskedDomain = domainParts[0][0] + '***';
+
+    return `${maskedUsername}@${maskedDomain}.${domainParts.slice(1).join('.')}`;
+}
+
 </script>
 
 
@@ -49,7 +64,7 @@ const submitOtp = async () => {
                 <div>
                     <label for="email"
                         class="mb-2 block text-sm  text-center text-lime-700 font-medium bg-lime-100 p-3">A six-digit
-                        OTP was sent to your email: {{ email.value }}</label>
+                        OTP was sent to your email: {{ maskedEmail }}</label>
                     <input type="hidden" v-model="email">
                     <input v-model="otp" type="text"
                         class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
