@@ -1,21 +1,29 @@
 <script setup>
+<<<<<<< HEAD
 import {  reactive, ref, onMounted } from 'vue';
+=======
+import { ref, onMounted } from 'vue';
+>>>>>>> origin/develop
 import NavBar from '@/components/NavBar.vue';
 import { fetchMyReports } from '@/services/report.service';
 import toast from '@/utils/toast';
 import ReportDetailsModal from '@/components/reports/ReportDetailsModal.vue';
 
 const reports = ref([]);
+<<<<<<< HEAD
 const pagination = reactive({
   currentPage: 1,
   lastPage: 1,
 });
 
+=======
+>>>>>>> origin/develop
 const loading = ref(false);
 
 const isModalOpen = ref(false);
 const selectedReport = ref(null);
 
+<<<<<<< HEAD
 const fetchReports = async (page = 1) => {
   try {
     loading.value = true;
@@ -27,6 +35,19 @@ const fetchReports = async (page = 1) => {
     pagination.lastPage = data.last_page;
   } catch (error) {
     toast.error('Failed to fetch reports.');
+=======
+const fetchReports = async () => {
+  try {
+    loading.value = true;
+
+    const data = await fetchMyReports();
+    reports.value = data;
+
+    toast.success('Reports fetched successfully!');
+  } catch (error) {
+    toast.error('Failed to fetch reports. Please try again later.');
+    loading.value = false;
+>>>>>>> origin/develop
   } finally {
     loading.value = false;
   }
@@ -44,11 +65,19 @@ const formatDate = (date) => {
 
 const openModal = (report) => {
   selectedReport.value = report;
+<<<<<<< HEAD
   isModalOpen.value = true;
 };
 
 const closeModal = () => {
   isModalOpen.value = false;
+=======
+  isModalOpen.value = true; 
+};
+
+const closeModal = () => {
+  isModalOpen.value = false; 
+>>>>>>> origin/develop
 };
 </script>
 
@@ -103,7 +132,12 @@ const closeModal = () => {
                   <div class="mt-4 flex justify-end">
                     <button
                       class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
+<<<<<<< HEAD
                       @click="openModal(report)">
+=======
+                      @click="openModal(report)"
+                      >
+>>>>>>> origin/develop
                       View Details
                     </button>
                   </div>
@@ -111,6 +145,7 @@ const closeModal = () => {
               </div>
             </div>
           </div>
+<<<<<<< HEAD
           <!-- pagination -->
           <div class="flex justify-end mb-3 px-6" v-if="pagination.lastPage > 1">
             <div class="join">
@@ -125,6 +160,8 @@ const closeModal = () => {
               </button>
             </div>
           </div>
+=======
+>>>>>>> origin/develop
         </div>
       </div>
     </div>
