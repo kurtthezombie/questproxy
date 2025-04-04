@@ -71,5 +71,5 @@ class ReportService {
         }
 
         return $user->id;
-    }
+    } 
 }
