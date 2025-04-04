@@ -101,7 +101,8 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
     });
 
     Route::controller(ReportController::class)->group(function () {
-        Route::post('reports/create','store');
+        Route::get('reports','index');
+        Route::post('reports','store');
         Route::get('reports/{id}','show');
     });
 
