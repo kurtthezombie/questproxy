@@ -82,6 +82,7 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::delete('portfolios/delete/{id}', 'destroy');
         Route::delete('portfolios/delete/pilot/{pilot_id}', 'destroyAll');
         Route::get('portfolios/user/{user_id}', 'getPortfolioByUser');
+        Route::get('portfolios/user/points/{username}', 'getPointsByUsername');
     });
 
     Route::controller(GamerController::class)->group(function () {
