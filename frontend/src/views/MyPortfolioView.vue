@@ -100,16 +100,13 @@ onMounted(() => {
             </div>
             <hr class="w-80 h-1 mx-auto my-4 bg-gray-100 border-0 rounded-sm md:my-10 dark:bg-gray-700 w-full">
 
-            <div class="flex w-100 flex-col p-5 items-center justify-center">
+            <div class="flex w-100 flex-col items-center justify-center">
                 <button
-                    class="btn btn-circle w-14 h-14 p-2 mx-auto hover:bg-gray-300 hover:shadow-green-300 hover:shadow-md"
+                    class="btn btn-neutral text-green-300 mx-auto hover:shadow-green-300 hover:shadow-md mb-5"
                     @click="isModalOpen = true">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
+                    + Add portfolio item
                 </button>
-                <div class="grid grid-cols-2 gap-y-3 gap-x-0 justify-items-center">
+                <div class="grid grid-cols-2 gap-y-5 gap-x-5 justify-items-center">
                     <!-- Show skeleton loader when loading -->
                     <template v-if="isLoading" class="flex justify-center items-center">
                         <div class="flex justify-center items-center col-span-2 min-h-80">

@@ -70,7 +70,7 @@ onMounted(() => {
 <template>
     <div class="flex justify-center">
         <div
-            class="mt-3 w-3/4 bg-gray-200 p-3 rounded-sm shadow-md hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer rounded-xl hover:shadow-lg hover:shadow-lime-500
+            class="mt-3 w-full bg-gray-200 rounded-sm shadow-md hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer rounded-xl hover:shadow-lg hover:shadow-lime-500
             flex flex-col justify-between 
             ">
             <!-- Portfolio Image -->
@@ -98,20 +98,19 @@ onMounted(() => {
                     </button>
                 </div>
                 <img v-if="portfolio.p_content" :src="portfolio.p_content"
-                    class="w-full aspect-[4/3] object-cover rounded-md" 
+                    class="w-full aspect-[4/3] object-cover rounded-t-md" 
                     alt="Portfolio Image"
                     @click="openImage(portfolio.p_content)" />
                 <span v-else class="text-white font-semibold">No Image</span>
             </div>
             <hr>
             <!-- Portfolio Caption -->
-             <div class="mt-auto">
-                <div class="mt-3 text-start text-xl text-gray-800 font-medium">
+             <div class="mb-3 p-2 px-3">
+                <div class="mt-1 text-start text-xl text-gray-800 font-medium">
                 {{ portfolio?.caption || "" }}
                 </div>
                 <div class="mt-1 text-sm text-gray-600">{{ formattedTime }}</div>
              </div>
-            
         </div>
         <!-- Image Preview Modal -->
         <div v-if="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90 mt-10">
