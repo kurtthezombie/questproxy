@@ -25,7 +25,7 @@ const register = async (user) => {
         return axios.post(
           'http://127.0.0.1:8000/api/login',
           credentials,
-          { withCredentials: true } // Ensures cookies are included
+          { withCredentials: true } 
         );
       })
       .then((response) => {
