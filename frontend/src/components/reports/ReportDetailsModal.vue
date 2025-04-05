@@ -1,6 +1,6 @@
 <script setup>
 
-import { defineProps, defineEmits, onMounted, onUnmounted, watch } from 'vue';
+import { onMounted, onUnmounted, watch } from 'vue';
 
 const props = defineProps({
   isModalOpen: Boolean,
