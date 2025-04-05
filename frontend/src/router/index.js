@@ -18,8 +18,7 @@ import MyPortfolioView from '@/views/MyPortfolioView.vue'
 import PortfolioView from '@/views/PortfolioView.vue'
 import TransactionHistoryView from '@/views/TransactionHistoryView.vue'
 import PaymentView from '@/views/PaymentView.vue'
-import BookingView from '@/components/BookingView.vue'
-import PaymentResult from '@/components/PaymentResult.vue' 
+import BookingCard from '@/components/BookingCard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -110,14 +109,8 @@ const router = createRouter({
     },
     {
       path: '/bookings/:serviceId',
-      name: 'BookingView',
-      component: BookingView,
-    },
-    // Add the new route for PaymentResult
-    {
-      path: '/payment-result',
-      name: 'PaymentResult',
-      component: PaymentResult,
+      name: 'BookingCard',
+      component: BookingCard,
     },
     {
       path: '/myportfolios',

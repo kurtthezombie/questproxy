@@ -122,54 +122,22 @@ const fetchUserDataById = async (userId) => {
   }
 };
 
+const getUserProfile = async (userId) => {
+  const userStore = useUserStore();
+  const token = userStore.token;  // Assuming you store the token in Pinia
 
-
-const createPortfolio = async (portfolioData) => {
-  const token = localStorage.getItem('authToken');
   try {
-    const response = await axios.post('http://127.0.0.1:8000/api/portfolios/create', portfolioData, {
+    const response = await axios.get(`http://127.0.0.1:8000/api/users/${userId}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (response.data.success) {
-      alert('Portfolio created successfully');
-    } else {}
-    return response.data;
-  } catch (error) {
-    console.error('Error creating portfolio:', error);
-    alert('Error creating portfolio');
-    throw error;
-  }
-};
-
-
-
-const updatePortfolio = async (id, portfolioData) => {
-  const token = localStorage.getItem('authToken');
-  try {
-    const response = await axios.patch(`http://127.0.0.1:8000/api/portfolios/edit/${id}`, portfolioData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`  // Include the token in the header
+      }
     });
     return response.data;
   } catch (error) {
-    console.error('Error updating portfolio:', error);
-    throw error;
+    throw new Error('Error fetching user profile: ' + error.message);
   }
 };
 
-const deletePortfolio = async (id) => {
-  try {
-    const response = await axios.delete(`http://127.0.0.1:8000/api/portfolios/destroy/${id}`);
-    console.log('Portfolio deleted:', response);
-    return response.data.message; // Return success message
-  } catch (error) {
-    console.error('Error deleting portfolio:', error);
-    return null;
-  }
-};
 
 const createService = async (serviceData) => {
   try {
@@ -258,8 +226,6 @@ export default {
   updatePilot,
   fetchPortfolio,
   fetchUserDataById,
-  createPortfolio,
-  updatePortfolio,
-  deletePortfolio,
   createService,
+  getUserProfile
 };

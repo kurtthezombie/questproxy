@@ -1,209 +1,122 @@
 <template>
-  <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
-
-  <div class="flex items-center justify-center min-h-screen bg-gray-900">
-    <div class="w-full max-w-md bg-white rounded-lg shadow-md p-6">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">
-        Complete Your Payment for {{ getGameTitle }}
-      </h2>
-
-      <!-- Error Message -->
-      <div v-if="error" class="mb-4 p-4 bg-red-50 text-red-500 rounded-md">
-        {{ error }}
-      </div>
-
-      <!-- Loading Spinner -->
-      <div v-else-if="loading" class="flex justify-center items-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
-      </div>
-
+  <NavBar />
+  <div class="min-h-screen flex items-center justify-center bg-gray-900 text-white p-6">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-4xl w-full flex">
       <!-- Service Details -->
-      <div v-else-if="service" class="space-y-4">
-        <p><strong>Game Title:</strong> {{ getGameTitle }}</p>
-        <p><strong>Description:</strong> {{ service.description }}</p>
-        <p><strong>Price:</strong> ₱{{ formatPrice(service.price) }}</p>
-        <p><strong>Duration:</strong> {{ formatDuration(service.duration) }}</p>
-        <p><strong>Availability:</strong> {{ service.availability ? 'Available' : 'Not Available' }}</p>
+      <div class="flex-1 pr-6">
+        <h2 class="text-2xl font-bold">
+          <span v-if="loading">Loading service details...</span>
+          <span v-else>{{ service ? service.game.replace('_', ' ').toUpperCase() : 'Service' }}</span>
+        </h2>
+
+        <p class="text-gray-400 mt-2">
+          <span v-if="loading" class="animate-pulse">Fetching description...</span>
+          <span v-else>{{ service && service.description ? service.description : 'No description available' }}</span>
+        </p>
+
+        <div class="mt-4">
+          <p><strong>Price:</strong> 
+            <span v-if="loading" class="animate-pulse">₱...</span>
+            <span v-else>{{ service ? formatPrice(service.price) : '₱0.00' }}</span>
+          </p>
+
+          <p><strong>Duration:</strong> 
+            <span v-if="loading" class="animate-pulse">Loading...</span>
+            <span v-else>
+              {{ service ? formatDuration(service.duration) : 'N/A' }}
+            </span>
+          </p>
+        </div>
       </div>
 
-      <!-- Buy Now Button -->
-      <button
-        class="w-full bg-red-500 text-white py-2 rounded-lg mt-4"
-        @click="openBookingModal"
-        :disabled="loading"
-      >
-        Buy Now
-      </button>
-
-      <!-- Cancel Button -->
-      <button
-        class="w-full bg-gray-500 text-white py-2 rounded-lg mt-2"
-        @click="cancelPayment"
-      >
-        Cancel
-      </button>
-
-      <!-- Booking Modal -->
-      <Booking
-        v-if="isBookingModalOpen"
-        :isModalOpen="isBookingModalOpen"
-        @close="closeBookingModal"
-        :serviceId="route.params.serviceId"
-        @submitBooking="handleBookingSubmit"
-      />
+      <!-- Buy Button -->
+      <div class="flex flex-col justify-center items-center w-1/3">
+        <button 
+          class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg text-lg w-full"
+          @click="proceedToPayment"
+          :disabled="loading"
+        >
+          {{ loading ? "Loading..." : "Buy Service" }}
+        </button>
+      </div>
     </div>
   </div>
+
+  <!-- Booking Modal -->
+  <BookingCard 
+    :isOpen="isModalOpen"
+    :serviceId="route.params.serviceId"
+    :closeModal="closeModal"
+  />
 </template>
 
-
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import axios from 'axios';
-import { useServiceStore } from '@/stores/serviceStore';
-import { useUserStore } from '@/stores/userStore';
-import NavBar from '@/components/NavBar.vue';
-import Booking from '@/components/BookingView.vue';
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import axios from "axios";
+import NavBar from "@/components/NavBar.vue";
+import BookingCard from "@/components/BookingCard.vue"; // Updated Import
 
-const serviceStore = useServiceStore();
-const userStore = useUserStore();
-const router = useRouter();
 const route = useRoute();
+const service = ref(null);  
+const loading = ref(true);  
+const isModalOpen = ref(false); // Controls modal visibility
 
-const loading = ref(false);
-const error = ref(null);
-const isBookingModalOpen = ref(false);
+const formatPrice = (price) => {
+  return price ? `₱${Number(price).toLocaleString("en-US", { minimumFractionDigits: 2 })}` : "₱0.00";
+};
 
-const service = computed(() => serviceStore.service);
-const username = ref(userStore.userData?.username || '');
-const email = ref(userStore.userData?.email || '');
-const role = ref(userStore.userData?.role || '');
-
-onMounted(() => {
-  checkAuth();
-  fetchService();
-});
-
-const fetchService = async () => {
-  const serviceId = route.params.serviceId;
-  if (!serviceId) {
-    error.value = 'Service ID is missing in route parameters.';
-    return;
-  }
-
+// Fetch service details
+const fetchServiceDetails = async () => {
   try {
-    loading.value = true;
-    error.value = null;
+    loading.value = true; 
+    const authToken = localStorage.getItem("authToken");
+    const tokenType = localStorage.getItem("tokenType");
 
-    const response = await axios.get(`http://127.0.0.1:8000/api/services/${serviceId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-      },
+    if (!authToken || !tokenType) {
+      console.error("No authentication token found.");
+      return;
+    }
+
+    console.log("Fetching Service ID:", route.params.serviceId);
+    const response = await axios.get(`http://127.0.0.1:8000/api/services/${route.params.serviceId}`, {
+      headers: { Authorization: `${tokenType} ${authToken}` }
     });
 
-    console.log('Fetched service response:', response.data); // Debugging
-
-    if (response.data && response.data.data) {
-      serviceStore.setService(response.data.data); // Assuming `data` contains the service
-      console.log('Stored service:', serviceStore.service);
+    if (response.data.service) {
+      service.value = response.data.service;
+      console.log("Service Data Loaded:", service.value);
     } else {
-      error.value = 'Invalid service data received.';
+      console.error("No service data found in response.");
     }
-  } catch (err) {
-    error.value = 'Failed to fetch service details. Please try again.';
-    console.error('Error fetching service:', err);
+
+  } catch (error) {
+    console.error("Error fetching service details:", error);
   } finally {
-    loading.value = false;
+    loading.value = false; 
   }
 };
 
-
-// Get the game title from categories or fallback to the service game name
-const getGameTitle = computed(() => {
-  return service.value?.game || 'Unknown Game';
-});
-
-// Format duration to a readable date string
-const formatDuration = (duration) => {
-  if (!duration) return 'Not specified';
-  const date = new Date(duration);
-  return date.toLocaleString();
+// Open the modal when clicking Buy Service
+const proceedToPayment = () => {
+  console.log("Opening booking modal...");
+  isModalOpen.value = true;
 };
 
-// Format price to a readable currency string
-const formatPrice = (price) => {
-  return Number(price).toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+// Close modal
+const closeModal = () => {
+  isModalOpen.value = false;
 };
 
-// Open the booking modal
-const openBookingModal = () => {
-  isBookingModalOpen.value = true;
+// Format duration
+const formatDuration = (datetime) => {
+  if (!datetime) return "N/A";
+  
+  const [date, time] = datetime.split(" "); 
+  const [hours, minutes] = time.split(":"); 
+
+  return `${date} (${hours}h ${minutes}m)`;
 };
 
-// Close the booking modal
-const closeBookingModal = () => {
-  isBookingModalOpen.value = false;
-};
-
-// Handle the final booking submission from the modal
-const handleBookingSubmit = async (bookingData) => {
-  try {
-    loading.value = true;
-
-    const successUrl = `${window.location.origin}/payments/success`;
-    const cancelUrl = `${window.location.origin}/payments/cancel`;
-
-    // Send payment request to the backend
-    const paymentResponse = await axios.post(
-      `http://127.0.0.1:8000/api/payments/${bookingData.bookingId}`,
-      {
-        success_url: successUrl,
-        cancel_url: cancelUrl,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-        },
-      }
-    );
-
-    if (paymentResponse.data && paymentResponse.data.data) {
-      const checkoutUrl = paymentResponse.data.data.checkout_url;
-
-      // Redirect to PayMongo payment link
-      window.location.href = checkoutUrl;
-    } else {
-      alert('Payment failed. Please try again.');
-    }
-  } catch (err) {
-    console.error('Error completing payment:', err);
-    alert('Failed to complete payment.');
-  } finally {
-    loading.value = false;
-  }
-};
-
-// Cancel payment and go back
-const cancelPayment = () => {
-  router.go(-1);
-};
-
-// Check if the user is authenticated
-const checkAuth = () => {
-  if (!localStorage.getItem('authToken')) {
-    router.push({ name: 'login' });
-  }
-};
-
-// Logout function
-const callLogout = () => {
-  userStore.clearUser();
-  serviceStore.clearServices();
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('tokenType');
-  router.push({ name: 'login' });
-};
+onMounted(fetchServiceDetails);
 </script>

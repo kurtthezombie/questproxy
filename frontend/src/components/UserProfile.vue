@@ -1,47 +1,46 @@
 <template>
-  <div class="max-w-4xl mx-auto p-4">
-    <div class="grid grid-cols-12 gap-4">
-      <!-- Left Section - Profile Info -->
-      <div class="col-span-4 space-y-4">
-        <div class="bg-white rounded-lg shadow p-4">
-          <!-- Avatar and Username -->
-          <div class="flex flex-col items-center space-y-2">
-            <!-- Avatar -->
-            <div 
-              class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white text-3xl font-bold"
-            >
-              {{ userInitial }}
-            </div>
-            <h2 class="text-xl font-semibold">{{ profileData.username }}</h2>
-
-            <!-- Report Button - Only visible for non-owners -->
-            <button 
-              v-if="!isOwner"
-              @click="showReportModal = true"
-              class="w-full px-4 py-2 text-sm border rounded hover:bg-gray-50"
-            >
-              Report
-            </button>
+  <div class="p-6 bg-gray-900 min-h-screen">
+    <div class="max-w-5xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg flex">
+      <!-- Left Section: Profile & Portfolio -->
+      <div class="w-1/3 pr-4">
+        <div class="flex flex-col items-center">
+          <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+            {{ userInitial }}
           </div>
+          <h2 class="mt-2 text-xl font-bold text-white">{{ username }}</h2>
+          <button 
+            class="mt-2 px-4 py-1 bg-blue-500 text-white rounded"
+            @click="goToPortfolio"
+          >
+            Portfolio
+          </button>
+        </div>
 
-          <!-- Description/Portfolio Section -->
-          <div class="mt-4">
-            <div class="flex justify-between items-center mb-2">
-              <h3 class="font-medium"></h3>
-              <div>
-      
-              </div>
-            </div>
+        <!-- Portfolio Preview -->
+        <div class="mt-4 flex items-center">
+          <div v-for="(portfolio, index) in portfolios.slice(0, 2)" :key="index">
+            <img :src="portfolio.p_content" alt="Portfolio Image" class="w-12 h-12 bg-gray-600 rounded-md mr-2">
+          </div>
+          <div v-if="portfolios.length > 2" class="w-12 h-12 bg-gray-700 rounded-md flex items-center justify-center text-white text-lg">
+            +
           </div>
         </div>
       </div>
 
-      <!-- Right Section - Service Display -->
-      <div class="col-span-8">
-        <div class="bg-white rounded-lg shadow h-full p-4">
-          <div class="h-full flex items-center justify-center text-gray-500">
-            {{ profileData.service || 'No services available' }}
-          </div>
+      <!-- Right Section: Services -->
+      <div class="w-2/3 pl-4">
+        <h3 class="text-lg text-center font-semibold text-white mb-4">Offered Services</h3>
+        <div v-if="userServices.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <ServiceCard 
+            v-for="service in userServices" 
+            :key="service.id" 
+            :service="service"
+            :categories="categories"
+            @click="handleServiceClick(service)"
+          />
+        </div>
+        <div v-else class="flex justify-center items-center h-32 text-gray-400 text-lg">
+          No services available
         </div>
       </div>
     </div>
@@ -49,49 +48,143 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useUserStore } from '@/stores/userStore'; 
 import loginService from '@/services/login-service';
+import userService from '@/services/user-service';
+import serviceService from '@/services/service-service';
+import { fetchPortfoliosByUser } from '@/services/portfolio.service';
 import { useLoader } from '@/services/loader-service';
-import { useRoute } from 'vue-router';
+import ServiceCard from '@/components/ServiceDisplay.vue'; // Import your service card component
 
 const { loadShow, loadHide } = useLoader();
 
+const router = useRouter();
 const route = useRoute();
-const profileData = ref({
-  username: '',
-  f_name: '',
-  description: '',
-  service: null,
+const userStore = useUserStore();
+
+const profileData = ref({});
+const userServices = ref([]);
+const portfolios = ref([]);
+const username = ref('');
+const role = ref('User');
+const profileLoaded = ref(false);
+const categories = ref([]); // Add categories data
+
+const userInitial = computed(() => {
+  if (!profileData.value?.f_name) return '?';
+  return `${profileData.value.f_name.charAt(0)}${profileData.value.l_name?.charAt(0) || ''}`.toUpperCase();
 });
 
-const isOwner = ref(false);
-const showReportModal = ref(false);
-const isLoading = ref(false);
-const currentUserId = ref(null);
+// Fetch categories (needed for ServiceCard)
+const fetchCategories = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/categories');
+    categories.value = response.data;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+  }
+};
 
-const fetchLoggedInUser = async () => {
+// Fetch logged-in user data
+const fetchUserData = async () => {
   const loader = loadShow();
   try {
-    const response = await loginService.fetchUserData();
-    currentUserId.value = response.id;
+    const userData = await loginService.fetchUserData();
+    username.value = userData.username;
+    role.value = userData.role || 'User';
   } catch (error) {
-    console.error('Error fetching logged-in user:', error);
+    console.error('Error fetching user data:', error);
+    router.push({ name: 'login' }); 
   } finally {
     loadHide(loader);
   }
 };
 
+// Fetch user profile info
+const fetchProfileData = async () => {
+  try {
+    const userId = route.params.id;
+    profileData.value = await userService.getUserProfile(userId);
+    profileLoaded.value = true; 
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+  }
+};
 
+// Fetch user services
+const fetchUserServices = async () => {
+  try {
+    const userId = route.params.id;
+    userServices.value = await serviceService.fetchUserDataById(userId);
+  } catch (error) {
+    console.error('Error fetching user services:', error);
+  }
+};
 
-// Generate user initial
-const userInitial = computed(() => {
-  return profileData.value.f_name?.charAt(0)?.toUpperCase() || '?';
-});
+// Fetch portfolio images
+const fetchPortfolios = async () => {
+  try {
+    const userId = route.params.id;
+    const response = await fetchPortfoliosByUser(userId);
+    const baseURL = "http://127.0.0.1:8000/storage/";
 
+    portfolios.value = response.portfolios?.map(portfolio => ({
+      ...portfolio,
+      p_content: baseURL + portfolio.p_content,
+    })) || [];
+  } catch (error) {
+    console.error("Error fetching portfolio:", error);
+  }
+};
 
-onMounted(() => {
+const handleServiceClick = (service) => {
+  if (!service.availability) {
+    toast.warning("This service is currently not accepting bookings.");
+    return;
+  }
+  router.push({
+    name: 'PaymentView', 
+    params: { serviceId: service.id }, 
+    state: { service: service } 
+  });
+};
 
-  fetchLoggedInUser();
+const goToPortfolio = () => {
+  if (!profileLoaded.value) {
+    console.error("Profile data not loaded yet, cannot redirect.");
+    return;
+  }
+
+  if (!profileData.value || !profileData.value.username) {
+    console.error("Username is missing, cannot redirect.");
+    return;
+  }
+
+  const isOwnProfile = profileData.value.username === username.value;
+
+  if (isOwnProfile) {
+    router.push({ name: 'MyPortfolio' });
+  } else {
+    router.push({ name: 'PortfolioView', params: { username: profileData.value.username } });
+  }
+};
+
+// Fetch data when profile ID changes
+watch(() => route.params.id, async () => {
+  await fetchUserData();
+  await fetchProfileData();
+  await fetchUserServices();
+  await fetchPortfolios();
+  await fetchCategories(); // Add categories fetch
+}, { immediate: true });
+
+onMounted(async () => {
+  await fetchUserData();
+  await fetchProfileData();
+  await fetchUserServices();
+  await fetchPortfolios();
+  await fetchCategories(); // Add categories fetch
 });
 </script>
