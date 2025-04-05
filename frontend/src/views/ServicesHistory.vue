@@ -1,12 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
-    <NavBar
-      :username="username"
-      :email="email"
-      :role="role"
-      :callLogout="callLogout"
-    />
-
+    <NavBar/>
     <!-- Loading State -->
     <div v-if="serviceStore.loading" class="flex justify-center items-center mt-10">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
@@ -36,6 +30,7 @@
             :service="service"
             :categories="serviceStore.categories"
             :isServiceHistory="true"
+            @serviceDeleted="handleServiceDeleted"
           />
         </div>
       </div>
@@ -87,6 +82,10 @@ const fetchData = async () => {
   } catch (error) {
     console.error("Error fetching data:", error);
   }
+};
+
+const handleServiceDeleted = (deletedId) => {
+  serviceStore.services = serviceStore.services.filter(service => service.id !== deletedId);
 };
 
 const callLogout = () => {

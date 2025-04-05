@@ -51,6 +51,8 @@ const props = defineProps({
 const usernames = ref({});
 const router = useRouter();
 const toast = useToast();
+const emit = defineEmits(['serviceDeleted']);
+
 
 onMounted(() => {
   fetchUsername(props.service.user_id, 'user');
@@ -106,5 +108,31 @@ const handleServiceClick = () => {
     state: { service: props.service } 
   });
 };
+
+const confirmDelete = async () => {
+  const confirmed = confirm("Are you sure you want to delete this service?");
+  if (!confirmed) return;
+
+  try {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      toast.error("Authentication required.");
+      return;
+    }
+
+    await axios.delete(`http://127.0.0.1:8000/api/services/destroy/${props.service.id}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      }
+    });
+
+    toast.success("Service deleted successfully.");
+    emit('serviceDeleted', props.service.id);
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to delete service.");
+  }
+};
+
 
 </script>

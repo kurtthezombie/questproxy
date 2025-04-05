@@ -97,14 +97,6 @@ export default {
         const userStore = useUserStore();
         if (!userStore.userData?.id) throw new Error("User data not available");
 
-        // 1. Debug: Log the payload before sending
-        console.log("Submitting booking with:", {
-          client_id: userStore.userData.id,
-          service_id: this.serviceId,
-          ...this.form
-        });
-
-        // 2. Create Booking
         const bookingResponse = await axios.post(
           "http://127.0.0.1:8000/api/bookings/store",
           {
@@ -112,61 +104,23 @@ export default {
             service_id: this.serviceId,
             credentials_username: this.form.credentials_username,
             credentials_password: this.form.credentials_password,
-            additional_notes: this.form.additional_notes || "No notes provided" // Ensure non-null
+            additional_notes: this.form.additional_notes || "No notes provided"
           },
           {
             headers: { Authorization: `Bearer ${authToken}` }
           }
         );
 
-        console.log("Booking response:", bookingResponse.data);
-
-        // 3. Get the booking ID from response
         let bookingId;
-        if (bookingResponse.data.status === 200) {
-          // Handle both response structures
-          bookingId = bookingResponse.data.data?.booking?.id || 
-                     bookingResponse.data.booking_id;
+        if (bookingResponse.data.status === 200 || bookingResponse.status === 200) {
+          const responseData = bookingResponse.data;
+          bookingId = responseData?.data?.booking?.id || responseData?.booking?.id || null;
         }
 
-        if (!bookingId) throw new Error("No booking ID received");
-
-        // 4. Initiate Payment
-        console.log("Initiating payment for booking:", bookingId);
-        const paymentResponse = await axios.post(
-          `http://127.0.0.1:8000/api/payments/${bookingId}`,
-          {
-            success_url: `${window.location.origin}/payment-success`,
-            cancel_url: `${window.location.origin}/payment-cancel`
-          },
-          {
-            headers: { Authorization: `Bearer ${authToken}` }
-          }
-        );
-
-        console.log("Payment response:", paymentResponse.data);
-
-        // 5. Handle payment response
-        if (paymentResponse.data.status === 201) {
-          const paymongoUrl = paymentResponse.data.data?.checkout_url;
-          if (!paymongoUrl) throw new Error("No PayMongo URL received");
-
-          console.log("Redirecting to:", paymongoUrl);
-          window.location.href = paymongoUrl;
-        } else {
-          throw new Error(paymentResponse.data.message || "Payment failed");
-        }
-
+        this.$emit("bookingConfirmed", bookingId);
       } catch (error) {
-        console.error("Full error details:", {
-          error: error,
-          response: error.response?.data,
-          config: error.config
-        });
-        
-        this.error = error.response?.data?.message || 
-                   error.message || 
-                   "Payment processing failed";
+        console.error("Error submitting booking:", error);
+        this.error = "An error occurred while submitting the booking. Please try again.";
       } finally {
         this.loading = false;
       }

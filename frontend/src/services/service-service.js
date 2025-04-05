@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 
-const API_URL = 'http://127.0.0.1:8000/api';
 
 const getAuthHeaders = () => {
   const authStore = useAuthStore();
@@ -17,9 +16,9 @@ const getAuthHeaders = () => {
 export default {
   async fetchUserDataById(userId) {
     try {
-      // Changed to use the correct endpoint from your routes
-      const response = await axios.get(`${API_URL}/pilots/${userId}/services`, getAuthHeaders());
-      return response.data.data || []; // Adjust based on your actual response structure
+     
+      const response = await axios.get(`http://127.0.0.1:8000/api/pilots/${userId}/services`, getAuthHeaders());
+      return response.data.data || []; 
     } catch (error) {
       console.error('Error fetching user services:', error);
       throw error;
@@ -28,8 +27,8 @@ export default {
   
   async fetchAllServices() {
     try {
-      const response = await axios.get(`${API_URL}/services`, getAuthHeaders());
-      return response.data.data || []; // Adjust based on your actual response structure
+      const response = await axios.get(`http://127.0.0.1:8000/api/services`, getAuthHeaders());
+      return response.data.data || []; 
     } catch (error) {
       console.error('Error fetching all services:', error);
       throw error;
@@ -38,7 +37,7 @@ export default {
   
   async fetchPilotServices(pilotId) {
     try {
-      const response = await axios.get(`${API_URL}/pilots/${pilotId}/services`, getAuthHeaders());
+      const response = await axios.get(`http://127.0.0.1:8000/api/pilots/${pilotId}/services`, getAuthHeaders());
       return response.data.data || [];
     } catch (error) {
       console.error('Error fetching pilot services:', error);
@@ -48,7 +47,7 @@ export default {
   
   async createService(serviceData) {
     try {
-      const response = await axios.post(`${API_URL}/services/create`, serviceData, getAuthHeaders());
+      const response = await axios.post(`http://127.0.0.1:8000/api/services/create`, serviceData, getAuthHeaders());
       return response.data;
     } catch (error) {
       console.error('Error creating service:', error);
@@ -58,7 +57,7 @@ export default {
   
   async updateService(serviceId, serviceData) {
     try {
-      const response = await axios.patch(`${API_URL}/services/edit/${serviceId}`, serviceData, getAuthHeaders());
+      const response = await axios.patch(`'http://127.0.0.1:8000/api'/services/edit/${serviceId}`, serviceData, getAuthHeaders());
       return response.data;
     } catch (error) {
       console.error('Error updating service:', error);
@@ -68,7 +67,7 @@ export default {
   
   async deleteService(serviceId) {
     try {
-      const response = await axios.delete(`${API_URL}/services/destroy/${serviceId}`, getAuthHeaders());
+      const response = await axios.delete(`http://127.0.0.1:8000/api/services/destroy/${serviceId}`, getAuthHeaders());
       return response.data;
     } catch (error) {
       console.error('Error deleting service:', error);
@@ -78,7 +77,7 @@ export default {
   
   async getServiceById(serviceId) {
     try {
-      const response = await axios.get(`${API_URL}/services/${serviceId}`, getAuthHeaders());
+      const response = await axios.get(`http://127.0.0.1:8000/api/services/${serviceId}`, getAuthHeaders());
       return response.data.data || null;
     } catch (error) {
       console.error('Error fetching service details:', error);

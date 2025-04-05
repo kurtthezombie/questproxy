@@ -7,7 +7,7 @@
           <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
             {{ userInitial }}
           </div>
-          <h2 class="mt-2 text-xl font-bold text-white">{{ username }}</h2>
+          <h2 class="mt-2 text-xl font-bold text-white">{{ profileData.username || 'Loading...' }}</h2>
           <button 
             class="mt-2 px-4 py-1 bg-blue-500 text-white rounded"
             @click="goToPortfolio"
@@ -56,7 +56,7 @@ import userService from '@/services/user-service';
 import serviceService from '@/services/service-service';
 import { fetchPortfoliosByUser } from '@/services/portfolio.service';
 import { useLoader } from '@/services/loader-service';
-import ServiceCard from '@/components/ServiceDisplay.vue'; // Import your service card component
+import ServiceCard from '@/components/ServiceDisplay.vue'; 
 
 const { loadShow, loadHide } = useLoader();
 
@@ -77,7 +77,7 @@ const userInitial = computed(() => {
   return `${profileData.value.f_name.charAt(0)}${profileData.value.l_name?.charAt(0) || ''}`.toUpperCase();
 });
 
-// Fetch categories (needed for ServiceCard)
+// Fetch categories
 const fetchCategories = async () => {
   try {
     const response = await axios.get('http://127.0.0.1:8000/api/categories');
@@ -87,7 +87,7 @@ const fetchCategories = async () => {
   }
 };
 
-// Fetch logged-in user data
+// Fetch user data
 const fetchUserData = async () => {
   const loader = loadShow();
   try {
@@ -102,7 +102,7 @@ const fetchUserData = async () => {
   }
 };
 
-// Fetch user profile info
+// Fetch profile data based on user ID in route params
 const fetchProfileData = async () => {
   try {
     const userId = route.params.id;
@@ -139,6 +139,7 @@ const fetchPortfolios = async () => {
   }
 };
 
+// Handle service click
 const handleServiceClick = (service) => {
   if (!service.availability) {
     toast.warning("This service is currently not accepting bookings.");
@@ -151,6 +152,7 @@ const handleServiceClick = (service) => {
   });
 };
 
+// Go to portfolio page
 const goToPortfolio = () => {
   if (!profileLoaded.value) {
     console.error("Profile data not loaded yet, cannot redirect.");
@@ -171,20 +173,21 @@ const goToPortfolio = () => {
   }
 };
 
-// Fetch data when profile ID changes
+// Watch for changes in the route and fetch the data
 watch(() => route.params.id, async () => {
   await fetchUserData();
   await fetchProfileData();
   await fetchUserServices();
   await fetchPortfolios();
-  await fetchCategories(); // Add categories fetch
+  await fetchCategories(); 
 }, { immediate: true });
 
+// Fetch initial data when mounted
 onMounted(async () => {
   await fetchUserData();
   await fetchProfileData();
   await fetchUserServices();
   await fetchPortfolios();
-  await fetchCategories(); // Add categories fetch
+  await fetchCategories(); 
 });
 </script>

@@ -1,12 +1,10 @@
 import axios from 'axios';
-import { useUserStore } from '@/stores/userStore';
 
 const userService = {
   // Fetch user profile by ID
   getUserProfile: async (userId) => {
     try {
-      const userStore = useUserStore(); // Access the user store
-      const token = userStore.token; // Get token from the store
+      const token = localStorage.getItem('authToken');
 
       if (!token) {
         throw new Error('Unauthorized: Missing authentication token');
@@ -15,7 +13,7 @@ const userService = {
       // Fetch the user profile for the logged-in user or another user by ID
       const response = await axios.get(`http://127.0.0.1:8000/users/${userId}`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Use token from the store for logged-in user
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
         },
       });
 
@@ -33,8 +31,7 @@ const userService = {
   // Fetch user by username
   getUserByUsername: async (username) => {
     try {
-      const userStore = useUserStore();
-      const token = userStore.token; // Use token from the store
+      const token = localStorage.getItem('authToken');
 
       if (!token) {
         throw new Error('Unauthorized: Missing authentication token');
@@ -42,7 +39,7 @@ const userService = {
 
       const response = await axios.get(`http://127.0.0.1:8000/users/username/${username}`, {
         headers: {
-            Authorization: `Bearer ${token}`, // Use token from the store
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
         },
       });
 
@@ -60,8 +57,7 @@ const userService = {
   // Update user profile
   updateUserProfile: async (userId, profileData) => {
     try {
-      const userStore = useUserStore();
-      const token = userStore.token; // Use token from the store
+      const token = localStorage.getItem('authToken');
 
       if (!token) {
         throw new Error('Unauthorized: Missing authentication token');
@@ -69,7 +65,7 @@ const userService = {
 
       const response = await axios.patch(`http://127.0.0.1:8000/users/edit/${userId}`, profileData, {
         headers: {
-            Authorization: `Bearer ${token}`, // Use token from the store
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
         },
       });
 

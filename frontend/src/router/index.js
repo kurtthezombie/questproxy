@@ -20,6 +20,8 @@ import OtpEmailVerification from '@/views/OtpEmailVerification.vue'
 import TransactionHistoryView from '@/views/TransactionHistoryView.vue'
 import MyReportsView from '@/views/MyReportsView.vue'
 import PaymentView from '@/views/PaymentView.vue'
+import Payment from '@/components/payment/Payment.vue'
+import PaymentCancel from '@/components/payment/PaymentCancel.vue'
 import BookingCard from '@/components/BookingCard.vue'
 
 const router = createRouter({
@@ -108,6 +110,16 @@ const router = createRouter({
       path: '/payment/:serviceId',
       name: 'PaymentView',
       component: PaymentView,
+    },
+    {
+      path: '/payment-success/:transaction_id',
+      name: 'PaymentSuccess',
+      component: Payment,
+    },
+    {
+      path: '/payment-cancel',
+      name: 'PaymentCancel',
+      component: PaymentCancel,
     },
     {
       path: '/bookings/:serviceId',

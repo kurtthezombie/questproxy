@@ -92,44 +92,18 @@ const updatePilot = async (id, updatedData) => {
   }
 };
 
-const fetchPortfolio = async (userId) => {
-  const token = localStorage.getItem('authToken');
-  try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/portfolios/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching portfolio:', error);
-    throw error;
-  }
-};
 
-const fetchUserDataById = async (userId) => {
-  const token = localStorage.getItem('authToken');
-  try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/users/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching user data:', error);
-    throw error;
-  }
-};
+
+
 
 const getUserProfile = async (userId) => {
   const userStore = useUserStore();
-  const token = userStore.token;  // Assuming you store the token in Pinia
+  const token = userStore.token;  
 
   try {
     const response = await axios.get(`http://127.0.0.1:8000/api/users/${userId}`, {
       headers: {
-        Authorization: `Bearer ${token}`  // Include the token in the header
+        Authorization: `Bearer ${token}` 
       }
     });
     return response.data;
@@ -154,7 +128,7 @@ const reportUser = async ({ reportedUserId, reason }) => {
   try {
     const reportData = {
       reason: reason,
-      reported_user_id: reportedUserId, // The ID of the user being reported
+      reported_user_id: reportedUserId, 
     };
 
     const response = await axios.post('http://localhost:8000/api/reports', reportData, {
@@ -163,11 +137,11 @@ const reportUser = async ({ reportedUserId, reason }) => {
       },
     });
 
-    return response.data; // Return the success response from the server
+    return response.data; 
   } catch (error) {
     console.error('Error reporting user:', error);
     alert('Failed to report user.');
-    throw error; // Re-throw the error for additional handling
+    throw error; 
   }
 };
 
@@ -224,8 +198,6 @@ export default {
   reportUser,
   editPilot,
   updatePilot,
-  fetchPortfolio,
-  fetchUserDataById,
   createService,
   getUserProfile
 };
