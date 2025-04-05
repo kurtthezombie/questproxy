@@ -50,6 +50,7 @@ class LoginController extends Controller
         try {
             $logout = $request->user()->currentAccessToken()->delete();
             $request->user()->tokens()->delete(); //use if u wanna delete all tokens hehe
+            Auth::logout();
             //if logout successful
             if ($logout) {
                 return response()->json([

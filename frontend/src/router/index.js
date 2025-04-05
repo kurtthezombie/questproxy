@@ -1,22 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import RegisterView from '../views/RegisterView.vue'
-import LoginView from '@/views/LoginView.vue'
 import Dashboard from '@/components/Dashboard.vue'
-import HomepageView from '@/views/HomePageView.vue';
-import LeaderboardsView from '@/views/LeaderboardsView.vue'
-import ConfirmDeleteUser from '@/views/ConfirmDeleteUser.vue'
-import AccountSettingview from '@/views/AccountSettingView.vue'
-import CreateServiceView from '@/views/CreateServiceView.vue'
-import UserProfileView from '@/views/UserProfileView.vue'
-import OtpEmailVerification from '@/views/OtpEmailVerification.vue'
+import HomeView from '../views/HomeView.vue'
+import LoginView from '@/views/LoginView.vue'
+import ReportView from '@/views/ReportView.vue'
 import ServiceView from '@/views/ServiceView.vue'
+import RegisterView from '../views/RegisterView.vue'
+import HomepageView from '@/views/HomePageView.vue';
+import PortfolioView from '@/views/PortfolioView.vue'
+import UserProfileView from '@/views/UserProfileView.vue'
 import EditServiceView from '@/views/EditServiceView.vue'
 import ServicesHistory from '@/views/ServicesHistory.vue'
-import NotificationsTest from '@/views/NotificationsTest.vue'
 import MyPortfolioView from '@/views/MyPortfolioView.vue'
-import PortfolioView from '@/views/PortfolioView.vue'
+import LeaderboardsView from '@/views/LeaderboardsView.vue'
+import CreateServiceView from '@/views/CreateServiceView.vue'
+import ConfirmDeleteUser from '@/views/ConfirmDeleteUser.vue'
+import NotificationsTest from '@/views/NotificationsTest.vue'
+import AccountSettingview from '@/views/AccountSettingView.vue'
+import OtpEmailVerification from '@/views/OtpEmailVerification.vue'
 import TransactionHistoryView from '@/views/TransactionHistoryView.vue'
+import MyReportsView from '@/views/MyReportsView.vue'
 import PaymentView from '@/views/PaymentView.vue'
 import BookingCard from '@/components/BookingCard.vue'
 
@@ -126,7 +128,17 @@ const router = createRouter({
       path: '/transaction-history',
       name: 'TransactionHistory',
       component: TransactionHistoryView,
-    }
+    },
+    {
+      path: '/report/:username',
+      name: 'ReportView',
+      component: ReportView,
+    },
+    {
+      path: '/myreports',
+      name: 'MyReports',
+      component: MyReportsView,
+    },
   ]
 });
 
