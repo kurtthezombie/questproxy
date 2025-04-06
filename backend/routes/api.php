@@ -40,7 +40,14 @@ Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class, 've
     ->name('verification.verify');
 
 //grouped routes that use middleware laravel sanctum
-Route::middleware(['auth:sanctum', 'auth'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/check-auth', function (Request $request) {
+        return response()->json([
+            'message' => 'Authenticated user found',
+            'user' => $request->user(),
+            'auth_user' => Auth::user()
+        ]);
+    });
 
     //email verification
     Route::controller(EmailVerificationController::class)->group(function () {
