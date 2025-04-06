@@ -1,13 +1,13 @@
 import api from '@/utils/api';
 import { callWithErrorHandling } from 'vue';
 
-const fetchTransactions = async (page = 1, searchQuery = '') => {
+const fetchTransactions = async (page = 1, searchQuery = '', searchColumn = 'id') => {
       try {
-            const response = await api.get(`/transactions?page=${page}&search=${searchQuery}`);
+            const response = await api.get(`/transactions?page=${page}&search=${searchQuery}&column=${searchColumn}`);
 
-            console.log(response.transactions);
+            console.log(response);
             
-            return response.transactions || {};
+            return response || {};
       } catch (error) {
             console.error("Error fetching transactions: ", error);
             throw error;

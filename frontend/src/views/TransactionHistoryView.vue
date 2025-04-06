@@ -12,17 +12,18 @@ const pagination = ref({
   last_page: 1, 
 });
 const searchQuery = ref('');
+const searchColumn = ref('status');
 const sortBy = ref('updated_at');
 const sortOrder = ref(1);
 
 const setPage = (page) => {
   if (page !== pagination.value.current_page) {
-    handleFetch(page);
+    handleFetch(page, searchQuery.value, searchColumn.value);
   }
 };
 
 const handleSearch = () => {
-  handleFetch(pagination.value.current_page, searchQuery.value);
+  handleFetch(pagination.value.current_page, searchQuery.value, searchColumn.value); // Pass selected column
 };
 
 const handleExport = async () => {
@@ -38,12 +39,12 @@ const handleExport = async () => {
   }
 };
 
-const handleFetch = async (page = 1, searchQuery = '') => {
+const handleFetch = async (page = 1, searchQuery = '', searchColumn = '') => {
   try {
     isLoading.value = true;
-    const data = await fetchTransactions(page, searchQuery);
-
-    transactions.value = data.data;
+    const data = await fetchTransactions(page, searchQuery,searchColumn);
+    console.log("Data: ", data);
+    transactions.value = data.transactions;
     pagination.value = {
       current_page: data.current_page,
       last_page: data.last_page,
@@ -54,13 +55,13 @@ const handleFetch = async (page = 1, searchQuery = '') => {
     toast.error(error.message);
   } finally {
     isLoading.value = false;
-    toast.success("Transactions fetched successfully!");
   }
 }
 
 const handleReset = () => {
   searchQuery.value = '';
-  handleFetch(pagination.value.current_page, '');
+  searchColumn.value = 'status';
+  handleFetch(pagination.value.current_page, '','status');
 }
 
 const sortTable = (column) => {
@@ -71,7 +72,7 @@ const sortTable = (column) => {
     sortBy.value = column;  // Update column for sorting
     sortOrder.value = 1;  // Default to ascending order
   }
-  handleFetch(pagination.value.current_page, searchQuery.value);  // Fetch sorted data
+  handleFetch(pagination.value.current_page, searchQuery.value, searchColumn.value);  // Fetch sorted data
 };
 
 onMounted(() => {
@@ -94,10 +95,16 @@ onMounted(() => {
             v-model="searchQuery"
             @keyup.enter="handleSearch"
             required 
-            placeholder="Search by Transaction ID"
+            placeholder="Search"
             />
         </label>
-        
+
+        <!-- Dropdown to select search column -->
+        <select v-model="searchColumn" class="input ml-3 w-1/6">
+          <option value="payment_id">Payment ID</option>
+          <option value="status">Status</option>
+        </select>
+
         <!--reset btn-->
         <button class="btn btn-square btn-sm ml-3" @click="handleReset">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -108,21 +115,6 @@ onMounted(() => {
         <table class="table w-full">
           <thead>
             <tr>
-              <th>
-                <button @click="sortTable('id')" class="flex items-center gap-1">
-                  Transaction ID
-                  <span v-if="sortBy === 'id'">
-                    <svg v-if="sortOrder === 1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                      stroke-width="1.5" stroke="currentColor" class="size-4">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
-                    </svg>
-                    <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                      stroke="currentColor" class="size-4">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </span>
-                </button>
-              </th>
               <th>
                 <button @click="sortTable('payment_id')" class="flex items-center gap-1">
                   Payment ID
@@ -209,7 +201,6 @@ onMounted(() => {
             </tr>
 
             <tr v-for="transaction in transactions" v-if="!isLoading" :key="transaction.id" class="hover:bg-base-300 hover:cursor-pointer duration-200 transition-all">
-              <td>{{ transaction.id }}</td>
               <td>{{ transaction.payment_id }}</td>
               <td>{{ transaction.payment?.amount }}</td>
               <td>{{ transaction.status }}</td>
