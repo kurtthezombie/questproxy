@@ -51,8 +51,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     //email verification
     Route::controller(EmailVerificationController::class)->group(function () {
-        Route::post('check-otp','checkOtp');
-        Route::post('resend-otp','resend');
+        Route::post('otp/check','checkOtp');
+        Route::post('otp/resend','resend');
+        Route::post('otp/cancel','cancel');
     });
 
     Route::controller(LoginController::class)->group(function () {
