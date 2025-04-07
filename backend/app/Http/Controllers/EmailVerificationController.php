@@ -6,13 +6,22 @@ use App\Http\Requests\MyEmailVerificationRequest;
 use App\Mail\EmailVerification;
 use App\Models\Otp;
 use App\Models\User;
+use App\Services\UserService;
 use App\Traits\ApiResponseTrait;
+use Exception;
 use Illuminate\Http\Request;
 use Mail;
 
 class EmailVerificationController extends Controller
 {
     use ApiResponseTrait;
+
+    protected $userService;
+
+    public function __construct(UserService $userService) {
+        $this->userService = $userService;
+    }
+
     public function checkVerified(Request $request){
         if ($request->email_verified_at != null) {
             return response()->json([
@@ -50,7 +59,7 @@ class EmailVerificationController extends Controller
             return $this->verify($request);
         }
 
-        return $this->failedResponse('Invalid OTP or already used.',400);
+        return $this->failedResponse('Invalid OTP or already used.',500);
     }
 
     public function resend(Request $request) {
@@ -76,5 +85,20 @@ class EmailVerificationController extends Controller
         }
 
         Mail::to($request->email)->send(new EmailVerification($otp));
+    }
+
+    public function cancel(Request $request) 
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+            ]);
+
+            $userDeleted = $this->userService->cancelAccountDeletion($request->email);
+    
+            return $this->successResponse('Verification cancelled and user deleted.', 200);
+        } catch (Exception $e) {
+            return $this->failedResponse('User already verified', 500);
+        }
     }
 }
