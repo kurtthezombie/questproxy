@@ -64,5 +64,3 @@ if (!isLoggedIn()) {
         </div>
     </div>
 </template>
-
-
