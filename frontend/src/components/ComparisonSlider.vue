@@ -84,8 +84,8 @@ export default {
   position: relative;
   overflow: hidden;
   margin: 0 auto;
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
-  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+  border-radius: 12px;
 }
 
 .image-container {
@@ -114,34 +114,33 @@ export default {
 
 .text-overlay {
   position: absolute;
-  bottom: 30px;
-  padding: 15px;
-  background-color: rgba(0, 0, 0, 0.7);
+  bottom: 20px;
+  padding: 12px;
+  background-color: rgba(0, 0, 0, 0.6);
   color: #ffffff;
-  max-width: 80%;
+  max-width: 75%;
   text-align: center;
   border-radius: 8px;
   font-family: 'Orbitron', sans-serif;
-  font-size: 16px;
-  line-height: 1.4;
-  text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
-  border: 2px solid #00ff00;
-  transform: perspective(500px) rotateX(10deg);
-  transition: all 0.3s ease;
+  font-size: 14px;
+  line-height: 1.5;
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+  border: 1px solid #00ff00;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .text-overlay:hover {
-  transform: perspective(500px) rotateX(0deg) scale(1.05);
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
 }
 
 .left-text {
-  left: 20px;
+  left: 10%;
   clip-path: inset(0 calc(100% - var(--slider-position, 50%)) 0 0);
 }
 
 .right-text {
-  right: 20px;
+  right: 10%;
   clip-path: inset(0 0 0 var(--slider-position, 50%));
 }
 
@@ -160,36 +159,36 @@ export default {
   top: 0;
   bottom: 0;
   left: 50%;
-  width: 4px;
+  width: 3px;
   background-color: #00ff00;
   transform: translateX(-50%);
-  box-shadow: 0 0 10px #00ff00;
+  box-shadow: 0 0 8px #00ff00;
 }
 
 .slider-button {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   background-color: #00ff00;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 0 20px #00ff00;
+  box-shadow: 0 0 15px #00ff00;
   transition: all 0.3s ease;
 }
 
 .slider-button:hover {
   background-color: #00cc00;
-  box-shadow: 0 0 30px #00ff00;
+  box-shadow: 0 0 20px #00ff00;
 }
 
 .slider-arrow {
-  font-size: 24px;
+  font-size: 22px;
   color: #000000;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
 }
 </style>

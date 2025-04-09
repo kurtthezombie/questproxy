@@ -1,11 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
-    <NavBar
-      :username="username"
-      :email="email"
-      :role="role"
-      :callLogout="callLogout"
-    />
+    <NavBar/>
     
     <!-- Loading State -->
     <div v-if="serviceStore.loading" 

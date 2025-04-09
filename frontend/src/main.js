@@ -9,15 +9,20 @@ import router from './router'
 import 'vue-loading-overlay/dist/css/index.css';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import echo from './echo';
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
 const app = createApp(App)
 
 const pinia = createPinia()
+
 pinia.use(piniaPluginPersistedstate)
 
 app.use(pinia)
 
 app.use(LoadingPlugin);
-app.use(router)
+app.use(router);
+app.use(Toast);
+
 
 app.mount('#app')

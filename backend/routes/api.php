@@ -2,6 +2,7 @@
 //controllers
 use App\Events\NotificationBroadcastEvent;
 use App\Events\TestEvent;
+use App\Exports\TransactionsExport;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\CategoryController;
@@ -26,6 +27,7 @@ use App\Notifications\PilotMatchedNotification;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -38,11 +40,20 @@ Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class, 've
     ->name('verification.verify');
 
 //grouped routes that use middleware laravel sanctum
-Route::middleware(['auth:sanctum', 'auth'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/check-auth', function (Request $request) {
+        return response()->json([
+            'message' => 'Authenticated user found',
+            'user' => $request->user(),
+            'auth_user' => Auth::user()
+        ]);
+    });
 
     //email verification
     Route::controller(EmailVerificationController::class)->group(function () {
-        Route::post('check-otp','checkOtp');
+        Route::post('otp/check','checkOtp');
+        Route::post('otp/resend','resend');
+        Route::post('otp/cancel','cancel');
     });
 
     Route::controller(LoginController::class)->group(function () {
@@ -55,6 +66,7 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         //delete user
         Route::get('users', 'index');
         Route::get('users/{id}', 'show');
+        Route::get('users/username/{username}', 'showByUsername');
         Route::post('users/delete-email', 'requestAccountDeletion');
         Route::delete('users/delete/{id}', 'destroy');
         Route::get('check_login', 'checklogin'); //just for checking
@@ -75,9 +87,11 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('portfolios/{id}', 'show');//
         Route::post('portfolios/create', 'store');//
         Route::get('portfolios/edit/{id}', 'edit');
-        Route::patch('portfolios/edit/{id}', 'update');
+        Route::put('portfolios/edit/{id}', 'update');
         Route::delete('portfolios/delete/{id}', 'destroy');
         Route::delete('portfolios/delete/pilot/{pilot_id}', 'destroyAll');
+        Route::get('portfolios/user/{user_id}', 'getPortfolioByUser');
+        Route::get('portfolios/user/points/{username}', 'getPointsByUsername');
     });
 
     Route::controller(GamerController::class)->group(function () {
@@ -97,7 +111,8 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
     });
 
     Route::controller(ReportController::class)->group(function () {
-        Route::post('reports/create','store');
+        Route::get('reports','index');
+        Route::post('reports','store');
         Route::get('reports/{id}','show');
     });
 
@@ -120,9 +135,9 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
     });
 
     Route::controller(TransactionController::class)->group(function() {
-        Route::get('/users/{user_id}/transactions', 'transactionByUser');
+        Route::get('/transactions', 'transactionByUser');
         Route::get('/payments/{payment_id}/transactions','transactionByPayment');
-        Route::get('/export-transaction-history/{user_id}', 'exportTransactionHistory');
+        Route::get('/export-transaction-history', 'exportTransactionHistory');
     });
 
     Route::controller(NotificationController::class)->group(function() {
@@ -141,19 +156,18 @@ Route::post('login', [LoginController::class, 'login']);
 //register
 Route::post('signup', [UserController::class, 'create']);
 
-
 //Route::delete('portfolio/destroy/{id}',[PilotController::class,'destroyAllPortfolio']);
 Route::controller(RankController::class)->group(function () {
     Route::get('leaderboards', 'index');
     Route::get('leaderboards/{id}', 'show');
 });
 
-Route::post('rank/create', [RankController::class, 'store']);
-Route::delete('rank/delete/{id}', [RankController::class, 'destroy']);
-
 //testing
 Route::get('testPostman', function () {
     return response()->json('Postman is works and is running', 200);
+});
+Route::get('/test-export', function () {
+    return Excel::download(new TransactionsExport(1), 'transactions.xlsx');
 });
 
 Route::controller(CategoryController::class)->group(function () {
