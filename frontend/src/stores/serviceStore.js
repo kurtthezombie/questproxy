@@ -35,40 +35,6 @@ export const useServiceStore = defineStore('service', () => {
         }
     };
 
-    const submitBooking = async (serviceId, additionalNotes, credentialsUsername, credentialsPassword) => {
-        try {
-          const userStore = useUserStore();
-          const authToken = localStorage.getItem('authToken'); 
-      
-          if (!authToken) {
-            console.error('Authentication token missing.');
-            return;
-          }
-      
-          const response = await axios.post(
-            'http://127.0.0.1:8000/api/bookings/store',
-            {
-              client_id: userStore.userData.id,
-              service_id: serviceId,
-              additional_notes: additionalNotes,
-              credentials_username: credentialsUsername,
-              credentials_password: credentialsPassword,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${authToken}`,
-                'Content-Type': 'application/json',
-              },
-            }
-          );
-      
-          return response.data;
-        } catch (error) {
-          console.error('Booking submission error:', error);
-          throw error;
-        }
-      };
-
     const createService = async (serviceData) => {
         loading.value = true;
         try {
@@ -116,37 +82,6 @@ export const useServiceStore = defineStore('service', () => {
         } catch (err) {
             error.value = err.message || 'Error fetching services';
             console.error('Error fetching services:', err);
-        } finally {
-            loading.value = false;
-        }
-    };
-
-    const fetchServiceById = async (serviceId) => {
-        if (!serviceId) {
-            error.value = "Service ID is required.";
-            return;
-        }
-
-        loading.value = true;
-        try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/services/${serviceId}`, {
-                headers: {
-                    Authorization: `${localStorage.getItem('tokenType')} ${localStorage.getItem('authToken')}`
-                }
-            });
-
-            console.log("Fetched service by ID:", response.data);
-
-            if (response.data.service) {
-                service.value = response.data.service;
-            } else if (response.data.data && response.data.data.service) {
-                service.value = response.data.data.service;
-            } else {
-                error.value = "Invalid service data received.";
-            }
-        } catch (err) {
-            error.value = err.message || "Error fetching service details.";
-            console.error("Error fetching service:", err);
         } finally {
             loading.value = false;
         }
@@ -204,8 +139,6 @@ export const useServiceStore = defineStore('service', () => {
             loading.value = false;
         }
     };
-
-    
     
     const deleteService = async (serviceId) => {
         loading.value = true;
@@ -232,8 +165,6 @@ export const useServiceStore = defineStore('service', () => {
         }
     };
 
-
-
     return {
         services,
         categories,
@@ -246,12 +177,9 @@ export const useServiceStore = defineStore('service', () => {
         fetchCategories,
         createService,
         fetchUserServices,
-        fetchServiceById,
         clearServices,
         updateService,
         deleteService,
         fetchServicesByPilot,
-        submitBooking
-        
     };
 });

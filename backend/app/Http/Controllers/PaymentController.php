@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Payment;
+use App\Models\Service;
+use App\Models\TransactionHistory;
 use App\Traits\ApiResponseTrait;
 use Auth;
 use DB;
@@ -55,7 +57,8 @@ class PaymentController extends Controller
                             'show_description' => false,
                             'show_line_items' => true,
                             'payment_method_types' => [
-                                "card","gcash","paymaya"
+                                "qrph","billease","card","dob","dob_ubp","brankas_bdo","brankas_landbank",
+                                "brankas_metrobank","gcash","grab_pay","paymaya"
                             ],
                             'line_items' => [
                                 [
@@ -88,6 +91,11 @@ class PaymentController extends Controller
                 'payer_id' => Auth::user()->id,
                 'booking_id' => $booking_id,
             ]);
+            //insert into transactions_history
+            $transaction = $this->addTransaction($payment->id, "pending");
+            if (!$transaction) {
+                throw new \Exception("Failed to create transaction history record.");
+            }
             
             DB::commit();
         } catch (\Exception $e) {
@@ -127,6 +135,9 @@ class PaymentController extends Controller
             $payment->method = $payment_method_used;
             $payment->status = $status;
             $payment->save();
+            
+            //create transaction history
+            $this->addTransaction($payment->id,$status);
 
             //return response
             return $this->successResponse('Payment successful.',200);
@@ -142,5 +153,14 @@ class PaymentController extends Controller
         }
 
         return $this->successResponse('Payments retrieved.',200,['payments' => $payments]);       
+    }
+
+    //refactors
+    public function addTransaction($payment_id, $status)
+    {
+        return TransactionHistory::create([
+            'payment_id' => $payment_id,
+            'status' => $status,
+        ]);
     }
 }

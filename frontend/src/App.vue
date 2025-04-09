@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="min-h-screen flex flex-col font-sans text-black" data-theme="light">
+  <div id="app" class="min-h-screen flex flex-col font-sans">
     <router-view></router-view>
   </div>
 </template>

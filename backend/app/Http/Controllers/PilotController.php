@@ -3,25 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pilot;
-use App\Services\PilotService;
-use App\Services\PilotServices;
 use App\Traits\ApiResponseTrait;
 use Auth;
 use DB;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class PilotController extends Controller
 {
     //
     use ApiResponseTrait;
-
-    protected $pilotService;
-
-    public function __construct(PilotService $pilotService){
-        $this->pilotService = $pilotService;
-    }
 
     public function getPilot(int $id, string $type)
     {
@@ -38,50 +29,69 @@ class PilotController extends Controller
     }
 
     public function index() {
-        try {
-            $pilots = $this->pilotService->index();
-            $message = $pilots->isEmpty() ? "No pilots yet." : "All pilots retrieved.";
+        $pilots = Pilot::all();
 
-            return $this->successResponse($message,200,['pilots' => $pilots]);
-        } catch (Exception $e) {
-            return $this->failedResponse('Failed to retrieve pilots: ' . $e->getMessage(),500);
+        if (!$pilots) {
+            return $this->failedResponse('Failed to retrieve pilots.',404);
         }
+        return $this->successResponse('All pilots retrieved.',200,['pilots' => $pilots]);
     }
 
     public function show($id) {
         try{
-            $pilot = $this->pilotService->findById($id);
+            $pilot = $this->getPilot($id,"pilot_id");
 
-            return $this->successResponse("Pilot record {$id} retrieved.", 200, ['pilot' => $pilot]);
-        } catch (ModelNotFoundException $e) {
-            return $this->failedResponse("Pilot record {$id} not found.",404);
+            if (!$pilot) {
+                return $this->failedResponse("Pilot record not found.",404);
+            } 
+            return $this->successResponse("Pilot record retrieved.", 200, ['pilot' => $pilot]);
         } catch (Exception $error) {
-            return $this->failedResponse("Error: " . $error->getMessage(),500);
+            return $this->failedResponse($error->getMessage(),500);
         }
     }
-
     public function edit($id)
     {
-        //just call the show function
-        return $this->show($id);
+        try {
+            //get pilot record
+            $pilot = $this->getPilot($id, "pilot_id");
+
+            if (!$pilot) {
+                return $this->failedResponse('Pilot record not found.',404);
+            }
+            //return data and fill up the forms
+            return $this->successResponse('Pilot record retrieved.',200,['pilot' => $pilot]);
+
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(),500);
+        }
     }
 
     public function update(Request $request, int $id)
     {
         //validate inputs
-        $data = $request->validate([
+        $request->validate([
             'skills' => 'required|string',
             'bio' => 'required|string',
         ]);
+        //retrieve pilot
+        $pilot = $this->getPilot($id,"pilot_id");
+        
+        if (!$pilot) {
+            return $this->failedResponse('Pilot record cannot be retrieved',404);
+        }
 
         try {
-            $this->pilotService->update($data,$id);
+            //replace them with the request
+            $pilot->update([
+                'skills' => $request->skills,
+                'bio' => $request->bio
+            ]);
 
             return $this->successResponse("Pilot has been updated successfully.",200);
-        } catch(ModelNotFoundException $e) {
-            return $this->failedResponse("Pilot {$id} is not found.",404);
         } catch (Exception $e) {
             return $this->failedResponse($e->getMessage(),500);
         }
+
     }
+
 }

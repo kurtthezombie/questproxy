@@ -4,24 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Instruction;
-use App\Services\BookingService;
-use App\Services\InstructionService;
 use App\Traits\ApiResponseTrait;
 use Crypt;
-use Exception;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
     use ApiResponseTrait;
-
-    protected $bookingService;
-    protected $instructionService;
-
-    public function __construct(BookingService $bookingService, InstructionService $instructionService){
-        $this->bookingService = $bookingService;
-        $this->instructionService = $instructionService;
-    }
 
     public function show($booking_id)
     {
@@ -33,25 +22,37 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         //validate
-        $data = $request->validate([
+        $request->validate([
             'client_id' => 'required',
             'service_id' => 'required',
             'additional_notes' => 'required|string',
             'credentials_username' => 'required|string',
             'credentials_password' => 'required|string',
         ]);
-        
-        try {
-            //create booking
-            $booking = $this->bookingService->create($data);
-            
-            $this->instructionService->create($booking->id,$data);
-            
-            //return success response
-            return $this->successResponse('Booking and instruction created successfully.', 200);
-        } catch (Exception $e) {
-            return $this->failedResponse("Error: " . $e->getMessage(), 500);
+
+        //create booking
+        $booking = Booking::create([
+            'client_id' => $request->client_id,
+            'service_id' => $request->service_id
+        ]);
+
+        if (!$booking) {
+            return $this->failedResponse('Booking failed.', 500);
         }
+
+        //create booking instruction
+        $instruction = Instruction::create([
+            'booking_id' => $booking->id,
+            'additional_notes' => $request->additional_notes,
+            'credentials_username' => Crypt::encryptString($request->credentials_username),
+            'credentials_password' => Crypt::encryptString($request->credentials_password),
+        ]);
+
+        if (!$instruction) {
+            return $this->failedResponse('Instruction creation failed', 500);
+        }
+        //return success response
+        return $this->successResponse('Booking created successfully.', 200);
     }
 
     public function destroy($booking_id)
@@ -70,48 +71,57 @@ class BookingController extends Controller
             'status' => 'required|string',
         ]);
 
-        try {
-            $updated = $this->bookingService->updateStatus($request->status,$booking_id);
-            return $this->successResponse('Booking status updated successfully', 200);
-        } catch (Exception $e) {
-            return $this->failedResponse('Error: ' . $e->getMessage(), 500);
-        }
+        $booking = Booking::findOrFail($booking_id);
+        $booking->status = $request->status;
+        $booking->save();
+
+        return $this->successResponse('Booking status updated successfully', 200);
     }
 
     public function updateInstruction(Request $request, $booking_id)
     {
-        $data = $request->validate([
+        $request->validate([
             'additional_notes' => 'nullable|string',
             'credentials_username' => 'nullable|string',
             'credentials_password' => 'nullable|string',
         ]);
-        try {
-            $instruction = $this->instructionService->update($booking_id, $data);
 
-            return $this->successResponse('Instructions updated successfully.',200);
-        } catch (Exception $e){
-            return $this->failedResponse('Error: ' . $e->getMessage(), 500);
-        }   
+        $instruction = Instruction::where('booking_id', $booking_id)->first();
+        if (!$instruction) {
+            return $this->failedResponse('Booking instruction not found.', 404);
+        }
+        // Update instruction fields if provided
+        if ($request->has('additional_notes')) {
+            $instruction->additional_notes = $request->additional_notes;
+        }
+        if ($request->has('credentials_username')) {
+            $instruction->credentials_username = Crypt::encryptString($request->credentials_username);
+        }
+        if ($request->has('credentials_password')) {
+            $instruction->credentials_password = Crypt::encryptString($request->credentials_password);
+        }
+
+        // Save the updated instruction
+        $instruction->save();
+
+        return $this->successResponse('Booking instruction updated successfully.', 200);
     }
 
     //booking by services
     public function booksByService($service_id)
     {
-        try {   
-            $bookings = $this->bookingService->booksByService($service_id);
+        //fetch books with certain service_id
+        $bookings = Booking::where('service_id', $service_id)->get();
 
-            $message = $bookings->isEmpty()
-            ? "No bookings found for Service $service_id."
-            : "Bookings of Service $service_id retrieved.";
-
-            return $this->successResponse(
-                $message,
-                200,
-                ['bookings' => $bookings->isEmpty() ? [] : $bookings]
-            );
-        } catch (Exception $e) {
-            return $this->failedResponse('Error: ' . $e->getMessage(),500);
+        if ($bookings->isEmpty()) {
+            return $this->failedResponse('No bookings yet for this service.', 204);
         }
+
+        return $this->successResponse(
+            "Bookings of Service $service_id retrieved.",
+            200,
+            ['bookings' => $bookings]
+        );
     }
 
     //booking by user
@@ -127,16 +137,25 @@ class BookingController extends Controller
     }
 
     public function getBookingInstructions($booking_id) {
-        try {
-            $instruction = $this->instructionService->retrieveInstructions($booking_id);
+        $booking = Booking::find($booking_id);
 
-            return $this->successResponse(
-                "Instructions for booking $booking_id is retrieved.",
-                200,
-                ['instruction' => $instruction],
-            );
-        } catch(Exception $e) {
-            return $this->failedResponse('Error: ' . $e->getMessage(), 500);
+        if (!$booking) {
+            return $this->failedResponse('Booking not found',404);
         }
+        $instruction = $booking->instruction;
+
+        if (!$instruction){
+            return $this->failedResponse('No instructions found for this booking', 404);
+        }
+
+        // Decrypt and set values directly on the instruction object
+        $instruction->credential_username = Crypt::decryptString($instruction->credential_username);
+        $instruction->credential_password = Crypt::decryptString($instruction->credential_password);
+
+        return $this->successResponse(
+            "Instructions for booking $booking_id is retrieved.",
+            200,
+            ['instruction' => $instruction],
+        );
     }
 }

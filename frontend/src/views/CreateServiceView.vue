@@ -91,7 +91,6 @@
 </template>
 
 <script setup>
-import axios from 'axios';
 import { ref, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useServiceStore } from '@/stores/serviceStore';
@@ -147,7 +146,6 @@ const submitService = async () => {
     console.error('Error in submitService:', error);
   }
 };
-
 
 const callLogout = () => {
   userStore.clearUser();

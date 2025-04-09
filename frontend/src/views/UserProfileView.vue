@@ -1,8 +1,6 @@
 <template>
-  <NavBar/>
   <div class="min-h-screen bg-gray-900">
-      <div class="flex items-center">
-      </div>
+    <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
     <div>
       <UserProfile />
     </div>
@@ -12,9 +10,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import UserProfile from '@/components/UserProfile.vue';
+import UserDropdown from '@/components/UserDropdown.vue';
 import loginService from '@/services/login-service';
-import { useLoader } from '@/services/loader-service';
 import NavBar from '@/components/NavBar.vue';
+import { useLoader } from '@/services/loader-service';
 
 const { loadShow, loadHide } = useLoader();
 
@@ -23,11 +22,7 @@ const email = ref('');
 const role = ref('');
 
 const callLogout = () => {
-  userStore.clearUser();
-  serviceStore.clearServices();
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('tokenType');
-  router.push({ name: 'login' });
+  localStorage.removeItem('token');
 };
 
 const fetchUserData = async () => {

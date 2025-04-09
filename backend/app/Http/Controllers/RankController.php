@@ -3,35 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rank;
-use App\Services\RankService;
 use App\Traits\ApiResponseTrait;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use App\Traits\RankOperations;
 
 class RankController extends Controller
 {
     use RankOperations, ApiResponseTrait;
-
-    protected $rankService;
-
-    public function __construct(RankService $rankService){
-        $this->rankService = $rankService;
-    }
-
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        try {
-            $rankings = $this->rankService->index();
-            $message = $rankings->isEmpty() ? "The leaderboard is currently empty." : "Leaderboard data has been successfully retrieved.";
+        $rank_records = Rank::with(['pilot.user'])->get();
 
-            return $this->successResponse($message,200,['rankings' => $rankings]);
-        } catch (Exception $e){
-            return $this->failedResponse("Error: " . $e->getMessage(), 500);
+        // Prepare the response data
+        $rankings = $rank_records->map(function ($rank) {
+            $pilot = $rank->pilot;
+
+            return [
+                'pilot_username' => $pilot->user->username,
+                'points' => $rank->points,
+            ];
+        });
+        if ($rankings) {
+            return $this->successResponse('Leaderboard data has been successfully retrieved.',200,['rankings' => $rankings]);
+        } else {
+            return $this->successResponse('The leaderboard is currently empty.',200,['rankings'=>$rankings]);
         }
     }
 
@@ -41,36 +40,42 @@ class RankController extends Controller
     public function store()
     {
         try {
-            $created = $this->rankService->create();
+            $created = $this->createRankRecord();
 
-            return $this->successResponse("Rank record created.",201);
+            return $this->successResponse("Rank record created",201);
         } catch (Exception $error) {
             return $this->failedResponse($error->getMessage(),500);
         }
     }
-    
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
         try {
-            $rank_record = $this->rankService->findById($id);
-
+            $rank_record = Rank::with('pilot.user')->findOrFail($id);
+            $username = $rank_record->pilot->user->username;
             //continue here?
             return $this->successResponse('Rank record successfully retrieved.',200,[
                 'rank_record' => [
                     'id' => $rank_record->id,
                     'rank' => $rank_record->pilot_rank,
                     'points' => $rank_record->points,
-                    'username' => $rank_record->pilot->user->username,
+                    'username' => $username,
                 ]
             ]);
-        } catch (ModelNotFoundException $e){
-            return $this->failedResponse("Rank record {$id} is not found.",404);
-        } catch (Exception $e) {
-            return $this->failedResponse("Error: " . $e->getMessage(),500);
+
+        } catch (Exception $error) {
+            return $this->failedResponse('Rank record not found.',404,['rank_record' => $rank_record]);
         }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
     }
 
     /**
@@ -79,13 +84,14 @@ class RankController extends Controller
     public function destroy(int $id)
     {
         try {
-            $deleted = $this->rankService->delete($id);
+            $deleted = $this->destroyRankRecord($id);
+            if (!$deleted) {
+                return $this->failedResponse("Error occured, Deletion failed.", 400);
+            }
 
             return $this->successResponse("Rank record deleted.",201);
-        } catch (ModelNotFoundException $e){
-            return $this->failedResponse("Rank record {$id} not found.",404);
         } catch (Exception $error) {
-            return $this->failedResponse("Error: " . $e->getMessage(),500);
+            return $this->failedResponse($error->getMessage(),500);
         }
     }
 }
