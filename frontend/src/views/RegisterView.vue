@@ -144,7 +144,7 @@ onMounted(() => {
               @click="cancelHandler">Cancel
             </button>
             <button 
-              type="button" 
+              type="submit" 
               class="w-1/2 p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">
               Register
             </button>
