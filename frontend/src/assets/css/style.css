@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -22,6 +23,13 @@
 }
 
 /* Navigation Styles */
+
+.navbar-container {
+  max-width: 1200px; /* Match the content width */
+  margin: 0 auto; /* Center it */
+  padding: 0 1rem; /* Add some padding */
+}
+
 nav {
   font-size: 14px;
   margin-top: 2rem;
@@ -43,10 +51,40 @@ nav a:hover {
   border-bottom: 2px solid #42b983;
 }
 
-
 nav a.router-link-exact-active {
   color: #42b983;
   border-bottom: 2px solid #42b983;
+}
+
+.gradient-circle {
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(23, 214, 102, 0.6) 0%, rgba(0,0,0,0) 70%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.gradient-circle-sign-up {
+  width: 1100px;
+  height: 900px;
+  background: radial-gradient(circle, rgba(23, 214, 102, 0.6) 0%, rgba(0,0,0,0) 70%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.relative-container {
+  position: relative;
+  z-index: 1; /* Allow the circle to be placed behind content */
+}
+
+.font-poppins {
+  font-family: 'Poppins', sans-serif !important;
 }
 
 /* Responsive Media Queries */
@@ -57,6 +95,7 @@ nav a.router-link-exact-active {
     align-items: center;
     padding: 2rem;
     text-align: left;
+    box-shadow: 0 4px 10px rgba(23, 214, 102, 0.6); 
   }
 
   .logo {

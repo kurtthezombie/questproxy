@@ -32,24 +32,37 @@ if (!isLoggedIn()) {
 
 <template>
     <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
-      <div class="min-h-screen bg-gray-900 flex flex-col">
-        <div class="mt-40 flex justify-center">
-            <h2 class="text-5xl text-gray-500">Leaderboards</h2>
+    <div class="min-h-screen bg-gray-900 flex flex-col font-poppins">
+        <div class="mt-20 flex justify-center">
+            <h2 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500 font-poppins">
+                LEADERBOARD
+            </h2>
         </div>
-        <div class="mt-10 flex flex-col justify-center items-center">
-            <table v-if="records.length > 0"
-                class="w-2/6 shadow-2xl font-[Poppins] border-2 border-red-100 rounded-lg bg-purple-300/5 overflow-hidden">
-                <tbody>
-                    <tr
-                        class="text-2xl text-gray-500 hover:scale-105 hover:bg-purple-200 hover:rounded-lg hover:text-black text-center cursor-pointer duration-300"
-                        v-for="(record, index) in records" :key="index">
-                        <td class="py-3 px-10">{{ index + 1 }}</td>
-                        <td class="py-3 px-10">{{ record.pilot_username }}</td>
-                        <td class="py-3 px-10">{{ record.points }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p v-else class="text-gray-50">No rankings available.</p>
+        <div class="mt-10 flex flex-col justify-center items-center space-y-4 font-poppins">
+            <!-- Container for rows -->
+            <div v-if="records.length > 0" class="w-2/6 font-poppins">
+                <!-- Table Header with smaller text -->
+                <div class="flex bg-gray-800 text-gray-100 text-sm py-3 px-15 mb-7 text-center font-poppins">
+                    <div class="flex-1">Rank</div>
+                    <div class="flex-1">Game Pilot</div>
+                    <div class="flex-1">Points</div>
+                </div>
+                <!-- Data Rows -->
+<div v-for="(record, index) in records" :key="index" 
+    class="flex bg-gray-800 text-gray-100 text-center cursor-pointer 
+        duration-300 shadow-xl hover:shadow-2xl p-1 mb-4 
+        hover:bg-gradient-to-r from-green-400 to-blue-500 hover:text-gray-900 
+        transform scale-100 hover:scale-105 transition-all ease-in-out">
+    <div class="flex-1 py-3 px-10">{{ String(index + 1).padStart(2, '0') }}</div>
+    <div class="flex-1 py-3 px-10">{{ record.pilot_username }}</div>
+    <div class="flex-1 py-3 px-10">{{ record.points }}</div>
+</div>
+
+
+            </div>
+            <p v-else class="text-gray-50 font-poppins">No rankings available.</p>
         </div>
     </div>
 </template>
+
+

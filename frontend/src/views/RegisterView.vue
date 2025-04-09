@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import loginservice from '@/services/login-service';
 import { useLoader } from '@/services/loader-service';
 
-//form
+// Form state
 const form = reactive({
   username: '',
   email: '',
@@ -16,25 +16,35 @@ const form = reactive({
   role: '',
 });
 
-//message variables
+// Message state
 const message = reactive({
   success: null,
-  error: null
-})
+  error: null,
+});
 
 const { loadShow, loadHide } = useLoader();
 const router = useRouter();
 
+// Form submission handler
 const submitForm = async () => {
-  message.error = '';
+  message.error = ''; // Reset error message
 
-  // Confirm password validation
+  // Basic field validation
+  if (!form.username || !form.email || !form.f_name || !form.l_name || !form.password || !form.confirmPassword || !form.contact_number || !form.role) {
+    message.error = "Please fill all required fields.";
+    return;
+  }
+
+  // Password match validation
   if (form.password !== form.confirmPassword) {
     message.error = "Passwords do not match!";
     return;
   }
 
+  // Loader visibility
   const loader = loadShow();
+
+  // Prepare form data
   const formData = {
     username: form.username,
     email: form.email,
@@ -48,124 +58,92 @@ const submitForm = async () => {
   try {
     const response = await loginservice.register(formData);
     if (response.status) {
-      //message
       message.success = 'Registration successful!';
-      //login
-      loginservice.login({
+      
+      // Perform login after successful registration
+      await loginservice.login({
         username: formData.username,
-        password: formData.password
+        password: formData.password,
       });
-      //push to otp
+
+      // Navigate to OTP verification
       router.push({ path: '/otp-verification', query: { email: form.email } });
-      //router.push({ path: '/login', query: { message: 'Registration successful!' } });
     } else {
-      message.error = response.message;
-      handleReload();
+      message.error = response.message || 'Registration failed. Please try again.';
     }
   } catch (error) {
-    message.error = 'An error occurred during registration. Please try again.';
+    message.error = 'An error occurred during registration. Please try again later.';
   } finally {
     loadHide(loader);
   }
 };
 
 onMounted(() => {
-  //removed captcha
+  // Optional: Remove captcha
 });
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-200">
-    <div class="bg-gray-100 p-8 rounded-lg shadow-lg max-w-3xl w-full shadow-lime-100 border-lime-300 border">
+  <div class="min-h-screen flex items-center justify-center bg-black">
+    <div class="absolute inset-0 flex justify-center items-center " >
+      <div class="gradient-circle-sign-up"></div>
+    </div> 
+    <div class="bg-black bg-opacity-60 backdrop-blur-md p-8 rounded-lg shadow-2xl max-w-3xl w-full border-lime-300">
       <div class="text-center mb-6">
-        <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
-        <h1 class="text-2xl font-bold text-gray-800 mt-4">Signup</h1>
+        <router-link to="/" class="block">
+          <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
+        </router-link>
+        <h1 class="text-3xl font-semibold text-white mt-4">Signup</h1>
       </div>
 
-      <!-- Success message -->
-      <div v-if="message.success"
-        class="flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-300 dark:border-green-800"
-        role="alert">
-        <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor" viewBox="0 0 20 20">
-          <path
-            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+      <!-- Success Message -->
+      <div v-if="message.success" class="flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50">
+        <svg class="w-5 h-5 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
         </svg>
-        <span class="sr-only">Info</span>
-        <div>
-          <span class="font-medium">Success!</span> {{ message.success }}
-        </div>
+        <span><strong>Success!</strong> {{ message.success }}</span>
       </div>
 
-      <!-- Error message -->
-      <div v-if="message.error"
-        class="flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-        role="alert">
-        <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor" viewBox="0 0 20 20">
-          <path
-            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+      <!-- Error Message -->
+      <div v-if="message.error" class="flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
+        <svg class="w-5 h-5 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
         </svg>
-        <span class="sr-only">Error</span>
-        <div>
-          <span class="font-medium">Error!</span> {{ message.error }}
-        </div>
+        <span><strong>Error!</strong> {{ message.error }}</span>
       </div>
 
-      <form @submit.prevent="submitForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Form inputs remain unchanged -->
-        <div class="space-y-3">
-          <div class="form-group">
-            <input type="text" id="username" v-model="form.username" placeholder="Username" required
-              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-          </div>
-          <div class="form-group">
-            <input type="text" id="first-name" v-model="form.f_name" placeholder="First Name" required
-              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-          </div>
-          <div class="form-group">
-            <input type="text" id="last-name" v-model="form.l_name" placeholder="Last Name" required
-              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-          </div>
-          <div class="form-group">
-            <input type="email" id="email" v-model="form.email" placeholder="Email" required
-              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-          </div>
+      <!-- Registration Form -->
+      <form @submit.prevent="submitForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Section (Personal Info) -->
+        <div class="space-y-4">
+          <input type="text" id="username" v-model="form.username" placeholder="Username" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="text" id="first-name" v-model="form.f_name" placeholder="First Name" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="text" id="last-name" v-model="form.l_name" placeholder="Last Name" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="email" id="email" v-model="form.email" placeholder="Email" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
         </div>
-        <div class="space-y-3">
-          <div class="form-group">
-            <input type="password" id="password" v-model="form.password" placeholder="Password" required
-              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-          </div>
-          <div class="form-group">
-            <input type="password" id="confirm-password" v-model="form.confirmPassword" placeholder="Confirm Password"
-              required
-              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-          </div>
-          <div class="form-group">
-            <input type="text" id="contact-number" v-model="form.contact_number" placeholder="Contact Number" required
-              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-          </div>
-          <div class="form-group">
-            <select id="role" v-model="form.role" required
-              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-              <option value="" disabled>Select Role</option>
-              <option value="gamer">Online Games Enthusiast</option>
-              <option value="game pilot">Game Pilot</option>
-            </select>
-          </div>
+
+        <!-- Right Section (Account Info) -->
+        <div class="space-y-4">
+          <input type="password" id="password" v-model="form.password" placeholder="Password" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="password" id="confirm-password" v-model="form.confirmPassword" placeholder="Confirm Password" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="text" id="contact-number" v-model="form.contact_number" placeholder="Contact Number" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <select id="role" v-model="form.role" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+            <option value="" disabled>Select Role</option>
+            <option value="gamer">Online Games Enthusiast</option>
+            <option value="game pilot">Game Pilot</option>
+          </select>
         </div>
+
+        <!-- Submit Button -->
         <div class="md:col-span-2 flex flex-col space-y-4">
-          <button type="submit"
-            class="w-full p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">
+          <button type="submit" class="w-full p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300">
             Register
           </button>
         </div>
       </form>
 
-      <router-link class="block text-center text-green-500 mt-4 hover:underline" to="/login">
-        Login now
-      </router-link>
+      <!-- Login Link -->
+      <router-link class="block text-center text-green-500 mt-4 hover:underline" to="/login">Already have an account? Login</router-link>
     </div>
   </div>
 </template>
