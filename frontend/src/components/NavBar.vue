@@ -1,12 +1,14 @@
 <template>
-  <header class="bg-gray-950 sticky top-0 z-50 p-4">
+  <header class="bg-gray-900 sticky top-0 z-50 p-4 shadow-lg border-b border-green-500">
     <div class="container mx-auto flex justify-between items-center px-20">
+      <!-- Logo Section -->
       <div class="flex items-center">
         <router-link to="/home" class="flex flex-row items-center">
           <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
-          <span class="text-2xl font-bold text-green-500">QuestProxy</span>
+          <span class="text-2xl font-bold text-white">QuestProxy</span>
         </router-link>
-      </div>   
+      </div>
+      
       <nav class="flex items-center gap-0">
         <router-link to="/home" class="text-white hover:text-green-500 transition-colors duration-300">
           Home
