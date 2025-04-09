@@ -78,22 +78,28 @@ const submitForm = async () => {
   }
 };
 
+// Cancel button handler
+const cancelHandler = () => {
+  router.push('/'); // Navigate to the home page
+};
+
 onMounted(() => {
   // Optional: Remove captcha
 });
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-black">
-    <div class="absolute inset-0 flex justify-center items-center " >
-      <div class="gradient-circle-sign-up"></div>
+  <div class="min-h-screen flex items-center justify-center bg-gray-900">
+    <div class="absolute inset-0 flex justify-center items-center">
     </div> 
-    <div class="bg-black bg-opacity-60 backdrop-blur-md p-8 rounded-lg shadow-2xl max-w-3xl w-full border-lime-300">
+    <div class="bg-white backdrop-blur-md p-8 rounded-lg shadow-2xl max-w-lg w-full border-lime-300">
       <div class="text-center mb-6">
         <router-link to="/" class="block">
           <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
         </router-link>
-        <h1 class="text-3xl font-semibold text-white mt-4">Signup</h1>
+        <h1 class="text-2xl font-bold mt-4">Sign up</h1>
+        <p class="text-gray-500 text-sm mt-4">Join QuestProxy to connect with skilled gaming pilots</p>
+
       </div>
 
       <!-- Success Message -->
@@ -113,21 +119,16 @@ onMounted(() => {
       </div>
 
       <!-- Registration Form -->
-      <form @submit.prevent="submitForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Left Section (Personal Info) -->
-        <div class="space-y-4">
-          <input type="text" id="username" v-model="form.username" placeholder="Username" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-          <input type="text" id="first-name" v-model="form.f_name" placeholder="First Name" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-          <input type="text" id="last-name" v-model="form.l_name" placeholder="Last Name" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-          <input type="email" id="email" v-model="form.email" placeholder="Email" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-        </div>
-
-        <!-- Right Section (Account Info) -->
-        <div class="space-y-4">
-          <input type="password" id="password" v-model="form.password" placeholder="Password" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-          <input type="password" id="confirm-password" v-model="form.confirmPassword" placeholder="Confirm Password" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-          <input type="text" id="contact-number" v-model="form.contact_number" placeholder="Contact Number" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-          <select id="role" v-model="form.role" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+      <form @submit.prevent="submitForm" class="flex flex-col items-center space-y-6">
+        <div class="space-y-4 w-3/4">
+          <input type="text" id="username" v-model="form.username" placeholder="Username" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="text" id="first-name" v-model="form.f_name" placeholder="First Name" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="text" id="last-name" v-model="form.l_name" placeholder="Last Name" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="email" id="email" v-model="form.email" placeholder="Email" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="password" id="password" v-model="form.password" placeholder="Password" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="password" id="confirm-password" v-model="form.confirmPassword" placeholder="Confirm Password" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="text" id="contact-number" v-model="form.contact_number" placeholder="Contact Number" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <select id="role" v-model="form.role" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
             <option value="" disabled>Select Role</option>
             <option value="gamer">Online Games Enthusiast</option>
             <option value="game pilot">Game Pilot</option>
@@ -135,15 +136,29 @@ onMounted(() => {
         </div>
 
         <!-- Submit Button -->
-        <div class="md:col-span-2 flex flex-col space-y-4">
-          <button type="submit" class="w-full p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300">
-            Register
-          </button>
+        <div class="flex flex-col space-y-4 w-3/4">
+          <div class="flex space-x-4">
+            <button 
+              type="button" 
+              class="w-1/2 p-3 border border-gray-300 bg-transparent rounded-lg hover:bg-gray-300 transition duration-300"
+              @click="cancelHandler">Cancel
+            </button>
+            <button 
+              type="button" 
+              class="w-1/2 p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">
+              Register
+            </button>
+          </div>
         </div>
       </form>
+      
+      <!-- Divider -->
+      <div class="border-t border-gray-200 dark:border-gray-300 my-5"></div>
 
       <!-- Login Link -->
-      <router-link class="block text-center text-green-500 mt-4 hover:underline" to="/login">Already have an account? Login</router-link>
+      <router-link class="block text-sm text-center mt-4 hover:underline text-gray-600" to="/login">
+        Already have an account? <span class="text-green-500">Log in</span>
+      </router-link>
     </div>
   </div>
 </template>

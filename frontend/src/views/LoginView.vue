@@ -71,11 +71,10 @@ const submitForm = async () => {
 
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-black">
+  <div class="min-h-screen flex items-center justify-center bg-gray-900">
     <div class="absolute inset-0 flex justify-center items-center " >
-      <div class="gradient-circle"></div>
     </div> 
-    <div class="bg-black bg-opacity-60 backdrop-blur-md p-8 rounded-lg shadow-lg max-w-md w-full">
+    <div class="bg-white backdrop-blur-md p-8 rounded-lg shadow-lg max-w-md w-full">
       <div class="text-center mb-6">
         <router-link to="/" class="block">
           <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
@@ -114,13 +113,16 @@ const submitForm = async () => {
           <input type="password" v-model="password" placeholder="Password" required
             class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
         </div>
-        <button type="submit" class="w-full p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">
-          Login
+        <button type="submit" class="w-full p-3 bg-green-500 font-semibold text-white rounded-lg hover:bg-green-600 transition duration-300">
+          Log in
         </button>
       </form>
 
-      <router-link class="block text-center text-green-500 mt-4 hover:underline" to="/signup">
-        Sign Up Now!
+        <!-- Divider -->
+        <div class="border-t border-gray-200 dark:border-gray-300 my-5"></div>
+
+      <router-link class="block text-center text-sm mt-4 hover:underline text-gray-600" to="/signup">
+        Don't have an account? <span class="text-green-500">Sign Up</span>
       </router-link>
     </div>
   </div>
