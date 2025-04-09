@@ -136,26 +136,31 @@ const router = createRouter({
       path: '/myportfolios',
       name: 'MyPortfolio',
       component: MyPortfolioView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/portfolio/:username',
       name: 'PortfolioView',
       component: PortfolioView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/transaction-history',
       name: 'TransactionHistory',
       component: TransactionHistoryView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/report/:username',
       name: 'ReportView',
       component: ReportView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/myreports',
       name: 'MyReports',
       component: MyReportsView,
+      meta: { requiresAuth: true },
     },
   ]
 });
