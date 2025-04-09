@@ -6,8 +6,7 @@
           <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
           <span class="text-2xl font-bold text-green-500">QuestProxy</span>
         </router-link>
-      </div>
-      
+      </div>   
       <nav class="flex items-center gap-0">
         <router-link to="/home" class="text-white hover:text-green-500 transition-colors duration-300">
           Home

@@ -21,66 +21,60 @@
             </div>
           </div>
 
+          <!-- Update Account Form -->
           <form @submit.prevent="UpdateForm">
             <div class="grid gap-6 mb-6 md:grid-cols-2">
-              <!-- First Name -->
+              <!-- Form Fields for Name, Email, and Contact Number -->
               <div>
                 <label for="firstName" class="block mb-2 text-sm font-medium text-gray-800">First Name</label>
-                <input
-                  type="text"
-                  id="firstName"
-                  class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5"
-                  v-model="firstName"
-                  required
-                />
+                <input type="text" id="firstName" class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" v-model="firstName" required />
               </div>
-
-              <!-- Last Name -->
               <div>
                 <label for="lastName" class="block mb-2 text-sm font-medium text-gray-800">Last Name</label>
-                <input
-                  type="text"
-                  id="last_name"
-                  class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5"
-                  v-model="lastName"
-                  required
-                />
+                <input type="text" id="last_name" class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" v-model="lastName" required />
               </div>
-
-              <!-- Email -->
               <div>
                 <label for="email" class="block mb-2 text-sm font-medium text-gray-800">Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5"
-                  v-model="email" 
-                  required
-                />
+                <input type="email" id="email" class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" v-model="email" required />
               </div>
-
-              <!-- Contact Number -->
               <div>
                 <label for="contact_number" class="block mb-2 text-sm font-medium text-gray-800">Contact Number</label>
-                <input
-                  type="tel"
-                  id="contact_number"
-                  class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5"
-                  v-model="contactNumber"
-                  placeholder="123-456-7890"
-                  required
-                />
+                <input type="tel" id="contact_number" class="bg-white border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" v-model="contactNumber" placeholder="123-456-7890" required />
               </div>
             </div>
-
-            <!-- Save Button -->
-            <button
-              type="submit"
-              class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-            >
-              Save
-            </button>
+            <button type="submit" class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Save</button>
           </form>
+
+          <!-- Account Deletion Section -->
+          <div class="mt-10">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Delete Account</h2>
+            <p class="text-gray-700 mb-4">This action cannot be undone. Confirm if you want to delete your account.</p>
+            <button @click="showConfirmationModal" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition duration-200">Delete My Account</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div v-if="isConfirmationModalOpen" id="popup-modal" tabindex="-1" class="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
+      <div class="relative p-4 w-full max-w-md">
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+          <button @click="hideConfirmationModal" type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+          <div class="p-4 md:p-5 text-center">
+            <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+            <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete your account?</h3>
+            <button @click="handleDeleteAccount" type="button" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+              Yes, I'm sure
+            </button>
+            <button @click="hideConfirmationModal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">No, cancel</button>
+          </div>
         </div>
       </div>
     </div>
@@ -89,6 +83,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import axios from 'axios';
 import Sidebar from '@/components/Sidebar.vue';
 import loginService from '@/services/login-service'; 
 import { useRouter } from 'vue-router';
@@ -106,9 +101,9 @@ const lastName = ref('');
 const contactNumber = ref('');
 const userId = ref('');
 const message = ref(''); 
+const isConfirmationModalOpen = ref(false); 
 
 // Fetch user data and populate form fields
-
 const fetchUserData = async () => {
   const loader = loadShow();
   try {
@@ -158,11 +153,57 @@ const UpdateForm = async () => {
   }
 };
 
+// Show/hide confirmation modal
+const showConfirmationModal = () => {
+  isConfirmationModalOpen.value = true;
+};
+
+const hideConfirmationModal = () => {
+  isConfirmationModalOpen.value = false;
+};
+
+// Handle account deletion
+const handleDeleteAccount = async () => {
+  hideConfirmationModal(); 
+  const loader = loadShow();
+  try {
+    // Call the requestAccountDeletion endpoint
+    const response = await axios.post(
+      'http://localhost:8000/api/users/delete-email',
+      {}, 
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+      }
+    );
+
+    // Show success message
+    if (response.data && response.data.message) {
+      alert(response.data.message); 
+    } else {
+      alert('A confirmation email has been sent to your email address. Please check your inbox.');
+    }
+  } catch (error) {
+    console.error('Error sending confirmation email:', error);
+    if (error.response && error.response.data && error.response.data.message) {
+      alert(`Error: ${error.response.data.message}`); 
+    } else {
+      alert('Failed to send confirmation email. Please try again.');
+    }
+  } finally {
+    loadHide(loader);
+  }
+};
+
 const callLogout = () => {
-  userStore.clearUser();
-  serviceStore.clearServices();
   localStorage.removeItem('authToken');
   localStorage.removeItem('tokenType');
   router.push({ name: 'login' });
 };
 </script>
+
+<style scoped>
+
+
+</style>

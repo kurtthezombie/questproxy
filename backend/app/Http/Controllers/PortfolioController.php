@@ -146,4 +146,14 @@ class PortfolioController extends Controller
             return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
     }
+
+    public function getPointsByUsername($username)
+    {
+        try {
+            $points = $this->portfolioService->getPointsByUsername($username);
+            return $this->successResponse("Points successfully retrieved.", 200, ['points' => $points]);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error: " . $e->getMessage(), 500);
+        }
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Pilot;
 use App\Models\Portfolio;
+use App\Models\User;
 use Auth;
 use DB;
 use Exception;
@@ -13,9 +14,11 @@ use Illuminate\Support\Facades\Storage;
 
 class PortfolioService {
     protected $portfolio;
+    protected $user;
 
-    public function __construct(Portfolio $portfolio){
+    public function __construct(Portfolio $portfolio, User $user){
         $this->portfolio = $portfolio;
+        $this->user = $user;
     }
 
     public function create(array $data){
@@ -104,6 +107,18 @@ class PortfolioService {
     public function getPortfolioByUser($user_id){
         $pilot = Pilot::where('user_id', $user_id)->firstOrFail();
         return $this->portfolio->where('pilot_id', $pilot->id)->get();
+    }
+
+    public function getPointsByUsername($username) {
+        $user = $this->user->where('username', $username)->firstOrFail();
+
+        $pilot = $user->pilot;
+
+        $rank = $pilot->rank;
+
+        $points = $rank->points;
+
+        return $points;
     }
 
     private function getPilotByUserId()

@@ -1,13 +1,14 @@
 <template>
   <!-- Header -->
-  <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
-  <div class="relative-container min-h-screen bg-gray-900 text-white p-5">
+  <NavBar/>
+  <div class="min-h-screen bg-gray-900 text-white p-5">
 
     <!-- Main Dashboard -->
     <div class="container mx-auto py-5 max-w-7xl">
       <!-- Header Section -->
       <div class="flex flex-col mb-8">
-        <h1 class="text-3xl font-bold mb-4">Welcome, {{ username }}</h1>
+        <h1 class="text-3xl mb-20">Welcome, {{ username }}</h1>
+
 
         <!-- Search Bar -->
         <div class="relative w-full max-w-7xl">
@@ -27,26 +28,27 @@
             v-model="searchQuery"
             type="text"
             placeholder="Search game"
-            class="bg-transparent text-gray-400 border border-gray-400 rounded-full pl-16 pr-4 py-5 h-15 shadow-md w-full focus:outline-none focus:border-gray-600 focus:text-gray-400"
-            />
+            class="bg-transparent text-gray-400 border border-gray-600 rounded-full pl-16 pr-4 py-5 h-15 shadow-md w-full focus:outline-none focus:border-gray-700 focus:text-gray-400"
+          />
         </div>
       </div>
 
       <!-- Categories Section -->
-      <div class="py-20">
-        <section class="max-w-7xl mx-auto text-center"> <!-- Added text-center to center all content -->
-          <h2 class="text-2xl font-semibold mb-10">Trending Categories</h2>
+      <div class="py-1">
+        <section class="max-w-7xl mx-auto text-center">
+          <h2 class="text-3xl font-bold mb-10">Trending Categories</h2>
           <div v-if="!categories.length" class="text-center mt-10 text-gray-400">
             Loading categories...
           </div>
           <!-- Category Cards -->
-          <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 justify-items-center"> <!-- Added justify-items-center to center the cards -->
+          <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 justify-items-center">
             <div 
               v-for="category in filteredCategories" 
               :key="category.id"
-              class="bg-gray-700 p-6 rounded-xl shadow-lg hover:shadow-green-500/50 hover:-translate-y-2 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center w-64 h-55"
+              class="bg-gray-700 p-6 rounded-xl shadow-lg hover:shadow-green-500/50 hover:-translate-y-2 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center w-64 min-h-[120px]"
               @click="$router.push({ name: 'ServiceView', params: { title: category.game } })">
-              <h3 class="text-lg font-semibold text-white text-center">{{ category.title }}</h3>
+              
+              <h3 class="text-sm font-normal text-white text-center">{{ category.title }}</h3>
             </div>
           </div>
         </section>

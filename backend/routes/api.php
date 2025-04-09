@@ -2,6 +2,7 @@
 //controllers
 use App\Events\NotificationBroadcastEvent;
 use App\Events\TestEvent;
+use App\Exports\TransactionsExport;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\CategoryController;
@@ -26,6 +27,7 @@ use App\Notifications\PilotMatchedNotification;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -38,11 +40,20 @@ Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class, 've
     ->name('verification.verify');
 
 //grouped routes that use middleware laravel sanctum
-Route::middleware(['auth:sanctum', 'auth'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/check-auth', function (Request $request) {
+        return response()->json([
+            'message' => 'Authenticated user found',
+            'user' => $request->user(),
+            'auth_user' => Auth::user()
+        ]);
+    });
 
     //email verification
     Route::controller(EmailVerificationController::class)->group(function () {
-        Route::post('check-otp','checkOtp');
+        Route::post('otp/check','checkOtp');
+        Route::post('otp/resend','resend');
+        Route::post('otp/cancel','cancel');
     });
 
     Route::controller(LoginController::class)->group(function () {
@@ -80,6 +91,7 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::delete('portfolios/delete/{id}', 'destroy');
         Route::delete('portfolios/delete/pilot/{pilot_id}', 'destroyAll');
         Route::get('portfolios/user/{user_id}', 'getPortfolioByUser');
+        Route::get('portfolios/user/points/{username}', 'getPointsByUsername');
     });
 
     Route::controller(GamerController::class)->group(function () {
@@ -99,7 +111,8 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
     });
 
     Route::controller(ReportController::class)->group(function () {
-        Route::post('reports/create','store');
+        Route::get('reports','index');
+        Route::post('reports','store');
         Route::get('reports/{id}','show');
     });
 
@@ -122,9 +135,9 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
     });
 
     Route::controller(TransactionController::class)->group(function() {
-        Route::get('/users/{user_id}/transactions', 'transactionByUser');
+        Route::get('/transactions', 'transactionByUser');
         Route::get('/payments/{payment_id}/transactions','transactionByPayment');
-        Route::get('/export-transaction-history/{user_id}', 'exportTransactionHistory');
+        Route::get('/export-transaction-history', 'exportTransactionHistory');
     });
 
     Route::controller(NotificationController::class)->group(function() {
@@ -152,6 +165,9 @@ Route::controller(RankController::class)->group(function () {
 //testing
 Route::get('testPostman', function () {
     return response()->json('Postman is works and is running', 200);
+});
+Route::get('/test-export', function () {
+    return Excel::download(new TransactionsExport(1), 'transactions.xlsx');
 });
 
 Route::controller(CategoryController::class)->group(function () {

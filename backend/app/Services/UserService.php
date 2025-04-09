@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Exception;
 use Hash;
 
 class UserService
@@ -49,6 +50,22 @@ class UserService
         $user = $this->user->find($id);
 
         return $user->delete();
+    }
+
+    public function cancelAccountDeletion($email)
+    {
+        $user = $this->user->where('email', $email)->first();
+
+        if(!$user) {
+            throw new Exception('User not found');
+        }  
+
+        //delete happens here
+        if (!$user->delete()) {
+            throw new Exception('Failed to delete the user');
+        }
+
+        return true;
     }
 
     public function getUserByUsername($username) {

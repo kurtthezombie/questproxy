@@ -1,21 +1,29 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import RegisterView from '../views/RegisterView.vue'
-import LoginView from '@/views/LoginView.vue'
 import Dashboard from '@/components/Dashboard.vue'
-import HomepageView from '@/views/HomePageView.vue';
-import LeaderboardsView from '@/views/LeaderboardsView.vue'
-import ConfirmDeleteUser from '@/views/ConfirmDeleteUser.vue'
-import AccountSettingview from '@/views/AccountSettingView.vue'
-import CreateServiceView from '@/views/CreateServiceView.vue'
-import UserProfileView from '@/views/UserProfileView.vue'
-import OtpEmailVerification from '@/views/OtpEmailVerification.vue'
+import HomeView from '../views/HomeView.vue'
+import LoginView from '@/views/LoginView.vue'
+import ReportView from '@/views/ReportView.vue'
 import ServiceView from '@/views/ServiceView.vue'
+import RegisterView from '../views/RegisterView.vue'
+import HomepageView from '@/views/HomePageView.vue';
+import PortfolioView from '@/views/PortfolioView.vue'
+import UserProfileView from '@/views/UserProfileView.vue'
 import EditServiceView from '@/views/EditServiceView.vue'
 import ServicesHistory from '@/views/ServicesHistory.vue'
-import NotificationsTest from '@/views/NotificationsTest.vue'
 import MyPortfolioView from '@/views/MyPortfolioView.vue'
-import PortfolioView from '@/views/PortfolioView.vue'
+import LeaderboardsView from '@/views/LeaderboardsView.vue'
+import CreateServiceView from '@/views/CreateServiceView.vue'
+import ConfirmDeleteUser from '@/views/ConfirmDeleteUser.vue'
+import NotificationsTest from '@/views/NotificationsTest.vue'
+import AccountSettingview from '@/views/AccountSettingView.vue'
+import OtpEmailVerification from '@/views/OtpEmailVerification.vue'
+import TransactionHistoryView from '@/views/TransactionHistoryView.vue'
+import MyReportsView from '@/views/MyReportsView.vue'
+import PaymentView from '@/views/PaymentView.vue'
+import PaymentHistoryView from '@/views/PaymentHistoryView.vue'
+import Payment from '@/components/payment/Payment.vue'
+import PaymentCancel from '@/components/payment/PaymentCancel.vue'
+import BookingCard from '@/components/BookingCard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,9 +36,6 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
     },
     {
@@ -75,11 +80,11 @@ const router = createRouter({
       name: 'create-service',
       component: CreateServiceView,
     },
-
     {
-      path: '/users/:username',
+      path: '/users/:id',
       name: 'userprofile',
-      component: UserProfileView, 
+      component: UserProfileView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/otp-verification',
@@ -92,7 +97,7 @@ const router = createRouter({
       component: ServiceView
     },
     {
-      path: '/serviceshistory',
+      path: '/services-history',
       name: 'ServicesHistory',
       component: ServicesHistory
     },
@@ -103,22 +108,62 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/notifications/test',
-      name: 'notifTest',
-      component: NotificationsTest
+      path: '/payment/:serviceId',
+      name: 'PaymentView',
+      component: PaymentView,
+    },
+    {
+      path: '/payment-history/',
+      name: 'PaymentHistoryView',
+      component: PaymentHistoryView,
+    },
+    {
+      path: '/payment-success/:transaction_id',
+      name: 'PaymentSuccess',
+      component: Payment,
+    },
+    {
+      path: '/payment-cancel',
+      name: 'PaymentCancel',
+      component: PaymentCancel,
+    },
+    {
+      path: '/bookings/:serviceId',
+      name: 'BookingCard',
+      component: BookingCard,
     },
     {
       path: '/myportfolios',
       name: 'MyPortfolio',
       component: MyPortfolioView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/portfolio/:username',
       name: 'PortfolioView',
       component: PortfolioView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/transaction-history',
+      name: 'TransactionHistory',
+      component: TransactionHistoryView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/report/:username',
+      name: 'ReportView',
+      component: ReportView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/myreports',
+      name: 'MyReports',
+      component: MyReportsView,
+      meta: { requiresAuth: true },
     },
   ]
-})
+});
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('authToken');
@@ -129,7 +174,6 @@ router.beforeEach((to, from, next) => {
       next({ name: 'login' });
     } else {
       if (to.name === 'dashboard') {
-        
         if (userRole === 'gamer' || userRole === 'pilot') {
           next({ name: 'home' });
         } else {
@@ -144,4 +188,4 @@ router.beforeEach((to, from, next) => {
   }
 });
 
-export default router
+export default router;
