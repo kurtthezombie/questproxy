@@ -39,11 +39,8 @@ const submitForm = async () => {
       password.value = '';
 
       const userRole = response.authenticated_user.role;
-      console.log("User role:", userRole);
-
       if (userRole === 'gamer' || userRole === 'game pilot') {
-        console.log("Navigating to homepage..")
-        await router.push({ name: 'homepage' });  
+        router.push({ name: 'homepage' });  
       }
 
       message.value = response.message;
@@ -71,15 +68,11 @@ const submitForm = async () => {
 
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-900">
-    <div class="absolute inset-0 flex justify-center items-center " >
-    </div> 
-    <div class="bg-white backdrop-blur-md p-8 rounded-lg shadow-lg max-w-md w-full">
+  <div class="min-h-screen flex items-center justify-center bg-gray-200">
+    <div class="bg-gray-100 p-8 rounded-lg shadow-lg max-w-md w-full">
       <div class="text-center mb-6">
-        <router-link to="/" class="block">
-          <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
-        </router-link>
-        <h1 class="text-2xl font-bold text-green-500 mt-4">QuestProxy</h1>
+        <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
+        <h1 class="text-2xl font-bold text-gray-800 mt-4">Welcome</h1>
         
         <!-- Success message -->
         <div v-if="message" class="flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-300 dark:border-green-800" role="alert">
@@ -113,16 +106,13 @@ const submitForm = async () => {
           <input type="password" v-model="password" placeholder="Password" required
             class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
         </div>
-        <button type="submit" class="w-full p-3 bg-green-500 font-semibold text-white rounded-lg hover:bg-green-600 transition duration-300">
-          Log in
+        <button type="submit" class="w-full p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">
+          Login
         </button>
       </form>
 
-        <!-- Divider -->
-        <div class="border-t border-gray-200 dark:border-gray-300 my-5"></div>
-
-      <router-link class="block text-center text-sm mt-4 hover:underline text-gray-600" to="/signup">
-        Don't have an account? <span class="text-green-500">Sign Up</span>
+      <router-link class="block text-center text-green-500 mt-4 hover:underline" to="/signup">
+        Signup now
       </router-link>
     </div>
   </div>
