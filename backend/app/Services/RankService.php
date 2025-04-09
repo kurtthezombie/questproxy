@@ -24,6 +24,7 @@ class RankService {
                 return [
                     'pilot_username' => $rank->pilot->user->username,
                     'points' => $rank->points,
+                    'created_at' => $rank->created_at,
                 ];
         })->values();
 
