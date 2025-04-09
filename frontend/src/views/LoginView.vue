@@ -113,8 +113,8 @@ const submitForm = async () => {
           <input type="password" v-model="password" placeholder="Password" required
             class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
         </div>
-        <button type="submit" class="w-full p-3 bg-green-500 font-semibold text-white rounded-lg hover:bg-green-600 transition duration-300">
-          Log in
+        <button type="submit" class="w-full p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">
+          Login
         </button>
       </form>
 

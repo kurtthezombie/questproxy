@@ -1,5 +1,3 @@
-home view 
-
 <template>
   <div class="min-h-screen bg-gray-100 text-white">
     <header class="bg-gray-900 sticky top-0 z-50 p-4 shadow-lg border-b border-green-500">
