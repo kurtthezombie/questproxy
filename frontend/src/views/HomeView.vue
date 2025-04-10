@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100 text-white">
-    <header class="bg-gray-900 sticky top-0 z-50 p-4 shadow-lg border-b border-green-500">
+    <header class="bg-gray-900 sticky top-0 z-50 p-4 shadow-lg border-b border-green-900">
       <div class="container mx-auto flex justify-between items-center px-20">
         <div class="flex items-center">
           <router-link to="/" class="flex flex-row items-center">

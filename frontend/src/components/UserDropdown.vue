@@ -7,7 +7,7 @@ userdropdown
       id="avatarButton" 
       @click="toggleDropdown" 
       class="w-10 h-10 rounded-full cursor-pointer bg-green-500 flex items-center justify-center text-white text-lg font-semibold">
-      {{ initials }}
+      {{ initial }}
     </div>
 
     <!-- Dropdown menu -->
@@ -20,7 +20,7 @@ userdropdown
       <div class="px-4 py-3 flex items-center space-x-4">
         <!-- Avatar Inside Dropdown -->
         <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white text-lg font-semibold">
-          {{ initials }}
+          {{ initial }}
         </div>
         <!-- Username and Role -->
         <div>
@@ -127,9 +127,10 @@ const capitalizedRole = computed(() => {
     .join(', ');
 });
 
-const initials = computed(() => {
-  return fName.value ? fName.value.charAt(0).toUpperCase() : '?';
+const initial = computed(() => {
+  return username.value ? username.value.trim().charAt(0).toUpperCase() : '';
 });
+
 
 const callLogout = () => {
   loginService.logout();
