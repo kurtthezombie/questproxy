@@ -13,10 +13,10 @@
           <a href="/" class="hover:text-green-400 text-white">Home</a>
           <a href="#about" class="scroll-link hover:text-green-400 text-white">About</a>
           <!-- Register & Login combined button with divider -->
-          <div class="button-container relative inline-flex space-x-0">
-            <RouterLink to="/signup" class="flex justify-center items-center border- border-green-500 text-white hover:bg-green-500 hover:text-white py-2 px-4 text-sm transition-all block">Register</RouterLink>
+          <div class="button-container relative inline-flex space-x-1">
+            <RouterLink to="/signup" class="flex justify-center items-center border- border-green-500 text-white hover:bg-green-500 hover:text-white py-2 px-4 text-sm transition-all block rounded-md">Register</RouterLink>
             <div class="divider"></div>
-            <RouterLink to="/login" class="flex justify-center items-center border-1 border-green-500 text-white hover:bg-green-500 hover:text-white py-2 px-4 text-sm transition-all block">Login</RouterLink>
+            <RouterLink to="/login" class="flex justify-center items-center border-1 border-green-500 text-white hover:bg-green-500 hover:text-white py-2 px-4 text-sm transition-all block rounded-md">Login</RouterLink>
           </div>
         </nav>
 
@@ -39,13 +39,9 @@
         </p>
 
         <div class="flex items-center space-x-2 mt-8">
-          <div class="flex space-x-1">
-            <span class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-white">1</span>
-            <span class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-white">2</span>
-            <span class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-white">3</span>
-            <span class="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-white">4</span>
-          </div>
-          <span class="text-green-400 text-sm font-semibold">500+ skilled pilots ready to help</span>
+          <button class="btn btn-success btn-lg text-black rounded-full"
+            @click="handleStartNow"
+          >Start Now</button>
         </div>
       </div>
     </section>
@@ -176,29 +172,13 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue';
-import ComparisonSlider from '@/components/ComparisonSlider.vue';
-import gamerImage from '@/assets/img/Gamers.jpg';
-import chadImage from '@/assets/img/Pilots.jpg';
 import '@/assets/css/style.css'; 
+import router from '@/router';
 
-export default {
-  components: {
-    ComparisonSlider,
-  },
-  setup() {
-    const gamerImageSrc = ref(gamerImage);
-    const chadImageSrc = ref(chadImage);
-    const gamerText = ref("Busy gamer seeking help to progress in favorite games");
-    const chadText = ref("Skilled pilot ready to assist and level up your game");
-
-    return {
-      gamerImage: gamerImageSrc,
-      chadImage: chadImageSrc,
-      gamerText,
-      chadText
-    };
-  }
+const handleStartNow = async () => {
+  router.push({ name: 'login' });
 }
+
 </script>

@@ -89,7 +89,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-900">
+  <div class="flex items-center justify-center bg-gray-900 py-5">
     <div class="absolute inset-0 flex justify-center items-center">
     </div> 
     <div class="bg-white backdrop-blur-md p-8 rounded-lg shadow-2xl max-w-lg w-full border-lime-300">
