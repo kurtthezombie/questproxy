@@ -83,7 +83,7 @@
             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-sm pointer-events-none">₱</span>
             <input 
               v-model="formData.price" 
-              type="text" 
+              type="number" 
               @input="formatPrice" 
               class="w-full pl-8 rounded-md bg-gray-700 text-white border border-gray-600 p-2" 
               placeholder="0.00" 
@@ -187,11 +187,7 @@ const username = ref(userStore.userData?.username || '');
 const email = ref(userStore.userData?.email || '');
 const role = ref(userStore.userData?.role || '');
 
-const formatPrice = () => {
-  let formattedPrice = formData.price.replace(/[^0-9]/g, '');
-  formattedPrice = formattedPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  formData.price = formattedPrice;
-};
+
 
 const formData = reactive({
   game: '',
@@ -233,6 +229,7 @@ const submitService = async () => {
       availability: formData.availability,
     });
 
+    
     if (!serviceStore.error) {
       resetForm();
     }
