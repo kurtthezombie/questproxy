@@ -67,19 +67,26 @@ const submitForm = async () => {
     loadHide(loader);
   }
 };
+
+const handleBack = async () => {
+  console.log('handleBack clicked!');
+  router.push({ name: 'home' });
+}
+
 </script>
 
 
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-900">
-    <div class="absolute inset-0 flex justify-center items-center " >
-    </div> 
     <div class="bg-white backdrop-blur-md p-8 rounded-lg shadow-lg max-w-md w-full">
+      <div>
+        <Button class="btn btn-xs rounded-full bg-green-200 text-green-800" @click="handleBack">< Back</Button>
+      </div>
       <div class="text-center mb-6">
         <router-link to="/" class="block">
           <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
         </router-link>
-        <h1 class="text-2xl font-bold text-green-500 mt-4">QuestProxy</h1>
+        <h1 class="text-2xl font-bold text-green-500">QuestProxy</h1>
         
         <!-- Success message -->
         <div v-if="message" class="flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-300 dark:border-green-800" role="alert">
