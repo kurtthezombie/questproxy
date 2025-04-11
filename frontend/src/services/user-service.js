@@ -1,28 +1,30 @@
 import axios from 'axios';
 
 const userService = {
-  // Fetch user profile by ID
   getUserProfile: async (userId) => {
     try {
       const token = localStorage.getItem('authToken');
-
       if (!token) {
         throw new Error('Unauthorized: Missing authentication token');
       }
 
-      // Fetch the user profile for the logged-in user or another user by ID
       const response = await axios.get(`http://127.0.0.1:8000/users/${userId}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
+        withCredentials: true 
       });
 
       return response.data;
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error('Unauthorized access - token may be expired or invalid');
-      } else {
-        console.error('Error fetching user profile:', error.message);
+      console.error('Error fetching user profile:', error);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Status code:', error.response.status);
+      } else if (error.request) {
+        console.error('No response received');
       }
       throw error;
     }

@@ -1,6 +1,18 @@
 <template>
   <div class="p-6 bg-gray-900 min-h-screen">
-    <div class="max-w-5xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col md:flex-row">
+    <div class="max-w-5xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col md:flex-row relative">
+      <!-- Edit Profile Button (Top Right) -->
+      <button 
+        v-if="isCurrentUser && !isEditing"
+        @click="openEditModal"
+        class="absolute top-4 right-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition flex items-center"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+        </svg>
+        Edit Profile
+      </button>
+
       <!-- Left Section: Profile & Portfolio -->
       <div class="w-full md:w-1/3 pr-0 md:pr-4 mb-6 md:mb-0">
         <div class="flex flex-col items-center">
@@ -8,34 +20,74 @@
             {{ userInitial }}
           </div>
           <h2 class="mt-2 text-xl font-bold text-white">{{ profileData.username || 'Loading...' }}</h2>
-          <p class="text-sm text-gray-400">{{ }}</p>
+          <p class="text-sm text-gray-400">{{ profileData.email }}</p>
           
-          <!-- Pilot Service Badge -->
-          <div v-if="isPilot" class="mt-1">
-            <span class="bg-blue-500 text-white text-xs font-medium px-2.5 py-0.5 rounded">
-              Game Pilot
+          <!-- Role Badge -->
+          <div class="mt-1">
+            <span :class="`${roleBadgeClass} text-white text-xs font-medium px-2.5 py-0.5 rounded`">
+              {{ roleDisplay }}
             </span>
           </div>
           
           <button 
             class="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-            :disabled="!profileLoaded"
+            
             @click="goToPortfolio"
           >
             Portfolio
           </button>
         </div>
 
+        <!-- Profile Content Section -->
+        <div class="mt-6">
+          <!-- For Pilots: Bio & Skills -->
+          <template v-if="isPilot">
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold text-white mb-2">Bio</h3>
+              <p class="text-gray-300 text-sm">
+                {{ profileData.bio || 'No bio provided' }}
+              </p>
+            </div>
+
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold text-white mb-2">Skills</h3>
+              <div v-if="profileData.skills" class="flex flex-wrap gap-2">
+                <span 
+                  v-for="(skill, index) in profileData.skills.split(',')" 
+                  :key="index"
+                  class="bg-gray-700 text-white text-xs px-2 py-1 rounded"
+                >
+                  {{ skill.trim() }}
+                </span>
+              </div>
+              <p v-else class="text-gray-400 text-sm">No skills listed</p>
+            </div>
+          </template>
+
+          <!-- For Gamers: Preferences -->
+          <template v-else-if="isGamer">
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold text-white mb-2">Gamer Preferences</h3>
+              <p class="text-gray-300 text-sm">
+                {{ profileData.gamer_preference || 'No preferences provided' }}
+              </p>
+            </div>
+          </template>
+        </div>
+
         <!-- Portfolio Preview -->
-        <div class="mt-4 flex items-center justify-center">
-          <div v-for="(portfolio, index) in portfolios.slice(0, 2)" :key="index">
-            <img :src="portfolio.p_content" alt="Portfolio Image" class="w-12 h-12 bg-gray-600 rounded-md mr-2 object-cover">
-          </div>
-          <div v-if="portfolios.length > 2" class="w-12 h-12 bg-gray-700 rounded-md flex items-center justify-center text-white text-lg cursor-pointer" @click="goToPortfolio">
-            +{{ portfolios.length - 2 }}
-          </div>
-          <div v-if="portfolios.length === 0" class="text-gray-400 text-sm">
-            No portfolio items
+        <div class="mt-6">
+          <h3 class="text-lg font-semibold text-white mb-2">Portfolio</h3>
+          <div class="flex items-center">
+            <div v-for="(portfolio, index) in portfolios.slice(0, 2)" :key="index">
+              <img :src="portfolio.p_content" alt="Portfolio Image" class="w-12 h-12 bg-gray-600 rounded-md mr-2 object-cover">
+            </div>
+            <div v-if="portfolios.length > 2" class="w-12 h-12 bg-gray-700 rounded-md flex items-center justify-center text-white text-lg cursor-pointer" @click="goToPortfolio">
+              +{{ portfolios.length - 2 }}
+            </div>
+            <div v-if="portfolios.length === 0" class="text-gray-400 text-sm">
+              No portfolio items
+            </div>
           </div>
         </div>
         
@@ -60,24 +112,122 @@
         </div>
       </div>
 
-      <!-- Right Section: Services -->
+      <!-- Right Section: Services or Gamer Content -->
       <div class="w-full md:w-2/3 pl-0 md:pl-4">
-        <h3 class="text-lg text-center font-semibold text-white mb-4">Offered Services</h3>
-        <div v-if="serviceStore.loading" class="flex justify-center items-center h-32">
-          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+        <div v-if="shouldShowServices">
+          <h3 class="text-lg text-center font-semibold text-white mb-4">Offered Services</h3>
+          <div v-if="serviceStore.loading" class="flex justify-center items-center h-32">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+          <div v-else-if="serviceStore.services.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <ServiceCard 
+              v-for="service in serviceStore.services" 
+              :key="service.id" 
+              :service="service"
+              :categories="serviceStore.categories"
+              @click="handleServiceClick(service)"
+            />
+          </div>
+          <div v-else class="flex justify-center items-center h-32 text-gray-400 text-lg">
+            <template v-if="isPilot">No services currently offered</template>
+            <template v-else>This pilot does not offer any services</template>
+          </div>
         </div>
-        <div v-else-if="serviceStore.services.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <ServiceCard 
-            v-for="service in serviceStore.services" 
-            :key="service.id" 
-            :service="service"
-            :categories="serviceStore.categories"
-            @click="handleServiceClick(service)"
-          />
+        <div v-else-if="isGamer" class="flex justify-center items-center h-32 text-gray-400 text-lg">
+          <p><!-- Gamer preferences and stats will be shown here --></p>
         </div>
-        <div v-else class="flex justify-center items-center h-32 text-gray-400 text-lg">
-          <template v-if="isPilot">No services currently offered</template>
-          <template v-else>This user does not offer any services</template>
+      </div>
+
+      <!-- Edit Profile Modal -->
+      <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-white">Edit Profile</h3>
+            <button @click="closeEditModal" class="text-gray-400 hover:text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Pilot Edit Form -->
+          <form v-if="isPilot" @submit.prevent="saveProfile">
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-white mb-1">Bio</label>
+              <textarea
+                v-model="editForm.bio"
+                class="w-full bg-gray-700 text-white rounded-md p-2 border border-gray-600"
+                rows="3"
+                placeholder="Tell us about yourself..."
+              ></textarea>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-white mb-1">Skills</label>
+              <textarea
+                v-model="editForm.skills"
+                class="w-full bg-gray-700 text-white rounded-md p-2 border border-gray-600"
+                rows="3"
+                placeholder="List your gaming skills (comma separated)..."
+              ></textarea>
+              <p class="text-xs text-gray-400 mt-1">Separate skills with commas</p>
+            </div>
+
+            <div class="flex justify-end gap-2">
+              <button
+                type="button"
+                @click="closeEditModal"
+                class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition flex items-center"
+                :disabled="isSaving"
+              >
+                <svg v-if="isSaving" class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ isSaving ? 'Saving...' : 'Save Changes' }}
+              </button>
+            </div>
+          </form>
+
+          <!-- Gamer Edit Form -->
+          <form v-else-if="isGamer" @submit.prevent="saveProfile">
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-white mb-1">Gamer Preferences</label>
+              <textarea
+                v-model="editForm.gamer_preference"
+                class="w-full bg-gray-700 text-white rounded-md p-2 border border-gray-600"
+                rows="3"
+                placeholder="Describe your gaming preferences..."
+              ></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2">
+              <button
+                type="button"
+                @click="closeEditModal"
+                class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition flex items-center"
+                :disabled="isSaving"
+              >
+                <svg v-if="isSaving" class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ isSaving ? 'Saving...' : 'Save Changes' }}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -99,7 +249,6 @@ import axios from 'axios';
 
 const { loadShow, loadHide } = useLoader();
 
-
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
@@ -111,25 +260,110 @@ const username = ref('');
 const role = ref('User');
 const profileLoaded = ref(false);
 const pilotService = ref(null);
+const isSaving = ref(false);
+const currentUser = ref(null);
+const showEditModal = ref(false);
 
+const editForm = ref({
+  bio: '',
+  skills: '',
+  gamer_preference: ''
+});
+
+// Computed properties
 const userInitial = computed(() => {
   if (!profileData.value?.f_name) return '?';
   return `${profileData.value.f_name.charAt(0)}${profileData.value.l_name?.charAt(0) || ''}`.toUpperCase();
 });
 
-// Check if user is a pilot
 const isPilot = computed(() => {
   return role.value === 'Game Pilot';
 });
 
-// Fetch user data
+const isGamer = computed(() => {
+  return role.value === 'Gamer';
+});
+
+const roleDisplay = computed(() => {
+  if (isPilot.value) return 'Game Pilot';
+  if (isGamer.value) return 'Gamer';
+  return 'User';
+});
+
+const roleBadgeClass = computed(() => {
+  if (isPilot.value) return 'bg-blue-500';
+  if (isGamer.value) return 'bg-purple-500';
+  return 'bg-gray-500';
+});
+
+const isCurrentUser = computed(() => {
+  return currentUser.value && profileData.value && currentUser.value.id === profileData.value.id;
+});
+
+const shouldShowServices = computed(() => {
+  return isPilot.value && (currentUser.value?.role === 'game pilot' || isCurrentUser.value);
+});
+
+// Methods
+const openEditModal = () => {
+  editForm.value = {
+    bio: profileData.value.bio || '',
+    skills: profileData.value.skills || '',
+    gamer_preference: profileData.value.gamer_preference || ''
+  };
+  showEditModal.value = true;
+};
+
+const closeEditModal = () => {
+  showEditModal.value = false;
+};
+
+const saveProfile = async () => {
+  isSaving.value = true;
+  try {
+    let endpoint, data;
+    
+    if (isPilot.value) {
+      endpoint = `/api/pilots/${profileData.value.id}`;
+      data = {
+        bio: editForm.value.bio,
+        skills: editForm.value.skills
+      };
+    } else if (isGamer.value) {
+      endpoint = `/api/gamers/${profileData.value.id}`;
+      data = {
+        gamer_preference: editForm.value.gamer_preference
+      };
+    }
+
+    const response = await axios.put(endpoint, data);
+    
+    // Update local profile data
+    if (isPilot.value) {
+      profileData.value.bio = editForm.value.bio;
+      profileData.value.skills = editForm.value.skills;
+    } else if (isGamer.value) {
+      profileData.value.gamer_preference = editForm.value.gamer_preference;
+    }
+    
+    closeEditModal();
+    toast.success('Profile updated successfully');
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    toast.error('Failed to update profile');
+  } finally {
+    isSaving.value = false;
+  }
+};
+
 const fetchUserData = async () => {
   const loader = loadShow();
   try {
     const userData = await loginService.fetchUserData();
     username.value = userData.username;
-    // Adjust role display
-    role.value = userData.role === 'gamer' ? 'Gamer' : userData.role === 'game pilot' ? 'Game Pilot' : 'User';
+    currentUser.value = userData;
+    role.value = userData.role === 'gamer' ? 'Gamer' : 
+                userData.role === 'game pilot' ? 'Game Pilot' : 'User';
   } catch (error) {
     console.error('Error fetching user data:', error);
     router.push({ name: 'login' }); 
@@ -138,7 +372,6 @@ const fetchUserData = async () => {
   }
 };
 
-// Fetch profile data based on user ID in route params
 const fetchProfileData = async () => {
   try {
     const userId = route.params.id;
@@ -147,16 +380,17 @@ const fetchProfileData = async () => {
 
     username.value = profile.username || "Loading...";
     
-    // Check if user has pilot service details
     if (profile.role === 'game pilot') {
       role.value = 'Game Pilot';
-      
-      // Set pilot service details if available
       pilotService.value = {
         experience: profile.pilot_experience || 0,
         active: profile.pilot_active !== undefined ? profile.pilot_active : true,
-        rating: profile.pilot_rating || '4.5'
+        rating: profile.pilot_rating || '4.5',
+        bio: profile.bio || '',
+        skills: profile.skills || ''
       };
+    } else if (profile.role === 'gamer') {
+      role.value = 'Gamer';
     }
     
     profileLoaded.value = true;
@@ -165,15 +399,13 @@ const fetchProfileData = async () => {
   }
 };
 
-// Fetch user services if role is pilot using the service store
 const fetchUserServices = async () => {
   try {
     const userId = route.params.id;
-    // Use role value directly from computed
-    if (role.value === 'Game Pilot') {
+    if (shouldShowServices.value) {
       await serviceStore.fetchServicesByPilot(userId);
     } else {
-      serviceStore.clearServices(); // Clear any existing services if not a pilot
+      serviceStore.clearServices();
     }
   } catch (error) {
     console.error('Error fetching user services:', error);
@@ -181,7 +413,6 @@ const fetchUserServices = async () => {
   }
 };
 
-// Fetch categories using the service store
 const fetchCategories = async () => {
   try {
     await serviceStore.fetchCategories();
@@ -190,7 +421,6 @@ const fetchCategories = async () => {
   }
 };
 
-// Fetch portfolio images
 const fetchPortfolios = async () => {
   try {
     const userId = route.params.id;
@@ -207,7 +437,6 @@ const fetchPortfolios = async () => {
   }
 };
 
-// Handle service click
 const handleServiceClick = (service) => {
   if (!service.availability) {
     toast.warning("This service is currently not accepting bookings.");
@@ -220,17 +449,11 @@ const handleServiceClick = (service) => {
   });
 };
 
-// Go to portfolio page
 const goToPortfolio = () => {
-  // Get user ID from route parameters
   const userId = route.params.id;
   
-  // If we have profile data loaded, use it
   if (profileLoaded.value && profileData.value && profileData.value.username) {
-    const isOwnProfile = currentUser.value && 
-                       currentUser.value.username === profileData.value.username;
-
-    if (isOwnProfile) {
+    if (isCurrentUser.value) {
       router.push({ name: 'MyPortfolio' });
     } else {
       router.push({ name: 'PortfolioView', params: { username: profileData.value.username } });
@@ -253,6 +476,7 @@ const goToPortfolio = () => {
   toast.info("Redirecting to portfolio with limited information. Some features may be unavailable.");
 };
 
+// Watchers and lifecycle hooks
 watch(() => route.params.id, async () => {
   serviceStore.loading = true;
   await fetchUserData();
@@ -262,7 +486,6 @@ watch(() => route.params.id, async () => {
   await fetchPortfolios();
 }, { immediate: true });
 
-// Fetch initial data when mounted
 onMounted(async () => {
   serviceStore.loading = true;
   await fetchUserData();
