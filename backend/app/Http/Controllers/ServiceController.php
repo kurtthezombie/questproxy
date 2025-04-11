@@ -75,6 +75,7 @@ class ServiceController extends Controller
             'price' => 'required|numeric|min:0',
             'duration' => 'required|date',
             'availability' => 'required|boolean',
+            'category_id' => 'required|exists:categories,id',
         ]);
         //get pilot id by auth::user()->id
         $pilot_id = $this->getPilot();
@@ -153,8 +154,18 @@ class ServiceController extends Controller
         }
     }
 
+    public function getServicesByCategory($category_id)
+    {
+        try{
+            $services = $this->listingService->getServiceByCategory($category_id);
+            return $this->successResponse('Servvices retrieved successfully', 200, ['services' => $services]);
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
+        }
+    }
+
     //
-    public function getPilot()
+    private function getPilot()
     {
         $id = Auth::id(); // Shortcut for Auth::user()->id
 
