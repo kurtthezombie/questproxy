@@ -44,15 +44,16 @@
           </div>
           <!-- Category Cards -->
           <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 justify-items-center">
-            <div 
+            <router-link 
               v-for="category in filteredCategories" 
               :key="category.id"
+              :to="{ name: 'ServiceView', params: { title: category.game } }"
               class="bg-gray-800 p-6 rounded-xl border border-gray-600 group hover:border-green-400 hover:shadow-green-500/50 hover:-translate-y-2 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center w-[290px] min-h-[120px]">
               <!-- Category Title -->
               <h3 class="font-bold text-gray-300 text-center text-lg group-hover:font-bold group-hover:text-green-400 group-hover:text-xl">
                 {{ category.title }}
               </h3>
-            </div>
+            </router-link>
           </div>
         </section>
       </div>
@@ -71,7 +72,6 @@ import { useUserStore } from '@/stores/userStore';
 import { useServiceStore } from '@/stores/serviceStore';
 
 const { loadShow, loadHide } = useLoader();
-
 const router = useRouter();
 const searchQuery = ref('');
 const username = ref('');
@@ -128,5 +128,4 @@ const callLogout = () => {
   localStorage.removeItem('tokenType');
   router.push({ name: 'login' });
 };
-
 </script>
