@@ -53,8 +53,8 @@ const getMemberSince = (createdAt) => {
     </div>
     <!-- Description -->
     <div class="mt-5 flex justify-center items-center">
-      <h5 class="text-sm text-gray-300 text-center px-4">
-        Top gaming pilots ranked by their Quest Points. Climb the ranks and become a legend!
+      <h5 class="text-lg text-gray-300 text-center px-4">
+        Top gaming pilots ranked by their Quest Points
       </h5>
     </div>
 

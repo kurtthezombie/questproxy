@@ -1,110 +1,156 @@
 <template>
-  <div class="min-h-screen bg-gray-900 flex flex-col">
+  <div class="min-h-screen bg-gray-900 flex flex-col text-white">
     <!-- Header -->
     <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
-
-    <!-- Form Container -->
-    <div class="flex items-center justify-center flex-grow">
-      <form @submit.prevent="submitService" class="bg-gray-800 p-6 rounded-lg shadow-lg w-96">
-        <!-- Message -->
-        <div v-if="serviceStore.message" 
-             class="flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50" 
-             role="alert">
-          <svg class="flex-shrink-0 inline w-4 h-4 me-3" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-          </svg>
-          <div>
-            <span class="font-medium">Success!</span> {{ serviceStore.message }}
-          </div>
+    <!-- Title + Description -->
+    <div class="mt-20 flex justify-center items-center">
+      <h2 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-blue-400 leading-normal">
+        Gaming Services
+      </h2>
+    </div>
+    <div class="mt-2 flex justify-center items-center">
+      <h5 class="text-lg text-gray-300 text-center px-4">
+        Connect with gamers and offer your expertise to help others level up their gaming experience
+      </h5>
+    </div>
+    <!-- Content Section -->
+    <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mt-10 px-4">
+      <!-- Left Column: Form -->
+      <form @submit.prevent="submitService" class="bg-gray-800 rounded-lg p-6 space-y-6 shadow-lg border border-gray-700 md:col-span-2 lg:col-span-2">
+        <div class="space-y-1">
+          <h2 class="text-2xl font-bold">Offer Your Gaming Services</h2>
+          <p class="text-sm text-gray-400">Share your gaming expertise and help others improve their skills</p>
         </div>
-
-        <!-- Loading State -->
-        <div v-if="serviceStore.loading" class="text-white text-center mb-4">
-          Loading...
-        </div>
-
-        <!-- Error Message -->
-        <div v-if="serviceStore.error" class="text-red-500 text-center mb-4">
-          {{ serviceStore.error }}
-        </div>
-
-        <!-- Form Fields -->
+        <!-- Game -->
         <div>
-          <label for="games" class="block mb-2 text-sm font-medium text-white">Game:</label>
-          <select v-model="formData.game" 
-                  id="games" 
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+          <label class="block text-sm mb-1">Game</label>
+          <select v-model="formData.game" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2">
             <option value="" disabled>Select a game</option>
-            <option v-for="category in serviceStore.categories" 
-                    :key="category.id" 
-                    :value="category.game">
+            <option v-for="category in serviceStore.categories" :key="category.id" :value="category.game">
               {{ category.title }}
             </option>
           </select>
         </div>
-
+        <!-- Description -->
         <div>
-          <label for="description" class="block mb-2 text-sm font-medium text-white">Description:</label>
-          <textarea v-model="formData.description" 
-                    id="description" 
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5" 
-                    required></textarea>
+          <!-- Label with Icon -->
+          <div class="flex items-center space-x-2 mb-1">
+            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z" />
+            </svg>
+            <label class="text-sm">Description</label>
+          </div>
+          <!-- Textarea -->
+          <textarea v-model="formData.description" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2" rows="3" placeholder="Describe what you need help with..."></textarea>
         </div>
-
+        <!-- Price -->
         <div>
-          <label for="price" class="block mb-2 text-sm font-medium text-white">Price (₱):</label>
-          <input v-model="formData.price" 
-                 type="number" 
-                 step="0.01" 
-                 id="price" 
-                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5" 
-                 required />
+          <div class="flex items-center space-x-2 mb-1">
+            <span class="text-green-400 font-semibold">₱</span>
+            <label class="text-sm">Price</label>
+          </div>
+          <!-- Peso input field -->
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-sm pointer-events-none">₱</span>
+            <input 
+              v-model="formData.price" 
+              type="text" 
+              @input="formatPrice" 
+              class="w-full pl-8 rounded-md bg-gray-700 text-white border border-gray-600 p-2" 
+              placeholder="0.00" 
+            />
+          </div>
+          <p class="text-xs text-gray-400">Set a fair price for the service (in platform currency)</p>
         </div>
-
-        <div>
-          <label for="duration" class="block mb-2 text-sm font-medium text-white">Duration:</label>
-          <input v-model="formData.duration" 
-                 type="datetime-local" 
-                 id="duration" 
-                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5" 
-                 required />
+        <!-- Duration & Availability -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div class="flex items-center space-x-2 mb-1">
+              <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <label class="text-sm">Duration</label>
+            </div>
+            <input v-model="formData.duration" type="datetime-local" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2" />
+          </div>
+          <div>
+            <!-- Label with Availability Icon -->
+            <div class="flex items-center space-x-2 mb-1">
+              <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <label class="text-sm">Availability</label>
+            </div>
+            <!-- Availability Select -->
+            <select v-model="formData.availability" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2">
+              <option :value="1">Available</option>
+              <option :value="0">Not Available</option>
+            </select>
+          </div>
         </div>
-
-        <div>
-          <label for="availability" class="block mb-2 text-sm font-medium text-white">Availability:</label>
-          <select v-model="formData.availability" 
-                  id="availability" 
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-            <option :value="1">Available</option>
-            <option :value="0">Not Available</option>
-          </select>
+        <!-- Submit Buttons -->
+        <div class="flex gap-4 mt-6">
+          <button type="submit" class="w-full bg-emerald-500 text-white py-2 rounded-md">Submit Request</button>
+          <button type="button" class="w-full bg-white text-gray-800 py-2 rounded-md">Cancel</button>
         </div>
-
-        <button type="submit" 
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 mt-4"
-                :disabled="serviceStore.loading">
-          {{ serviceStore.loading ? 'Submitting...' : 'Submit' }}
-        </button>
       </form>
+
+      <!-- Right Column: Sidebar -->
+      <div class="space-y-6">
+        <!-- How It Works -->
+        <div class="bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700">
+          <h4 class="text-2xl font-bold mb-4">How It Works</h4>
+          <ul class="text-sm space-y-3">
+            <li class="flex items-start space-x-2">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-900 text-lg text-green-400 font-semibold mr-2">1</span>
+              <div>
+                <span class="text-lg font-semibold">Fill the form</span>
+                <div class="text-sm text-gray-500">Share your gaming expertise</div>
+              </div>
+            </li>
+            <li class="text-lg flex items-start space-x-2">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-900 text-lg text-green-400 font-semibold mr-2">2</span>
+              <div>
+                <span class="font-semibold">Get discovered</span>
+                <div class="text-sm text-gray-500">Players looking for your skills will find you</div>
+              </div>
+            </li>
+            <li class="text-lg flex items-start space-x-2">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-900 text-lg text-green-400 font-semibold mr-2">3</span>
+              <div>
+                <span class="font-semibold">Start gaming</span>
+                <div class="text-sm text-gray-500">Help others improve their gaming experience</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
+
 <script setup>
 import axios from 'axios';
+
+const router = useRouter();
 import { ref, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useServiceStore } from '@/stores/serviceStore';
 import { useUserStore } from '@/stores/userStore';
 import NavBar from '@/components/NavBar.vue';
-
-const router = useRouter();
 const serviceStore = useServiceStore();
 const userStore = useUserStore();
 
 const username = ref(userStore.userData?.username || '');
 const email = ref(userStore.userData?.email || '');
 const role = ref(userStore.userData?.role || '');
+
+const formatPrice = () => {
+  let formattedPrice = formData.price.replace(/[^0-9]/g, '');
+  formattedPrice = formattedPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  formData.price = formattedPrice;
+};
 
 const formData = reactive({
   game: '',
@@ -147,7 +193,6 @@ const submitService = async () => {
     console.error('Error in submitService:', error);
   }
 };
-
 
 const callLogout = () => {
   userStore.clearUser();
