@@ -21,6 +21,35 @@
           <h2 class="text-2xl font-bold">Offer Your Gaming Services</h2>
           <p class="text-sm text-gray-400">Share your gaming expertise and help others improve their skills</p>
         </div>
+
+        <!-- Success Message -->
+        <div v-if="serviceStore.message" 
+             class="flex items-center p-4 rounded-md bg-emerald-900 border border-emerald-700 text-emerald-300">
+          <svg class="w-5 h-5 mr-2 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>{{ serviceStore.message }}</span>
+        </div>
+
+        <!-- Error Message -->
+        <div v-if="serviceStore.error" 
+             class="flex items-center p-4 rounded-md bg-red-900 border border-red-700 text-red-300">
+          <svg class="w-5 h-5 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>{{ serviceStore.error }}</span>
+        </div>
+
+        <!-- Loading State -->
+        <div v-if="serviceStore.loading" 
+             class="flex items-center justify-center p-4">
+          <svg class="animate-spin h-5 w-5 mr-2 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="text-emerald-400">Processing your request...</span>
+        </div>
+
         <!-- Game -->
         <div>
           <label class="block text-sm mb-1">Game</label>
@@ -90,8 +119,20 @@
         </div>
         <!-- Submit Buttons -->
         <div class="flex gap-4 mt-6">
-          <button type="submit" class="w-full bg-emerald-500 text-white py-2 rounded-md">Submit Request</button>
-          <button type="button" class="w-full bg-white text-gray-800 py-2 rounded-md">Cancel</button>
+          <button 
+            type="submit" 
+            class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-md transition-colors duration-200"
+            :disabled="serviceStore.loading"
+          >
+            {{ serviceStore.loading ? 'Processing...' : 'Submit Request' }}
+          </button>
+          <button 
+            type="button" 
+            class="w-full bg-white hover:bg-gray-200 text-gray-800 py-2 rounded-md transition-colors duration-200"
+            @click="resetForm"
+          >
+            Cancel
+          </button>
         </div>
       </form>
 
@@ -132,13 +173,13 @@
 
 <script setup>
 import axios from 'axios';
-
-const router = useRouter();
 import { ref, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useServiceStore } from '@/stores/serviceStore';
 import { useUserStore } from '@/stores/userStore';
 import NavBar from '@/components/NavBar.vue';
+
+const router = useRouter();
 const serviceStore = useServiceStore();
 const userStore = useUserStore();
 
@@ -160,13 +201,23 @@ const formData = reactive({
   availability: 1
 });
 
-const isLoggedIn = () => {
-  return !!localStorage.getItem('authToken');
+const resetForm = () => {
+  Object.assign(formData, {
+    game: '',
+    description: '',
+    price: null,
+    duration: '',
+    availability: 1
+  });
 };
 
-if (!isLoggedIn()) {
-  router.push({ name: 'login' });
-}
+const isLoggedIn = ref(!!localStorage.getItem('authToken'));
+
+onMounted(() => {
+  if (!isLoggedIn.value) {
+    router.push({ name: 'login' });
+  }
+});
 
 onMounted(async () => {
   await serviceStore.fetchCategories();
@@ -182,13 +233,9 @@ const submitService = async () => {
       availability: formData.availability,
     });
 
-    Object.assign(formData, {
-      game: '',
-      description: '',
-      price: null,
-      duration: '',
-      availability: 1
-    });
+    if (!serviceStore.error) {
+      resetForm();
+    }
   } catch (error) {
     console.error('Error in submitService:', error);
   }
