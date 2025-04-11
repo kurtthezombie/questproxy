@@ -124,7 +124,7 @@
             class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-md transition-colors duration-200"
             :disabled="serviceStore.loading"
           >
-            {{ serviceStore.loading ? 'Processing...' : 'Submit Request' }}
+            {{ serviceStore.loading ? 'Processing...' : 'Create Service' }}
           </button>
           <button 
             type="button" 
