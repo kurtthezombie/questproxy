@@ -194,7 +194,8 @@ const formData = reactive({
   description: '',
   price: null,
   duration: '',
-  availability: 1
+  availability: 1,
+  category_id: null
 });
 
 const resetForm = () => {
@@ -221,6 +222,12 @@ onMounted(async () => {
 
 const submitService = async () => {
   try {
+    const selectedCategory = serviceStore.categories.find(cat => cat.game === formData.game);
+    
+    if (!selectedCategory) {
+      throw new Error(`No category found for game: ${formData.game}`);
+    }
+
     await serviceStore.createService({
       game: formData.game,
       description: formData.description,
@@ -229,12 +236,12 @@ const submitService = async () => {
       availability: formData.availability,
     });
 
-    
     if (!serviceStore.error) {
       resetForm();
     }
   } catch (error) {
     console.error('Error in submitService:', error);
+    serviceStore.error = error.message;
   }
 };
 

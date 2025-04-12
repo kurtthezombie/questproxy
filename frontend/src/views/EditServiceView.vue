@@ -1,99 +1,174 @@
 <template>
-    <div class="min-h-screen bg-gray-900 flex flex-col">
-      <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
-  
-      <div class="flex items-center justify-center flex-grow">
-        <form @submit.prevent="submitUpdate" class="bg-gray-800 p-6 rounded-lg shadow-lg w-96">
-          <!-- Message -->
-          <div v-if="serviceStore.message" 
-               class="flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50" 
-               role="alert">
-            <svg class="flex-shrink-0 inline w-4 h-4 me-3" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+  <div class="min-h-screen bg-gray-900 flex flex-col text-white">
+    <!-- Header -->
+    <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
+    
+    <!-- Title + Description -->
+    <div class="mt-20 flex justify-center items-center">
+      <h2 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-blue-400 leading-normal">
+        Edit Gaming Service
+      </h2>
+    </div>
+    <div class="mt-2 flex justify-center items-center">
+      <h5 class="text-lg text-gray-300 text-center px-4">
+        Update your service details to keep your offerings current
+      </h5>
+    </div>
+
+    <!-- Content Section -->
+    <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mt-10 px-4">
+      <!-- Left Column: Form -->
+      <form @submit.prevent="submitUpdate" class="bg-gray-800 rounded-lg p-6 space-y-6 shadow-lg border border-gray-700 md:col-span-2 lg:col-span-2">
+        <div class="space-y-1">
+          <h2 class="text-2xl font-bold">Update Your Gaming Service</h2>
+          <p class="text-sm text-gray-400">Edit your service details to provide the best experience</p>
+        </div>
+
+        <!-- Success Message -->
+        <div v-if="serviceStore.message" 
+             class="flex items-center p-4 rounded-md bg-emerald-900 border border-emerald-700 text-emerald-300">
+          <svg class="w-5 h-5 mr-2 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>{{ serviceStore.message }}</span>
+        </div>
+
+        <!-- Error Message -->
+        <div v-if="serviceStore.error" 
+             class="flex items-center p-4 rounded-md bg-red-900 border border-red-700 text-red-300">
+          <svg class="w-5 h-5 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>{{ serviceStore.error }}</span>
+        </div>
+
+        <!-- Loading State -->
+        <div v-if="serviceStore.loading" 
+             class="flex items-center justify-center p-4">
+          <svg class="animate-spin h-5 w-5 mr-2 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="text-emerald-400">Processing your request...</span>
+        </div>
+
+        <!-- Game -->
+        <div>
+          <label class="block text-sm mb-1">Game</label>
+          <select v-model="formData.game" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2">
+            <option value="" disabled>Select a game</option>
+            <option v-for="category in serviceStore.categories" :key="category.id" :value="category.game">
+              {{ category.title }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <div class="flex items-center space-x-2 mb-1">
+            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z" />
             </svg>
-            <div>
-              <span class="font-medium">Success!</span> {{ serviceStore.message }}
+            <label class="text-sm">Description</label>
+          </div>
+          <textarea v-model="formData.description" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2" rows="3" placeholder="Describe your service..."></textarea>
+        </div>
+
+        <!-- Price -->
+        <div>
+          <div class="flex items-center space-x-2 mb-1">
+            <span class="text-green-400 font-semibold">₱</span>
+            <label class="text-sm">Price</label>
+          </div>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-sm pointer-events-none">₱</span>
+            <input 
+              v-model="formData.price" 
+              type="number" 
+              class="w-full pl-8 rounded-md bg-gray-700 text-white border border-gray-600 p-2" 
+              placeholder="0.00" 
+            />
+          </div>
+          <p class="text-xs text-gray-400">Update your service price (in platform currency)</p>
+        </div>
+
+        <!-- Duration & Availability -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div class="flex items-center space-x-2 mb-1">
+              <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <label class="text-sm">Duration</label>
             </div>
+            <input v-model="formData.duration" type="datetime-local" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2" />
           </div>
-  
-          <!-- Loading State -->
-          <div v-if="serviceStore.loading" class="text-white text-center mb-4">
-            Loading...
-          </div>
-  
-          <!-- Error Message -->
-          <div v-if="serviceStore.error" class="text-red-500 text-center mb-4">
-            {{ serviceStore.error }}
-          </div>
-  
-          <!-- Form Fields -->
           <div>
-            <label for="games" class="block mb-2 text-sm font-medium text-white">Game:</label>
-            <select v-model="formData.game" 
-                    id="games" 
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-              <option value="" disabled>Select a game</option>
-              <option v-for="category in serviceStore.categories" 
-                      :key="category.id" 
-                      :value="category.game">
-                {{ category.title }}
-              </option>
-            </select>
-          </div>
-  
-          <div>
-            <label for="description" class="block mb-2 text-sm font-medium text-white">Description:</label>
-            <textarea v-model="formData.description" 
-                      id="description" 
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5" 
-                      required></textarea>
-          </div>
-  
-          <div>
-            <label for="price" class="block mb-2 text-sm font-medium text-white">Price (₱):</label>
-            <input v-model="formData.price" 
-                   type="number" 
-                   step="0.01" 
-                   id="price" 
-                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5" 
-                   required />
-          </div>
-  
-          <div>
-            <label for="duration" class="block mb-2 text-sm font-medium text-white">Duration:</label>
-            <input v-model="formData.duration" 
-                   type="datetime-local" 
-                   id="duration" 
-                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5" 
-                   required />
-          </div>
-  
-          <div>
-            <label for="availability" class="block mb-2 text-sm font-medium text-white">Availability:</label>
-            <select v-model="formData.availability" 
-                    id="availability" 
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <div class="flex items-center space-x-2 mb-1">
+              <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <label class="text-sm">Availability</label>
+            </div>
+            <select v-model="formData.availability" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2">
               <option :value="1">Available</option>
               <option :value="0">Not Available</option>
             </select>
           </div>
-  
-          <div class="flex gap-4 mt-4">
-            <button type="submit" 
-                    class="flex-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
-                    :disabled="serviceStore.loading">
-              {{ serviceStore.loading ? 'Updating...' : 'Update Service' }}
-            </button>
-            <button type="button" 
-                    @click="router.back()" 
-                    class="flex-1 text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
-              Cancel
-            </button>
-          </div>
-        </form>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="flex gap-4 mt-6">
+          <button 
+            type="submit" 
+            class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-md transition-colors duration-200"
+            :disabled="serviceStore.loading"
+          >
+            {{ serviceStore.loading ? 'Updating...' : 'Update Service' }}
+          </button>
+          <button 
+            type="button" 
+            class="w-full bg-white hover:bg-gray-200 text-gray-800 py-2 rounded-md transition-colors duration-200"
+            @click="router.back()"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+
+      <!-- Right Column: Sidebar -->
+      <div class="space-y-6">
+        <!-- Tips Section -->
+        <div class="bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700">
+          <h4 class="text-2xl font-bold mb-4">Editing Tips</h4>
+          <ul class="text-sm space-y-3">
+            <li class="flex items-start space-x-2">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-900 text-lg text-green-400 font-semibold mr-2">1</span>
+              <div>
+                <span class="text-lg font-semibold">Be specific</span>
+                <div class="text-sm text-gray-500">Clear descriptions attract more clients</div>
+              </div>
+            </li>
+            <li class="text-lg flex items-start space-x-2">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-900 text-lg text-green-400 font-semibold mr-2">2</span>
+              <div>
+                <span class="font-semibold">Fair pricing</span>
+                <div class="text-sm text-gray-500">Competitive rates improve visibility</div>
+              </div>
+            </li>
+            <li class="text-lg flex items-start space-x-2">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-900 text-lg text-green-400 font-semibold mr-2">3</span>
+              <div>
+                <span class="font-semibold">Update availability</span>
+                <div class="text-sm text-gray-500">Keep your schedule current</div>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script setup>
   import { ref, onMounted, reactive } from 'vue';
