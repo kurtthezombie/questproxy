@@ -128,12 +128,23 @@ onMounted(async () => {
 
 const submitService = async () => {
   try {
+    const selectedCategory = serviceStore.categories.find(
+      (category) => category.game === formData.game
+    );
+    
+    console.log('Selected category ID:', selectedCategory?.id);
+
+    const categoryId = selectedCategory?.id;
+
+    console.log('CATEGORY ID:', categoryId);
+
     await serviceStore.createService({
       game: formData.game,
       description: formData.description,
       price: formData.price,
       duration: formData.duration,
       availability: formData.availability,
+      category_id: categoryId,
     });
 
     Object.assign(formData, {
