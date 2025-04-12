@@ -157,16 +157,32 @@
             </button>
           </form>
           <!-- Delete Account -->
-          <div class="mt-10 border-t border-gray-600 pt-6">
-            <h3 class="text-lg font-semibold text-red-400 mb-3">Delete Account</h3>
-            <p class="text-sm text-gray-400 mb-4">This action is irreversible.</p>
-            <button
-              @click="showConfirmationModal"
-              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
-            >
-              Delete My Account
-            </button>
-          </div>
+<div class="mt-10 border-t border-gray-600 pt-6">
+  <h3 class="text-lg font-semibold text-red-400 mb-3">Delete Account</h3>
+ 
+  <p class="text-sm text-gray-400 mb-4">
+    Deleting your QuestProxy account will permanently remove all your personal information, settings, saved data, and activity history from our system.
+  </p>
+  
+  <p class="text-sm text-gray-400 mb-2 font-semibold">Before proceeding, please note:</p>
+  <ul class="list-disc list-inside text-sm text-gray-400 mb-4">
+    <li>You will lose access to all services associated with your account.</li>
+    <li>Any content or data linked to your account will be permanently deleted.</li>
+    <li>This action cannot be undone.</li>
+  </ul>
+  
+  <p class="text-sm text-gray-400 mb-4">
+    If you are sure you want to delete your account, please confirm below.
+  </p>
+  
+  <button
+    @click="showConfirmationModal"
+    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
+  >
+    Delete My Account
+  </button>
+</div>
+
         </div>
       </div>
     </div>
