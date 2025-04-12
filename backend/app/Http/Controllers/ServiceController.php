@@ -68,6 +68,7 @@ class ServiceController extends Controller
 
     public function store(Request $request)
     {
+        \Log::info('Request Data: ', $request->all());
         //require validate
         $data = $request->validate([
             'game' => 'required|string',

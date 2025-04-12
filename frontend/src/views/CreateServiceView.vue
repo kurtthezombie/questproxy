@@ -222,11 +222,15 @@ onMounted(async () => {
 
 const submitService = async () => {
   try {
-    const selectedCategory = serviceStore.categories.find(cat => cat.game === formData.game);
+    const selectedCategory = serviceStore.categories.find(
+      (category) => category.game === formData.game
+    );
     
-    if (!selectedCategory) {
-      throw new Error(`No category found for game: ${formData.game}`);
-    }
+    console.log('Selected category ID:', selectedCategory?.id);
+
+    const categoryId = selectedCategory?.id;
+
+    console.log('CATEGORY ID:', categoryId);
 
     await serviceStore.createService({
       game: formData.game,
@@ -234,6 +238,7 @@ const submitService = async () => {
       price: formData.price,
       duration: formData.duration,
       availability: formData.availability,
+      category_id: categoryId,
     });
 
     if (!serviceStore.error) {

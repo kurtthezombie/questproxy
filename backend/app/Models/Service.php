@@ -16,7 +16,8 @@ class Service extends Model
         'price',
         'duration',
         'availability',
-        'pilot_id'
+        'pilot_id',
+        'category_id',
     ];
 
     public function pilot()
