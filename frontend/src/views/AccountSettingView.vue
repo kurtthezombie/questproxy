@@ -19,7 +19,9 @@
           <h3 class="text-lg font-semibold">{{ firstName }} {{ lastName }}</h3>
           <p class="text-sm text-gray-400">@{{ username }}</p>
           <div class="mt-2">
-            <span class="bg-green-900 text-green-400 px-2 py-1 text-xs rounded-full">Gamer</span>
+            <span class="bg-green-900 text-green-400 px-2 py-1 text-xs rounded-full">
+              {{ formattedRole }}
+            </span>
           </div>
           <div class="flex justify-center">
             <div class="mt-6 text-sm text-gray-400 space-y-2">
@@ -295,4 +297,15 @@ const callLogout = () => {
 const initial = computed(() => {
   return username.value ? username.value.trim().charAt(0).toUpperCase() : '';
 });
+
+const formattedRole = computed(() => {
+  if (role.value) {
+    return role.value
+      .split(' ')  // Split the role string by spaces
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))  // Capitalize first letter of each word
+      .join(' ');  // Join the words back together with spaces
+  }
+  return '';
+});
+
 </script>
