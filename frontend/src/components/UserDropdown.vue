@@ -1,5 +1,3 @@
-userdropdown
-
 <template>
   <div class="relative inline-block text-left">
     <!-- Avatar Button -->
@@ -61,15 +59,18 @@ userdropdown
         <div class="py-0">
           <button 
             @click="callLogout" 
-            class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300 w-full text-left">
-            Sign out
+            class="flex items-center gap-2 px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300 w-full text-left hover:text-red-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
+            </svg>
+            Sign Out
           </button>
         </div>
       </ul>
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
