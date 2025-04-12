@@ -35,6 +35,7 @@ class ListingService
             'duration' => $data['duration'],
             'availability' => $data['availability'],
             'pilot_id' => $pilot_id,
+            'category_id' => $data['category_id'],
         ]);
 
         if(!$service){
@@ -68,5 +69,10 @@ class ListingService
 
     public function serviceByPilot($pilot_id){
         return $this->service->where('pilot_id', $pilot_id)->get();
+    }
+
+    public function getServiceByCategory($category_id)
+    {
+        return $this->service->where('category_id', $category_id)->get();
     }
 }
