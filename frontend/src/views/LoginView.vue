@@ -80,7 +80,7 @@ const handleBack = async () => {
   <div class="min-h-screen flex items-center justify-center bg-gray-900">
     <div class="bg-white backdrop-blur-md p-8 rounded-lg shadow-lg max-w-md w-full">
       <div>
-        <Button class="btn btn-xs rounded-full bg-green-200 text-green-800" @click="handleBack">< Back</Button>
+        <Button class="btn btn-md rounded-md bg-green-200 text-green-800" @click="handleBack">Back</Button>
       </div>
       <div class="text-center mb-6">
         <router-link to="/" class="block">

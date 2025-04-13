@@ -9,31 +9,36 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const usernameToReport = ref(route.params.username);
 const reason = ref('');
-const selectedReason = ref('');
+const selectedReasons = ref([]);
 const otherReasonText = ref('');
 const loading = ref(false);
 
 const handleSubmitReport = async () => {
-  if (!selectedReason.value) {
-    toast.error('Please select a reason for reporting.');
+  if (selectedReasons.value.length === 0) {
+    toast.error('Please select at least one reason for reporting.');
     return;
   }
 
   // Validate that other reason has text if "Other" is selected
-  if (selectedReason.value === 'Other' && !otherReasonText.value.trim()) {
+  if (selectedReasons.value.includes('Other') && !otherReasonText.value.trim()) {
     toast.error('Please provide details for the "Other" reason.');
     return;
   }
+
+  const reasons = selectedReasons.value.map(reason =>
+    reason === 'Other' ? otherReasonText.value : reason
+  );
 
   try {
     loading.value = true;
 
     const reportData = {
-      reason: selectedReason.value === 'Other' ? otherReasonText.value : selectedReason.value,
+      reason: reasons.join(', '), 
       reported_user: usernameToReport.value,
     };
 
     const result = await submitReport(reportData);
+    selectedReasons.value = [];
     otherReasonText.value = ''; 
     toast.success('Report submitted successfully!');
   } catch (error) {
@@ -66,7 +71,7 @@ const handleSubmitReport = async () => {
 
           <!-- Report reason options with v-model to track selection -->
           <div class="flex items-center">
-            <input type="radio" id="harassment" name="reportReason" value="Harassment/Abuse" v-model="selectedReason"
+            <input type="checkbox" id="harassment" name="reportReason" value="Harassment/Abuse" v-model="selectedReasons"
               class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300" />
             <label for="harassment" class="ml-3 block text-sm font-medium text-gray-700">
               Harassment/Abuse
@@ -74,7 +79,7 @@ const handleSubmitReport = async () => {
           </div>
 
           <div class="flex items-center">
-            <input type="radio" id="spam" name="reportReason" value="Spam" v-model="selectedReason"
+            <input type="checkbox" id="spam" name="reportReason" value="Spam" v-model="selectedReasons"
               class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300" />
             <label for="spam" class="ml-3 block text-sm font-medium text-gray-700">
               Spam
@@ -82,7 +87,7 @@ const handleSubmitReport = async () => {
           </div>
 
           <div class="flex items-center">
-            <input type="radio" id="offensive" name="reportReason" value="Offensive Content" v-model="selectedReason"
+            <input type="checkbox" id="offensive" name="reportReason" value="Offensive Content" v-model="selectedReasons"
               class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300" />
             <label for="offensive" class="ml-3 block text-sm font-medium text-gray-700">
               Offensive Content
@@ -90,7 +95,7 @@ const handleSubmitReport = async () => {
           </div>
 
           <div class="flex items-center">
-            <input type="radio" id="fraudulent" name="reportReason" value="Fraudulent Behavior" v-model="selectedReason"
+            <input type="checkbox" id="fraudulent" name="reportReason" value="Fraudulent Behavior" v-model="selectedReasons"
               class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300" />
             <label for="fraudulent" class="ml-3 block text-sm font-medium text-gray-700">
               Fraudulent Behavior
@@ -98,15 +103,15 @@ const handleSubmitReport = async () => {
           </div>
 
           <div class="flex items-center">
-            <input type="radio" id="username" name="reportReason" value="Inappropriate Username"
-              v-model="selectedReason" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300" />
+            <input type="checkbox" id="username" name="reportReason" value="Inappropriate Username"
+              v-model="selectedReasons" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300" />
             <label for="username" class="ml-3 block text-sm font-medium text-gray-700">
               Inappropriate Username
             </label>
           </div>
 
           <div class="flex items-center">
-            <input type="radio" id="impersonation" name="reportReason" value="Impersonation" v-model="selectedReason"
+            <input type="checkbox" id="impersonation" name="reportReason" value="Impersonation" v-model="selectedReasons"
               class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300" />
             <label for="impersonation" class="ml-3 block text-sm font-medium text-gray-700">
               Impersonation
@@ -114,15 +119,15 @@ const handleSubmitReport = async () => {
           </div>
 
           <div class="flex items-center">
-            <input type="radio" id="inaccurate" name="reportReason" value="Inaccurate Information"
-              v-model="selectedReason" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300" />
+            <input type="checkbox" id="inaccurate" name="reportReason" value="Inaccurate Information"
+              v-model="selectedReasons" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300" />
             <label for="inaccurate" class="ml-3 block text-sm font-medium text-gray-700">
               Inaccurate Information
             </label>
           </div>
 
           <div class="flex items-center">
-            <input type="radio" id="other" name="reportReason" value="Other" v-model="selectedReason"
+            <input type="checkbox" id="other" name="reportReason" value="Other" v-model="selectedReasons"
               class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300" />
             <label for="other" class="ml-3 block text-sm font-medium text-gray-700">
               Other
@@ -130,7 +135,7 @@ const handleSubmitReport = async () => {
           </div>
 
           <!-- Textbox appears only when "Other" is selected -->
-          <div v-if="selectedReason === 'Other'" class="mt-4">
+          <div v-if="selectedReasons.includes('Other')" class="mt-4">
             <label for="otherReason" class="block text-sm font-medium text-gray-700">Please provide details:</label>
             <textarea id="otherReason" v-model="otherReasonText"
               class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
