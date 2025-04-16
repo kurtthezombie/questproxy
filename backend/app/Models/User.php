@@ -3,11 +3,14 @@
 namespace App\Models;
 use Laravel\Sanctum\HasApiTokens;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Observers\UserObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+#[ObservedBy([UserObserver::class])]
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -28,6 +31,26 @@ class User extends Authenticatable
         'status'
     ];
 
+
+    public function payments(){
+        return $this->hasMany(Payment::class,'payer_id');
+    }
+
+    public function pilot()
+    {
+        return $this->hasOne(Pilot::class, 'user_id');
+    }
+
+    public function reportsMade()
+    {
+        return $this->hasMany(Report::class, 'reporting_user_id');
+    }
+
+    public function reportsReceived()
+    {
+        return $this->hasMany(Report::class, 'reported_user_id');  
+    }
+    
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -50,4 +73,5 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
 }

@@ -1,198 +1,164 @@
 <script setup>
-
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import loginservice from '@/services/login-service';
+import { useLoader } from '@/services/loader-service';
 
-const username = ref('');
-const email = ref('');
-const f_name = ref('');
-const l_name = ref('');
-const password = ref('');
-const contact_number = ref('');
-const role = ref('');
-const message = ref('');
+// Form state
+const form = reactive({
+  username: '',
+  email: '',
+  f_name: '',
+  l_name: '',
+  password: '',
+  confirmPassword: '',
+  contact_number: '',
+  role: '',
+});
 
+// Message state
+const message = reactive({
+  success: null,
+  error: null,
+});
+
+const { loadShow, loadHide } = useLoader();
 const router = useRouter();
 
+// Form submission handler
 const submitForm = async () => {
-    const formData = {
-        username: username.value,
-        email: email.value,
-        f_name: f_name.value,
-        l_name: l_name.value,
-        password: password.value,
-        contact_number: contact_number.value,
-        role: role.value
-    };
-    try {
-        console.log('calling register')
-        const response = await loginservice.register(formData);
-        console.log('after register')
-        if(response.status) {
-            console.log('inside status true')
-            username.value = '';
-            email.value = '';
-            f_name.value ='';
-            l_name.value = '';
-            password.value = '';
-            contact_number.value = '';
-            role.value = '';
+  message.error = ''; // Reset error message
 
-            router.push({ path: '/login', query: { message: 'Registration successful!' } });
-        }
-        message.value = response.message;
-    } catch (error) {
-        console.log('Error message: ', error);
+  // Basic field validation
+  if (!form.username || !form.email || !form.f_name || !form.l_name || !form.password || !form.confirmPassword || !form.contact_number || !form.role) {
+    message.error = "Please fill all required fields.";
+    return;
+  }
+
+  // Password match validation
+  if (form.password !== form.confirmPassword) {
+    message.error = "Passwords do not match!";
+    return;
+  }
+
+  // Loader visibility
+  const loader = loadShow();
+
+  // Prepare form data
+  const formData = {
+    username: form.username,
+    email: form.email,
+    f_name: form.f_name,
+    l_name: form.l_name,
+    password: form.password,
+    contact_number: form.contact_number,
+    role: form.role,
+  };
+
+  try {
+    const response = await loginservice.register(formData);
+    if (response.status) {
+      message.success = 'Registration successful!';
+      
+      // Perform login after successful registration
+      await loginservice.login({
+        username: formData.username,
+        password: formData.password,
+      });
+
+      // Navigate to OTP verification
+      router.push({ path: '/otp-verification', query: { email: form.email } });
+    } else {
+      message.error = response.message || 'Registration failed. Please try again.';
     }
+  } catch (error) {
+    message.error = 'An error occurred during registration. Please try again later.';
+  } finally {
+    loadHide(loader);
+  }
+};
 
-}
+// Cancel button handler
+const cancelHandler = () => {
+  router.push('/'); // Navigate to the home page
+};
 
+onMounted(() => {
+  // Optional: Remove captcha
+});
 </script>
 
-
 <template>
-  <div class="registration-form">
-    <div class="registration-header">
-      <img class="gaming-icon" src="@/assets/img/qplogo2.png" alt="logo" width="80" height="80" />
-      <h1>Registration</h1>
+  <div class="flex items-center justify-center bg-gray-900 py-5">
+    <div class="absolute inset-0 flex justify-center items-center">
+    </div> 
+    <div class="bg-white backdrop-blur-md p-8 rounded-lg shadow-2xl max-w-lg w-full border-lime-300">
+      <div class="text-center mb-6">
+        <router-link to="/" class="block">
+          <img src="@/assets/img/qplogo3.png" alt="logo" class="w-20 h-20 mx-auto">
+        </router-link>
+        <h1 class="text-2xl font-bold mt-4">Sign up</h1>
+        <p class="text-gray-500 text-sm mt-4">Join QuestProxy to connect with skilled gaming pilots</p>
+
+      </div>
+
+      <!-- Success Message -->
+      <div v-if="message.success" class="flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50">
+        <svg class="w-5 h-5 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+        <span><strong>Success!</strong> {{ message.success }}</span>
+      </div>
+
+      <!-- Error Message -->
+      <div v-if="message.error" class="flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
+        <svg class="w-5 h-5 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+        <span><strong>Error!</strong> {{ message.error }}</span>
+      </div>
+
+      <!-- Registration Form -->
+      <form @submit.prevent="submitForm" class="flex flex-col items-center space-y-6">
+        <div class="space-y-4 w-3/4">
+          <input type="text" id="username" v-model="form.username" placeholder="Username" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="text" id="first-name" v-model="form.f_name" placeholder="First Name" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="text" id="last-name" v-model="form.l_name" placeholder="Last Name" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="email" id="email" v-model="form.email" placeholder="Email" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="password" id="password" v-model="form.password" placeholder="Password" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="password" id="confirm-password" v-model="form.confirmPassword" placeholder="Confirm Password" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="text" id="contact-number" v-model="form.contact_number" placeholder="Contact Number" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <select id="role" v-model="form.role" required class="w-full p-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+            <option value="" disabled>Select Role</option>
+            <option value="gamer">Online Games Enthusiast</option>
+            <option value="game pilot">Game Pilot</option>
+          </select>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex flex-col space-y-4 w-3/4">
+          <div class="flex space-x-4">
+            <button 
+              type="button" 
+              class="w-1/2 p-3 border border-gray-300 bg-transparent rounded-lg hover:bg-gray-300 transition duration-300"
+              @click="cancelHandler">Back
+            </button>
+            <button 
+              type="submit" 
+              class="w-1/2 p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">
+              Register
+            </button>
+          </div>
+        </div>
+      </form>
+      
+      <!-- Divider -->
+      <div class="border-t border-gray-200 dark:border-gray-300 my-5"></div>
+
+      <!-- Login Link -->
+      <router-link class="block text-sm text-center mt-4 hover:underline text-gray-600" to="/login">
+        Already have an account? <span class="text-green-500">Log in</span>
+      </router-link>
     </div>
-    <form @submit.prevent="submitForm">
-      <div class="form-group">
-        <input type="text" id="username" v-model="username" placeholder="Username" required>
-      </div>
-
-      <div class="form-group">
-        <input type="text" id="first-name" v-model="f_name" placeholder="First Name" required>
-      </div>
-
-      <div class="form-group">
-        <input type="text" id="last-name" v-model="l_name" placeholder="Last Name" required>
-      </div>
-
-      <div class="form-group">
-        <input type="email" id="email" v-model="email" placeholder="Email" required>
-      </div>
-
-      <div class="form-group">
-        <input type="password" id="password" v-model="password" placeholder="Password" required>
-      </div>
-
-      <div class="form-group">
-        <input type="text" id="contact-number" v-model="contact_number" placeholder="Contact Number" required>
-      </div>
-
-      <div class="form-group">
-        <select id="role" v-model="role" required>
-          <option value="" disabled selected>Select Role</option>
-          <option value="gamer">Online Games Enthusiast</option>
-          <option value="game pilot">Game Pilot</option>
-        </select>
-      </div>
-
-      <button type="submit">Register</button>
-    </form>
-
-    <router-link class="router-link-custom" to="/login">
-      Login now
-    </router-link>
-
-    <h5>{{ message }}</h5>
   </div>
 </template>
-
- 
-<style scoped>
-.registration-form {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 50px;
-  background-color: rgba(0, 20, 30, 0.8);
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  color: #fff;
-}
-
-.registration-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.gaming-icon {
-  margin-right: 10px;
-}
-
-h1 {
-  font-size: 24px;
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group {
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: center;
-}
-
-input, select {
-  width: 100%;
-  padding: 10px;
-  border: none;
-  background-color: rgba(0, 40, 60, 0.6);
-  color: #fff;
-  font-size: 16px;
-}
-
-input::placeholder, select {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-  background-repeat: no-repeat;
-  background-position-x: 100%;
-  background-position-y: 5px;
-}
-
-button {
-  padding: 10px;
-  background-color: #FF69B4;
-  border: none;
-  border-radius: 5px;
-  color: #fff;
-  font-size: 18px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #FF1493;
-}
-
-.router-link-custom {
-  display: inline-block;
-  margin-top: 15px;
-  color: #FF69B4;
-  text-decoration: none;
-}
-
-.router-link-custom:hover {
-  text-decoration: underline;
-}
-
-h5 {
-  color: #FF69B4;
-  margin-top: 15px;
-}
-</style>

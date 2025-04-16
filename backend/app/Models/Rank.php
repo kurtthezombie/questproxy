@@ -16,8 +16,8 @@ class Rank extends Model
         'points'
     ];
 
-    public function pilots()
+    public function pilot()
     {
-        return $this->hasMany(Pilot::class, 'rank_id');
+        return $this->hasOne(Pilot::class, 'rank_id');
     }
 }

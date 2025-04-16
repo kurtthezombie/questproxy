@@ -3,57 +3,47 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gamer;
+use App\Services\GamerService;
+use App\Traits\ApiResponseTrait;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class GamerController extends Controller
 {
+    use ApiResponseTrait;
+
+    protected $gamerService;
+
+    public function __construct(GamerService $gamerService){
+        $this->gamerService = $gamerService;
+    }
+
     public function edit($id){
-        $gamer = Gamer::find($id);
+        try {
+            $gamer = $this->gamerService->findById($id);
 
-        if (!$gamer) {
-            return response()->json([
-                'status' => false,
-                'message' => "Gamer account $id not found",
-            ],404);
+            return $this->successResponse("Gamer account {$id} successfully retrieved.",200, ['gamer' => $gamer]);
+        } catch (ModelNotFoundException $e) {
+            return $this->failedResponse("Gamer {$id} not found", 404);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
-
-        return response()->json([
-            'gamer' => $gamer,
-            'status' => true,
-            'message' => "Gamer account $id found."
-        ]);
     }
 
     public function update(Request $request, $id) {
-        $request->validate([
-            'gamer_preference' => 'required|string', 
+        $data = $request->validate([
+            'gamer_preference' => 'required|string',
         ]);
 
-        $gamer = Gamer::find($id);
-        //if gamer does not exist
-        if(!$gamer) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Gamer not found',
-            ],404);    
-        }
-        
         try {
-            $gamer->update([
-                'gamer_preference' => $request->gamer_preference,
-            ]);
+            $gamer = $this->gamerService->update($data,$id);
 
-            return response()->json([
-                'message' => "Gamer account has been updated successfully.",
-                'status' => true,
-            ], 200);
-
-        } catch (Exception $error) {
-            return response()->json([
-                'status' => false,
-                'message' => "Error {$error->getMessage()}",
-            ],500);
+            return $this->successResponse("Gamer account has been updated successfully.",200,['gamer' => $gamer]);
+        } catch (ModelNotFoundException $e) {
+            return $this->failedResponse("Gamer {$id} not found", 404);
+        } catch (Exception $e) {
+            return $this->failedResponse("Error " . $e->getMessage(),500);
         }
     }
 }
