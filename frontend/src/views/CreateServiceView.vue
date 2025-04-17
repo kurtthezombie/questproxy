@@ -16,7 +16,7 @@
     <!-- Content Section -->
     <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mt-10 px-4">
       <!-- Left Column: Form -->
-      <form @submit.prevent="submitService" class="bg-gray-800 rounded-lg p-6 space-y-6 shadow-lg border border-gray-700 md:col-span-2 lg:col-span-2">
+      <form @submit.prevent="submitService" class="bg-blue-800 bg-opacity-5 rounded-lg p-6 space-y-6 shadow-lg border border-gray-700 md:col-span-2 lg:col-span-2">
         <div class="space-y-1">
           <h2 class="text-2xl font-bold">Offer Your Gaming Services</h2>
           <p class="text-sm text-gray-400">Share your gaming expertise and help others improve their skills</p>
@@ -53,7 +53,7 @@
         <!-- Game -->
         <div>
           <label class="block text-sm mb-1">Game</label>
-          <select v-model="formData.game" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2">
+          <select v-model="formData.game" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2">
             <option value="" disabled>Select a game</option>
             <option v-for="category in serviceStore.categories" :key="category.id" :value="category.game">
               {{ category.title }}
@@ -70,7 +70,7 @@
             <label class="text-sm">Description</label>
           </div>
           <!-- Textarea -->
-          <textarea v-model="formData.description" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2" rows="3" placeholder="Describe what you need help with..."></textarea>
+          <textarea v-model="formData.description" class="w-full rounded-md bg-blue-900 bg-opacity-20 bg-opacity-20 text-white border border-gray-600 p-2" rows="3" placeholder="Describe what you need help with..."></textarea>
         </div>
         <!-- Price -->
         <div>
@@ -85,7 +85,7 @@
               v-model="formData.price" 
               type="number" 
               @input="formatPrice" 
-              class="w-full pl-8 rounded-md bg-gray-700 text-white border border-gray-600 p-2" 
+              class="w-full pl-8 rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" 
               placeholder="0.00" 
             />
           </div>
@@ -100,7 +100,7 @@
               </svg>
               <label class="text-sm">Duration</label>
             </div>
-            <input v-model="formData.duration" type="datetime-local" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2" />
+            <input v-model="formData.duration" type="datetime-local" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" />
           </div>
           <div>
             <!-- Label with Availability Icon -->
@@ -111,7 +111,7 @@
               <label class="text-sm">Availability</label>
             </div>
             <!-- Availability Select -->
-            <select v-model="formData.availability" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2">
+            <select v-model="formData.availability" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2">
               <option :value="1">Available</option>
               <option :value="0">Not Available</option>
             </select>
@@ -121,25 +121,30 @@
         <div class="flex gap-4 mt-6">
           <button 
             type="submit" 
-            class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-md transition-colors duration-200"
+            class="w-full bg-emerald-500 hover:bg-emerald-600 text-black py-2 rounded-md transition-colors duration-200"
             :disabled="serviceStore.loading"
           >
             {{ serviceStore.loading ? 'Processing...' : 'Create Service' }}
           </button>
-          <button 
-            type="button" 
-            class="w-full bg-white hover:bg-gray-200 text-gray-800 py-2 rounded-md transition-colors duration-200"
-            @click="resetForm"
+          <router-link 
+            v-if="role === 'game pilot'" 
+            to="/services-history"
+            class="block w-full"
           >
-            Cancel
-          </button>
+            <button 
+              type="button" 
+              class="w-full bg-white hover:bg-gray-200 text-gray-800 py-2 rounded-md transition-colors duration-200"
+            >
+              Cancel
+            </button>
+          </router-link>
         </div>
       </form>
 
       <!-- Right Column: Sidebar -->
       <div class="space-y-6">
         <!-- How It Works -->
-        <div class="bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700">
+        <div class="bg-blue-800 bg-opacity-5 rounded-lg p-6 shadow-lg border border-gray-700">
           <h4 class="text-2xl font-bold mb-4">How It Works</h4>
           <ul class="text-sm space-y-3">
             <li class="flex items-start space-x-2">

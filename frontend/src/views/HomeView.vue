@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100 text-white">
+  <div class="min-h-screen bg-gray-900 text-white">
     <header class="bg-gray-900 sticky top-0 z-50 p-4 shadow-lg border-b border-green-900">
       <div class="container mx-auto flex justify-between items-center px-20">
         <div class="flex items-center">
@@ -24,7 +24,18 @@
     </header>
 
     <!-- Intro Section -->
-    <section class="relative bg-gradient-to-r from-[#0f172a] via-[#1f2937] to-gray-400 text-white py-32 px-6 lg:px-24">
+    <section class="relative bg-blue-800 bg-opacity-5 p-16 rounded-xl shadow-md mb-8 overflow-hidden text-white py-32 px-6 lg:px-24">
+      <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0">
+        <div class="dust-container">
+          <!-- Generate 100 dust particles -->
+          <div 
+            v-for="index in 100" 
+            :key="index" 
+            class="dust"
+            :style="generateParticleStyle(index)"
+          ></div>
+        </div>
+      </div>
       <div class="max-w-7xl mx-auto flex flex-col items-start space-y-6">
         <span class="bg-green-800 text-green-300 px-4 py-1 rounded-full text-sm font-semibold">Level Up Your Gaming Experience</span>
         <h1 class="text-5xl sm:text-6xl font-extrabold">
@@ -37,7 +48,8 @@
         <div class="flex items-center space-x-2 mt-8">
           <button class="btn btn-success btn-lg text-black rounded-full"
             @click="handleStartNow"
-          >Start Now</button>
+            >Start Now
+          </button>
         </div>
       </div>
     </section>
@@ -88,8 +100,19 @@
     </section>
 
     <!-- About Section -->
-    <section id="about" class="relative isolate overflow-hidden pt-36 lg:pb-14 bg-gray-800 py-10 sm:py-5">
-    <div class="mx-auto max-w-7xl px-6 lg:px-0">
+    <section id="about" class="relative isolate overflow-hidden pt-36 lg:pb-14 bg-blue-800 bg-opacity-5 py-10 sm:py-5 border border-gray-800">
+      <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0">
+        <div class="dust-container">
+          <!-- Generate 100 dust particles -->
+          <div 
+            v-for="index in 100" 
+            :key="index" 
+            class="dust"
+            :style="generateParticleStyle(index)"
+          ></div>
+        </div>
+      </div>
+      <div class="mx-auto max-w-7xl px-6 lg:px-0">
       <div class="w-full min-h-[600px] flex flex-col justify-center space-y-10">
         <h2 class="text-5xl sm:text-6xl font-bold tracking-tight text-white">
           About <span class="text-green-500">QuestProxy</span>
@@ -176,5 +199,46 @@ import router from '@/router';
 const handleStartNow = async () => {
   router.push({ name: 'login' });
 }
+</script>
 
+<!-- Star Now Button Jumping -->
+<script>
+export default {
+  data() {
+    return {
+      isJumping: false,
+    };
+  },
+  mounted() {
+    this.startContinuousJump();
+  },
+  methods: {
+    startContinuousJump() {
+      setInterval(() => {
+        this.isJumping = true;
+        setTimeout(() => {
+          this.isJumping = false;
+        }, 600);
+      }, 1500);
+    },
+  },
+};
+
+// Function to generate random styles for dust particles
+const generateParticleStyle = (index) => {
+  const left = Math.random() * 100; // Random left position (0-100%)
+  const top = Math.random() * 100; // Random top position (0-100%)
+  const size = Math.random() * 3 + 2; // Random size between 2px to 5px
+  const duration = Math.random() * 10 + 5; // Random duration between 5s to 15s (longer to make them float slowly)
+  const delay = Math.random() * 5; // Random delay between 0s to 5s
+  
+  return {
+    left: `${left}%`,
+    top: `${top}%`,
+    width: `${size}px`,
+    height: `${size}px`,
+    animationDuration: `${duration}s`,
+    animationDelay: `${delay}s`,
+  };
+};
 </script>
