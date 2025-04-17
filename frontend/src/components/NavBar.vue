@@ -16,7 +16,7 @@
         <router-link to="/leaderboards" class="text-white hover:text-green-500 transition-colors duration-300">
           Leaderboard
         </router-link>
-        <router-link v-if="role === 'game pilot'" to="/create-service"
+        <router-link v-if="role === 'game pilot'" to="/services-history"
           class="text-white hover:text-green-500 transition-colors duration-300">
           Service
         </router-link>

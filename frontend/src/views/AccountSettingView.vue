@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#0F172A] text-white flex flex-col">
+  <div class="min-h-screen bg-gray-900 text-white flex flex-col">
     <!-- Header -->
     <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
      
@@ -10,7 +10,7 @@
         <div class="w-full md:w-[240px] space-y-6">
 
           <!-- User Profile Card -->
-          <div class="bg-[#1E293B] rounded-lg p-6 text-center shadow border border-gray-700">
+          <div class="bg-blue-800 bg-opacity-5 rounded-lg p-6 text-center shadow border border-gray-700">
             <div class="flex justify-center">
               <div class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold text-5xl leading-[1]">
                 {{ initial }}
@@ -61,7 +61,7 @@
             </div>
           </div>
 
-          <div class="bg-[#1E293B] rounded-lg p-4 border border-gray-700">
+          <div class="bg-blue-800 bg-opacity-5 rounded-lg p-4 border border-gray-700">
             <nav class="space-y-4 text-base">
               <!-- Personal Information -->
               <a href="#" class="flex items-center gap-2 text-green-400 font-medium text-left w-full">
@@ -70,7 +70,7 @@
             </nav>
 
             <!-- Divider -->
-            <div class="border-t border-gray-200 dark:border-gray-600 my-1"></div>
+            <div class="border-t border-gray-700 dark:border-gray-700 my-1"></div>
             
             <!-- Sign Out -->
             <div class="mt-4">
@@ -94,7 +94,7 @@
 
       <!-- Right Content Area (Form) -->
       <div class="flex-1">
-        <div class="bg-[#1E293B] w-full max-w-4xl p-8 rounded-lg shadow-lg border border-gray-700">
+        <div class="bg-blue-800 bg-opacity-5 w-full max-w-4xl p-8 rounded-lg shadow-lg border border-gray-700">
           <!--Header -->
           <div class="flex items-center mb-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -124,28 +124,28 @@
                 <label class="block text-sm mb-2 text-gray-300">First Name</label>
                 <input v-model="firstName"
                   type="text"
-                  class="w-full p-2.5 text-sm text-white bg-gray-800 border border-gray-600 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
+                  class="w-full p-2.5 text-sm text-white bg-blue-900 bg-opacity-20 border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
                 />
               </div>
               <div>
                 <label class="block text-sm mb-2 text-gray-300">Last Name</label>
                 <input v-model="lastName"
                   type="text"
-                  class="w-full p-2.5 text-sm text-white bg-gray-800 border border-gray-600 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
+                  class="w-full p-2.5 text-sm text-white bg-blue-900 bg-opacity-20 border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
                 />  
               </div>
               <div>
                 <label class="block text-sm mb-2 text-gray-300">Email</label>
                 <input v-model="email"
                   type="email"
-                  class="w-full p-2.5 text-sm text-white bg-gray-800 border border-gray-600 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
+                  class="w-full p-2.5 text-sm text-white bg-blue-900 bg-opacity-20 border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
                 />  
               </div>
               <div>
                 <label class="block text-sm mb-2 text-gray-300">Contact Number</label>
                 <input v-model="contactNumber"
                   type="tel"
-                  class="w-full p-2.5 text-sm text-white bg-gray-800 border border-gray-600 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
+                  class="w-full p-2.5 text-sm text-white bg-blue-900 bg-opacity-20 border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
                 />  
               </div>
             </div>
@@ -157,7 +157,7 @@
             </button>
           </form>
           <!-- Delete Account -->
-<div class="mt-10 border-t border-gray-600 pt-6">
+<div class="mt-10 border-t border-gray-700 pt-6">
   <h3 class="text-lg font-semibold text-red-400 mb-3">Delete Account</h3>
  
   <p class="text-sm text-gray-400 mb-4">
