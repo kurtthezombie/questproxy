@@ -16,7 +16,7 @@
         </div>
         <!-- Search Bar -->
         <div class="relative w-full max-w-7xl">
-          <div class="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-700 rounded-full p-2 focus-within:border-2 focus-within:border-green-400">
+          <div class="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-700 rounded-full p-2 focus-within:border-green-400">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               class="h-7 w-7 text-white"

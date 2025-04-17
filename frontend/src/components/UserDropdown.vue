@@ -42,11 +42,6 @@
             Settings
           </router-link>
         </li>
-        <li v-if="role === 'game pilot'">
-          <router-link to="/services-history" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">
-            Services
-          </router-link>        
-        </li>
         <li>
           <router-link to="/payment-history" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-300">
             Payment History
