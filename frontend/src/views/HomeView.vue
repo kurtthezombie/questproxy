@@ -25,19 +25,15 @@
 
     <!-- Intro Section -->
     <section class="relative bg-gradient-to-r from-[#0f172a] via-[#1f2937] to-gray-400 text-white py-32 px-6 lg:px-24">
-
       <div class="max-w-7xl mx-auto flex flex-col items-start space-y-6">
         <span class="bg-green-800 text-green-300 px-4 py-1 rounded-full text-sm font-semibold">Level Up Your Gaming Experience</span>
-        
         <h1 class="text-5xl sm:text-6xl font-extrabold">
           Connect with Elite <br />
           <span class="text-green-400">Gaming Pilots</span>
         </h1>
-
         <p class="text-lg text-gray-200 max-w-2xl">
           QuestProxy bridges the gap between gamers and skilled pilots, helping you overcome challenges and master advanced strategies.
         </p>
-
         <div class="flex items-center space-x-2 mt-8">
           <button class="btn btn-success btn-lg text-black rounded-full"
             @click="handleStartNow"

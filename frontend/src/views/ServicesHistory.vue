@@ -59,7 +59,6 @@ const filteredUserServices = computed(() => {
   return userId ? serviceStore.services.filter(service => service.pilot_id === userId) : [];
 });
 
-
 const checkAuth = () => {
   if (!localStorage.getItem('authToken')) {
     router.push({ name: 'login' });
