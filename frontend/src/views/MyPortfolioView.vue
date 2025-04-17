@@ -123,7 +123,7 @@ const generateParticleStyle = (index) => {
     <NavBar />
     <!--container-->
     <div class="flex justify-center min-h-screen max-w-full bg-gray-900">
-        <div class="flex w-1/2 flex-col items-center p-10">
+        <div class="flex w-1/2 flex-col p-10">
             <div class="gradient-bg flex justify-center flex-col items-center">
                 <div class="dust-container">
                     <!-- Generate 100 dust particles -->
@@ -133,7 +133,7 @@ const generateParticleStyle = (index) => {
                         class="dust"
                         :style="generateParticleStyle(index)"
                     ></div>
-                    </div>
+                </div>
                 <div
                     class="w-[130px] h-[130px] rounded-full bg-green-500 flex items-center justify-center text-7xl font-semibold text-white">
                     {{ initials }}
@@ -142,7 +142,7 @@ const generateParticleStyle = (index) => {
                     {{ userStore.userData?.username || 'Guest' }}'s portfolio
                 </div>
                 <div class="mt-5 flex items-center gap-2">
-                    <div class="bg-emerald-950 text-emerald-400 px-3 py-1 rounded-full text-xs flex items-cent border border-emerald-800">
+                    <div class="bg-emerald-950 text-emerald-400 px-3 py-1 rounded-full text-xs flex items-center border border-emerald-800">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="yellow">
                             <path d="M12 2L15 8L22 8.5L17 12.5L18 19.5L12 16.5L6 19.5L7 12.5L2 8.5L9 8L12 2Z"/>
                         </svg>
@@ -157,37 +157,38 @@ const generateParticleStyle = (index) => {
                     </div>
                 </div>
             </div>
-            <div class="flex w-100 flex-col justify-center mt-20">
-                <div class="flex justify-between items-center">
-                    <div class="text-left">
-                        <h2 class="text-2xl font-bold text-white">Portfolio Gallery</h2>
-                        <p class="text-gray-400">Showcase of achievements</p>
-                    </div>
+            <!-- Portfolio Gallery -->
+            <div class="flex w-full justify-between mt-20">
+                <div class="text-left">
+                    <h2 class="text-2xl font-bold text-white">Portfolio Gallery</h2>
+                    <p class="text-gray-400">Showcase of achievements</p>
+                </div>
+                <div class="text-right">
                     <button class="bg-emerald-600 text-white mb-5 p-2 pb-2 rounded"
                         @click="isModalOpen = true">
                         + Add portfolio item
                     </button>
                 </div>
-                <div class="mt-10 w-full max-h-[600px] overflow-y-auto px-5">
-                    <div class="grid grid-cols-2 gap-y-5 gap-x-5 justify-items-center">
-                        <!-- Show skeleton loader when loading -->
-                        <template v-if="isLoading" class="flex justify-center items-center">
-                            <div class="flex justify-center items-center col-span-2 min-h-80">
-                                <span class="loading loading-bars loading-xl text-accent scale-[3]"></span>
-                            </div>
-                        </template>
+            </div>
 
-                        <!-- Show actual portfolios when loaded -->
-                        <template v-else>
-                            <PortfolioCard v-for="portfolio in portfolios" :key="portfolio.id" :username="userName"
-                                :portfolio="portfolio" class="w-full" @deleted="handlePortfolioDeleted"
-                                @edit="openEditModal" />
-                        </template>
-                    </div>
+            <!-- Portfolio Cards -->
+            <div class="mt-10 w-full max-h-[600px] overflow-y-auto px-5">
+                <div class="grid grid-cols-2 gap-y-5 gap-x-5 justify-items-center">
+                    <template v-if="isLoading">
+                        <div class="flex justify-center items-center col-span-2 min-h-80">
+                            <span class="loading loading-bars loading-xl text-accent scale-[3]"></span>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <PortfolioCard v-for="portfolio in portfolios" :key="portfolio.id" :username="userName"
+                            :portfolio="portfolio" class="w-full" @deleted="handlePortfolioDeleted"
+                            @edit="openEditModal" />
+                    </template>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- modal component -->
     <CreateModal v-model="isModalOpen" @submit="handleSubmit" />
     <EditPortfolioModal v-show="isEditModalOpen" v-model="isEditModalOpen" :portfolio="selectedPortfolio"
