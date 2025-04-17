@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Review;
 use App\Services\ReviewService;
 use App\Traits\ApiResponseTrait;
 use Exception;
@@ -16,7 +15,7 @@ class ReviewController extends Controller
     protected $reviewService;  
 
     public function __construct(ReviewService $reviewService) {
-        $this->ReviewService = $reviewService;
+        $this->reviewService = $reviewService;
     }
 
     public function index($service_id)
@@ -71,6 +70,16 @@ class ReviewController extends Controller
             return $this->failedResponse("Review {$review_id} is not found", 404);
         } catch (Exception $e) {
             return $this->failedResponse($e->getMessage(),500);
+        }
+    }
+
+    public function fetchServiceInfo($id)
+    {
+        try {
+            $service = $this->reviewService->getServiceInfo($id);
+            return $this->successResponse('Service info retrieved.', 200, ['data' => $service]);
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
         }
     }
 }

@@ -16,6 +16,7 @@ use App\Http\Controllers\PilotController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -145,6 +146,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('pilot/notifications/{id}/read', 'NotificationController@markAsRead');
         Route::delete('pilot/notifications/{id}', 'NotificationController@destroy');
         Route::post('pilot/notifications/read-all', 'NotificationController@markAllAsRead');
+    });
+
+    Route::controller(ReviewController::class)->group(function() {
+        Route::get('reviews/{id}/info', 'fetchServiceInfo');
     });
 
     Route::post('match-pilot',[MatchingController::class,'matchPilot']);
