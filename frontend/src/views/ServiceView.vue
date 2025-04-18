@@ -39,12 +39,13 @@
               </h2>
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" class="ml-6 mr-20">
-              <rect x="25" y="35" width="70" height="50" rx="10" ry="10" fill="none" stroke="#4ade80" stroke-width="7"/>
-              <rect x="35" y="50" width="6" height="20" fill="#4ade80" rx="3" ry="3"/>
-              <rect x="30" y="55" width="20" height="6" fill="#4ade80" rx="3" ry="3"/>
-              <circle cx="70" cy="55" r="6" fill="#4ade80"/>
-              <circle cx="80" cy="65" r="6" fill="#4ade80"/>
+                <rect x="25" y="35" width="70" height="50" rx="10" ry="10" fill="none" stroke="#047857" stroke-width="7"/>
+                <rect x="35" y="50" width="6" height="20" fill="#047857" rx="3" ry="3"/>
+                <rect x="30" y="55" width="20" height="6" fill="#047857" rx="3" ry="3"/>
+                <circle cx="70" cy="55" r="6" fill="#047857"/>
+                <circle cx="80" cy="65" r="6" fill="#047857"/>
             </svg>
+
           </div>
           <div class="flex flex-wrap justify-start gap-4 -ml-10">
             <span class="bg-emerald-950 border border-emerald-600 text-emerald-500 text-xs font-semibold px-3 py-1 rounded-full hover:bg-gray-950 flex items-center gap-2">

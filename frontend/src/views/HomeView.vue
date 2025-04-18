@@ -48,8 +48,7 @@
         <div class="flex items-center space-x-2 mt-8">
           <button class="btn btn-success btn-lg text-black rounded-full"
             @click="handleStartNow"
-            >Start Now
-          </button>
+          >Start Now</button>
         </div>
       </div>
     </section>
@@ -201,36 +200,14 @@ const handleStartNow = async () => {
 }
 </script>
 
-<!-- Star Now Button Jumping -->
 <script>
-export default {
-  data() {
-    return {
-      isJumping: false,
-    };
-  },
-  mounted() {
-    this.startContinuousJump();
-  },
-  methods: {
-    startContinuousJump() {
-      setInterval(() => {
-        this.isJumping = true;
-        setTimeout(() => {
-          this.isJumping = false;
-        }, 600);
-      }, 1500);
-    },
-  },
-};
-
 // Function to generate random styles for dust particles
 const generateParticleStyle = (index) => {
-  const left = Math.random() * 100; // Random left position (0-100%)
-  const top = Math.random() * 100; // Random top position (0-100%)
-  const size = Math.random() * 3 + 2; // Random size between 2px to 5px
-  const duration = Math.random() * 10 + 5; // Random duration between 5s to 15s (longer to make them float slowly)
-  const delay = Math.random() * 5; // Random delay between 0s to 5s
+  const left = Math.random() * 100;
+  const top = Math.random() * 100;
+  const size = Math.random() * 3 + 2;
+  const duration = Math.random() * 10 + 5;
+  const delay = Math.random() * 5;
   
   return {
     left: `${left}%`,
