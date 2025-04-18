@@ -3,15 +3,18 @@
 namespace App\Services;
 
 use App\Models\Service;
+use App\Models\Booking;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ListingService
 {
     protected $service;
+    protected $booking;
 
-    public function __construct(Service $service){
+    public function __construct(Service $service, Booking $booking){
         $this->service = $service;
+        $this->booking = $booking;
     }
 
     public function index() {
@@ -59,6 +62,14 @@ class ListingService
 
     public function destroy($id) {
         $service = $this->service->findOrFail($id);
+
+        $hasActiveBookings = $this->booking->where('service_id', $service->id)
+            ->whereNotIn('status', ['completed','cancelled'])
+            ->exists();
+
+        if ($hasActiveBookings) {
+            throw new Exception('Cannot delete service with active bookings (pending or in-progress).',500);
+        }
 
         if(!$service->delete()) {
             throw new Exception("Failed to delete service {$id}.");
