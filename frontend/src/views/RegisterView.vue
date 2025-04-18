@@ -84,20 +84,17 @@ const cancelHandler = () => {
   router.push('/'); // Navigate to the home page
 };
 
-onMounted(() => {
-  // Optional: Remove captcha
-});
-</script>
+// Dust particle styles
+const dustStyles = ref([]);
 
-<script>
-// Function to generate random styles for dust particles
-const generateParticleStyle = (index) => {
+// Function to generate one random particle style
+const generateParticleStyle = () => {
   const left = Math.random() * 100;
   const top = Math.random() * 100;
   const size = Math.random() * 3 + 2;
   const duration = Math.random() * 10 + 5;
   const delay = Math.random() * 5;
-  
+
   return {
     left: `${left}%`,
     top: `${top}%`,
@@ -107,17 +104,22 @@ const generateParticleStyle = (index) => {
     animationDelay: `${delay}s`,
   };
 };
+
+onMounted(() => {
+  // Generate dust particle styles once
+  dustStyles.value = Array.from({ length: 100 }, () => generateParticleStyle());
+});
+
 </script>
 
 <template>
   <div class="flex items-center justify-center bg-gray-900 py-6">
     <div class="dust-container">
-      <!-- Generate 100 dust particles -->
       <div 
-        v-for="index in 100" 
+        v-for="(style, index) in dustStyles" 
         :key="index" 
         class="dust"
-        :style="generateParticleStyle(index)"
+        :style="style"
       ></div>
     </div>
     <div class="absolute inset-0 flex justify-center items-center"></div> 
