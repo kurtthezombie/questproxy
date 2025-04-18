@@ -91,7 +91,7 @@ onMounted(() => {
         <div class="overflow-x-auto border border-gray-700 shadow-md rounded-lg p-5 mt-7">
           <!--search bar-->
           <div class="flex flex-wrap items-center gap-3">
-            <label class="input flex items-center bg-gray-700 bg-opacity-100 text-white border border-gray-700 shadow-none focus-within:ring-2 focus-within:ring-green-400 focus-within:border-green-600 rounded">
+            <label class="input flex items-center bg-[#1e293b] text-white border border-gray-700 shadow-none focus-within:ring-2 focus-within:ring-green-400 focus-within:border-green-600 rounded">
               <svg class="h-[1.2em] opacity-70 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
                   <circle cx="11" cy="11" r="8"></circle>
@@ -109,13 +109,13 @@ onMounted(() => {
             </label>
 
             <!-- Dropdown to select search column -->
-            <select v-model="searchColumn" class="input w-1/6 bg-gray-700 bg-opacity-100 text-white border border-gray-700 shadow-none">
+            <select v-model="searchColumn" class="input w-1/6 bg-[#1e293b] text-white border border-gray-700 shadow-none">
               <option value="payment_id">Payment ID</option>
               <option value="status">Status</option>
             </select>
 
             <!--reset btn-->
-            <button class="btn btn-square bg-gray-700 bg-opacity-100 text-white border border-gray-700 shadow-none" @click="handleReset">
+            <button class="btn btn-square bg-[#1e293b] text-white border border-gray-700 shadow-none" @click="handleReset">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
               </svg>
@@ -123,7 +123,7 @@ onMounted(() => {
 
             <div class="ml-auto">
               <button 
-                class="btn bg-gray-700 bg-opacity-100 text-white border border-gray-700 shadow-none flex items-center gap-2" 
+                class="btn bg-[#1e293b] text-white border border-gray-700 shadow-none flex items-center gap-2" 
                 :disabled="isLoading" 
                 @click="handleExport"
               >

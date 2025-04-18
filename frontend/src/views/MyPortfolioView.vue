@@ -123,7 +123,7 @@ const generateParticleStyle = (index) => {
     <NavBar />
     <!--container-->
     <div class="flex justify-center min-h-screen max-w-full bg-gray-900">
-        <div class="flex w-1/2 flex-col p-10">
+        <div class="flex flex-col p-10 w-full max-w-5xl mx-auto">
             <div class="gradient-bg flex justify-center flex-col items-center">
                 <div class="dust-container">
                     <!-- Generate 100 dust particles -->
@@ -158,7 +158,7 @@ const generateParticleStyle = (index) => {
                 </div>
             </div>
             <!-- Portfolio Gallery -->
-            <div class="flex w-full justify-between mt-20">
+            <div class="flex w-full justify-between mt-20 px-4">
                 <div class="text-left">
                     <h2 class="text-2xl font-bold text-white">Portfolio Gallery</h2>
                     <p class="text-gray-400">Showcase of achievements</p>
