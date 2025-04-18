@@ -175,6 +175,8 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('authToken');
   const userRole = localStorage.getItem('userRole');
 
+  const guestOnlyRoutes = ['login', 'signup', 'home'];
+
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isAuthenticated) {
       next({ name: 'login' });
@@ -190,7 +192,11 @@ router.beforeEach((to, from, next) => {
       }
     }
   } else {
-    next();
+    if (isAuthenticated && guestOnlyRoutes.includes(to.name)) {
+      next({ name: 'homepage' }); // or wherever you want to redirect logged-in users
+    } else {
+      next();
+    }
   }
 });
 
