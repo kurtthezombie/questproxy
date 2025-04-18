@@ -24,6 +24,7 @@ import PaymentHistoryView from '@/views/PaymentHistoryView.vue'
 import Payment from '@/components/payment/Payment.vue'
 import PaymentCancel from '@/components/payment/PaymentCancel.vue'
 import BookingCard from '@/components/BookingCard.vue'
+import ReviewView from '@/views/ReviewView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -161,6 +162,11 @@ const router = createRouter({
       name: 'MyReports',
       component: MyReportsView,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/review',
+      name: 'Review',
+      component: ReviewView,
     },
   ]
 });
