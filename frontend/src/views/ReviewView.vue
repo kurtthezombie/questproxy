@@ -1,14 +1,14 @@
 <script setup>
-import NavBar from '@/components/NavBar.vue';
-import { fetchServiceData } from '@/services/review.service';
 import toast from '@/utils/toast';
-import { ref, reactive, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import NavBar from '@/components/NavBar.vue';
+import { ref, reactive, computed, onMounted } from 'vue';
+import { fetchServiceData, submitReview } from '@/services/review.service';
 
 //fetch serviceId from route state
 const route = useRoute();
-// const serviceId = ref(route.state?.serviceId);
-const serviceId = ref(7);
+const serviceId = ref(route.state?.serviceId);
+
 const isLoading = ref(false);
 const review = reactive({
   rating: 0,
@@ -20,6 +20,7 @@ const serviceData = reactive({
   serviceName: '',
   serviceDescription: '',
   pilotName: '',
+  pilotId: null,
 })
 
 const setRating = (star) => {
@@ -34,11 +35,11 @@ const loadServiceData = async (id) => {
   try {
     isLoading.value = true;
     const data = await fetchServiceData(id);
-    console.log(data);
 
     serviceData.serviceName = data.game
     serviceData.serviceDescription = data.description;
     serviceData.pilotName = data.pilot_name;
+    serviceData.pilotId = data.pilot_id;
   } catch (error) {
     toast.error('Failed to load service data.');
   } finally {
@@ -46,18 +47,42 @@ const loadServiceData = async (id) => {
   }
 }
 
-const handleSubmitReview = () => {
-  console.log('Rating: ', review.rating);
-  console.log('Comment: ', review.comment);
+const handleSubmitReview = async () => {
+  if(review.rating === 0) {
+    toast.error('Please select a rating before submitting.');
+    return;
+  }
+
+  try {
+    const formData = {
+      rating: review.rating,
+      comment: review.comment,
+      service_id: serviceId.value,
+      pilot_id: serviceData.pilotId,
+    };
+
+    await submitReview(formData);
+    toast.success('Review submitted successfully!');
+    clearForm();
+  } catch {
+    toast.error('Failed to submit review.');
+  }
 }
 
-const isButtonDisabled = computed(() => review.rating === 0 && review.comment.trim() === '');
+const clearForm = () => {
+  review.rating = 0;
+  review.comment = '';
+  review.hoveredRating = 0;
+}
+
+const isButtonDisabled = computed(() => review.rating === 0);
 
 onMounted(() => {
   if (serviceId.value) {
     loadServiceData(serviceId.value);
   } else {
     console.error("No service ID provided in route state.");
+    toast.error("No service ID provided in route state.");
   }
 })
 
@@ -130,8 +155,10 @@ onMounted(() => {
         </div>
 
         <div class="card-actions justify-center mt-2">
-          <button @click="handleSubmitReview" class="btn bg-green-300 w-full" :disabled="isButtonDisabled">Submit
-            Review</button>
+          <button @click="handleSubmitReview" class="btn bg-green-300 w-full" :disabled="isButtonDisabled">
+            <span v-if="isLoading" class="loading loading-spinner"></span>
+            <span v-else>Submit Review</span>
+          </button>
         </div>
 
       </div>

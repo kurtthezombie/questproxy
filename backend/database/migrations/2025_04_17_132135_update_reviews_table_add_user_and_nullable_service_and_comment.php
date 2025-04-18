@@ -15,6 +15,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable()->after('id');
             $table->unsignedBigInteger('service_id')->nullable()->change();
 
+            $table->text('comment')->nullable()->change();
+
             $table->foreign('user_id')->references('id')->on('users');
         });
     }
@@ -31,6 +33,7 @@ return new class extends Migration
 
             // Revert service_id to not nullable
             $table->unsignedBigInteger('service_id')->nullable(false)->change();
+            $table->text('comment')->nullable(false)->change();
         });
     }
 };

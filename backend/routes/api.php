@@ -150,6 +150,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::controller(ReviewController::class)->group(function() {
         Route::get('reviews/{id}/info', 'fetchServiceInfo');
+        Route::post('reviews', 'store');
     });
 
     Route::post('match-pilot',[MatchingController::class,'matchPilot']);
