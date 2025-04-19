@@ -124,28 +124,28 @@
                 <label class="block text-sm mb-2 text-gray-300">First Name</label>
                 <input v-model="firstName"
                   type="text"
-                  class="w-full p-2.5 text-sm text-white bg-blue-900 bg-opacity-20 border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
+                  class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
                 />
               </div>
               <div>
                 <label class="block text-sm mb-2 text-gray-300">Last Name</label>
                 <input v-model="lastName"
                   type="text"
-                  class="w-full p-2.5 text-sm text-white bg-blue-900 bg-opacity-20 border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
+                  class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
                 />  
               </div>
               <div>
                 <label class="block text-sm mb-2 text-gray-300">Email</label>
                 <input v-model="email"
                   type="email"
-                  class="w-full p-2.5 text-sm text-white bg-blue-900 bg-opacity-20 border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
+                  class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
                 />  
               </div>
               <div>
                 <label class="block text-sm mb-2 text-gray-300">Contact Number</label>
                 <input v-model="contactNumber"
                   type="tel"
-                  class="w-full p-2.5 text-sm text-white bg-blue-900 bg-opacity-20 border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
+                  class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
                 />  
               </div>
             </div>

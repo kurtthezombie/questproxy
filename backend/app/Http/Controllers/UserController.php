@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\RegisteredUser;
 use App\Mail\AccountDeletionMail;
+use App\Models\Booking;
 use App\Models\User;
 use App\Services\UserService;
 use App\Traits\RankOperations;
@@ -19,9 +20,11 @@ class UserController extends Controller
     use RankOperations, ApiResponseTrait;
 
     protected $userService;
+    protected $booking;
 
-    public function __construct(UserService $userService){
+    public function __construct(UserService $userService, Booking $booking){
         $this->userService = $userService;
+        $this->booking = $booking;
     }
 
     public function show($id)
@@ -124,13 +127,35 @@ class UserController extends Controller
     {
         try {
             $user = $request->user();
-            
+
+            if ($this->hasUnfinishedActivities($user)){
+                return $this->failedResponse("Cannot delete account with active services or unfinished bookings.", 500);
+            }
+
             Mail::to($user->email)->send(new AccountDeletionMail($user));
 
             return $this->successResponse("Deletion email sent. Please check your inbox.",200);
         } catch (Exception $error) {
             return $this->failedResponse($error,500);
         }
+    }
+
+    private function hasUnfinishedActivities(User $user)
+    {
+        $hasAvailableServices = false;
+        $hasActiveBookingsByClient = false;
+
+        if ($user->pilot) {
+            $pilot = $user->pilot;
+
+            $hasAvailableServices = $pilot->services()->where('availability', true)->exists();
+        }
+
+        $hasActiveBookingsByClient = $this->booking->where('client_id', $user->id)
+            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->exists();
+
+        return $hasAvailableServices || $hasActiveBookingsByClient;
     }
 
     //for testing, not a major function

@@ -29,7 +29,7 @@ class Pilot extends Model
     }
 
     //a pilot has many services
-    public function service()
+    public function services()
     {
         return $this->hasMany(Service::class);
     }
