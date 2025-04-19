@@ -112,7 +112,7 @@ onUnmounted(() => window.removeEventListener("keydown", closeOnEscape));
                         <div class="mb-4 flex flex-col justify-center items-center">
                             <img :src="form.imagePreview" alt="Portfolio Image"
                                 class="w-full max-h-48 object-cover rounded-md border border-gray-700" />
-                            <label class="btn mt-4 text-white bg-green-600 shadow-none border border-green-600">
+                            <label class="btn mt-4 text-white bg-green-600 shadow-none border border-green-600 font-thin">
                                 Change Image
                                 <input type="file" accept="image/*" class="hidden" @change="handleImageChange">
                             </label>
@@ -122,15 +122,15 @@ onUnmounted(() => window.removeEventListener("keydown", closeOnEscape));
                         <div class="mb-4">
                             <label class="block font-semibold text-white">Caption</label>
                             <input :value="form.caption" @input="form.caption = $event.target.value" type="text"
-                                class="input input-bordered w-full mt-1" />
+                                class="input input-bordered w-full mt-1 bg-[#1e293b] text-white shadow-none border border-gray-700" />
                         </div>
 
                         <!-- Cancel Button -->
                         <div class="flex justify-end gap-x-1">
-                            <button @click="emit('close')" class="btn text-white bg-[#1e293b] border border-gray-700 shadow-none">Cancel</button>
+                            <button @click="emit('close')" class="btn text-white bg-gray-700 border font-thin border-gray-700 shadow-none">Cancel</button>
                             <button 
                                 @click="handleUpdatePortfolio"
-                                class="btn bg-green-600 border border-green-600 shadow-none text-white hover:bg-green-700 flex items-center gap-2"
+                                class="btn bg-green-600 border border-green-900 shadow-none text-white font-thin hover:bg-green-700 flex items-center gap-2"
                                 :disabled="isUnchanged || loadingBtn">
                                 <span v-if="loadingBtn" class="loading loading-spinner"></span>
                                 <span v-if="!loadingBtn">Update</span>

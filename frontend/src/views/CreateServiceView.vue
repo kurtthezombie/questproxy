@@ -101,7 +101,7 @@
               <label class="text-sm">Duration</label>
             </div>
             <input v-model="formData.duration" type="number" min="1" max="90" placeholder="Enter the number of days" 
-            class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" />
+            class="w-full rounded-md bg-[#1e293b]  text-white border border-gray-600 p-2" />
           </div>
           <div>
             <!-- Label with Availability Icon -->
@@ -193,8 +193,6 @@ const username = ref(userStore.userData?.username || '');
 const email = ref(userStore.userData?.email || '');
 const role = ref(userStore.userData?.role || '');
 
-
-
 const formData = reactive({
   game: '',
   description: '',
@@ -264,8 +262,4 @@ const callLogout = () => {
   router.push({ name: 'login' });
 };
 
-const now = new Date().toISOString().slice(0, 16); // Current date and time
-const maxDate = new Date();
-maxDate.setMonth(maxDate.getMonth() + 3); // Add 3 months to current date
-const max = maxDate.toISOString().slice(0, 16); // Format as 'YYYY-MM-DDTHH:MM'
 </script>

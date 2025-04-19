@@ -101,13 +101,8 @@
               </svg>
               <label class="text-sm">Duration</label>
             </div>
-            <input 
-              v-model="formData.duration" 
-              type="datetime-local" 
-              class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2" 
-              :min="'2025-01-01T00:00'" 
-              :max="'2026-12-31T23:59'" 
-            />
+            <input v-model="formData.duration" type="number" min="1" max="90" placeholder="Enter the number of days" 
+            class="w-full rounded-md bg-[#1e293b]  text-white border border-gray-600 p-2" />
           </div>
           <div>
             <div class="flex items-center space-x-2 mb-1">
@@ -255,4 +250,5 @@
   localStorage.removeItem('tokenType');
   router.push({ name: 'login' });
 };
+
   </script>

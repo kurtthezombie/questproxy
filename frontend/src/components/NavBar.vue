@@ -18,7 +18,7 @@
       </button>
 
       <!-- Desktop Nav -->
-      <nav class="hidden lg:flex items-center gap-6">
+      <nav class="hidden lg:flex items-center gap-">
         <router-link to="/home" class="text-white hover:text-green-500 transition">Home</router-link>
         <router-link to="/leaderboards" class="text-white hover:text-green-500 transition">Leaderboard</router-link>
         <router-link v-if="role === 'game pilot'" to="/services-history" class="text-white hover:text-green-500 transition">Service</router-link>
@@ -28,7 +28,7 @@
     </div>
 
     <!-- Mobile Nav -->
-    <div v-if="isMenuOpen" class="lg:hidden bg-gray-800 px-4 py-3 space-y-2 flex flex-col items-center justify-center">
+    <div v-if="isMenuOpen" class="lg:hidden px-4 py-3 space-y-2 flex flex-col items-center justify-center">
       <div class="w-full flex justify-end">
         <button class="p-1 border-none text-green-500" @click="toggleMenu">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
@@ -36,14 +36,14 @@
           </svg>
         </button>
       </div>
-      <div class="flex justify-center items-center flex-col w-full bg-green-800 text-center bg-opacity-50 rounded-md">
-        <router-link to="/home" class="block text-white hover:text-green-500 w-full p-2 border-b border-gray-800">Home</router-link>
-        <router-link to="/leaderboards" class="block text-white hover:text-green-500 w-full p-2 border-b border-gray-800">Leaderboard</router-link>
-        <router-link v-if="role === 'game pilot'" to="/services-history" class="block text-white hover:text-green-500 w-full p-2 border-b border-gray-800">Service</router-link>
-        <router-link v-if="role === 'game pilot'" to="/myportfolios" class="block text-white hover:text-green-500 w-full p-2 border-b border-gray-800">Portfolio</router-link>
-        <router-link :to="{ name: 'userprofile', params: { id } }" class="block text-white hover:text-green-500 w-full p-2 border-b border-gray-800">My Profile</router-link>
-        <router-link to="/account-settings" class="block text-white hover:text-green-500 w-full p-2 border-b border-gray-800">Settings</router-link>
-        <router-link to="/payment-history" class="block text-white hover:text-green-500 w-full p-2 border-b border-gray-800">Payment History</router-link>
+      <div class="flex justify-center items-center flex-col w-full bg-blue-800 bg-opacity-5 text-center rounded-md">
+        <router-link to="/home" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Home</router-link>
+        <router-link to="/leaderboards" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Leaderboard</router-link>
+        <router-link v-if="role === 'game pilot'" to="/services-history" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Service</router-link>
+        <router-link v-if="role === 'game pilot'" to="/myportfolios" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Portfolio</router-link>
+        <router-link :to="{ name: 'userprofile', params: { id } }" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">My Profile</router-link>
+        <router-link to="/account-settings" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Settings</router-link>
+        <router-link to="/payment-history" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Payment History</router-link>
         <button @click="callLogout" class="block text-white hover:text-red-500 w-full p-2 border-b border-gray-800 bg-red-800 bg-opacity-50">Sign Out</button>
       </div>      
     </div>
