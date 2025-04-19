@@ -16,17 +16,9 @@
         <!-- Date with calendar icon -->
         <div class="flex items-center mb-1 mt-4">
           <svg class="w-4 h-4 text-gray-500 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <span class="text-sm">{{ formatDate(service.duration) }}</span>
-        </div>
-
-        <!-- Time with clock icon -->
-        <div class="flex items-center">
-          <svg class="w-4 h-4 text-gray-500 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span class="text-xs">{{ formatTime(service.duration) }}</span>
+          <span class="text-sm">{{ service.duration }} {{ service.duration === 1 ? 'day' : 'days' }}</span>
         </div>
       </div>
     </div>
