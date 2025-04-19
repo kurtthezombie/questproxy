@@ -70,7 +70,7 @@
             <label class="text-sm">Description</label>
           </div>
           <!-- Textarea -->
-          <textarea v-model="formData.description" class="w-full rounded-md bg-blue-900 bg-opacity-20 bg-opacity-20 text-white border border-gray-600 p-2" rows="3" placeholder="Describe what you need help with..."></textarea>
+          <textarea v-model="formData.description" class="w-full rounded-md bg-blue-900 bg-opacity-20 bg-opacity-20 text-white border border-gray-600 p-2" rows="3" placeholder="Provide a detailed description of the service..."></textarea>
         </div>
         <!-- Price -->
         <div>
