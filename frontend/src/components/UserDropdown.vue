@@ -128,8 +128,8 @@ const initial = computed(() => {
 });
 
 
-const callLogout = () => {
-  loginService.logout();
+const callLogout = async () => {
+  await loginService.logout();
   router.push({ name: 'login' });
 };
 </script>

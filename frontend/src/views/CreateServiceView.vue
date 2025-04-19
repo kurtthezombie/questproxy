@@ -100,13 +100,8 @@
               </svg>
               <label class="text-sm">Duration</label>
             </div>
-            <input 
-              v-model="formData.duration" 
-              type="datetime-local" 
-              class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2" 
-              :min="now" 
-              :max="max" 
-            />
+            <input v-model="formData.duration" type="number" min="1" max="90" placeholder="Enter the number of days" 
+            class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" />
           </div>
           <div>
             <!-- Label with Availability Icon -->
@@ -204,7 +199,7 @@ const formData = reactive({
   game: '',
   description: '',
   price: null,
-  duration: '',
+  duration: 1,
   availability: 1,
   category_id: null
 });
