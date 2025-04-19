@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('game');
             $table->text('description');
             $table->float('price');
-            $table->dateTime('duration');
+            $table->unsignedInteger('duration');
             $table->boolean('availability');
 
             $table->unsignedBigInteger('pilot_id');

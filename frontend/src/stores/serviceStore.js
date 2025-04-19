@@ -82,21 +82,26 @@ export const useServiceStore = defineStore('service', () => {
                 }
             );
             message.value = 'Your service has been successfully created!';
-            services.value.push(response.data.service);
             error.value = null;
+
+            services.value.push(response.data.service);
             
             setTimeout(() => {
                 message.value = '';
             }, 2000);
-            
+
             return response.data;
         } catch (err) {
-            error.value = err.message || 'Error creating service';
-            message.value = 'Error creating service. Please try again.';
+            if (err.response && err.response.status === 422) {
+                error.value = 'Inputs are invalid. Please check and try again.';
+            } else {
+                error.value = err.message || 'Error creating service';
+            }
+            message.value = '';
             setTimeout(() => {
                 message.value = '';
             }, 2000);
-            throw err;
+            throw new Error(error.value); 
         } finally {
             loading.value = false;
         }
