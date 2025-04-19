@@ -29,7 +29,7 @@
                 d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 0115 0" />
             </svg>
         <span class="font-medium text-gray-400">
-          {{ usernames[service.user_id] || usernames[service.pilot_id] || 'Unknown User' }}
+          {{ service.pilot_username || 'Unknown User' }}
         </span>
       </div>
       <span class="text-2xl font-bold text-green-400">₱{{ formatPrice(service.price) }}</span>
@@ -59,37 +59,10 @@ const props = defineProps({
   isServiceHistory: { type: Boolean, default: false }
 });
 
-const usernames = ref({});
 const router = useRouter();
 const toast = useToast();
 const emit = defineEmits(['serviceDeleted']);
 
-
-onMounted(() => {
-  fetchUsername(props.service.user_id, 'user');
-  fetchUsername(props.service.pilot_id, 'pilot');
-});
-
-const fetchUsername = async (id, type) => {
-    if (!id) return;
-    try {
-        const authToken = localStorage.getItem('authToken');
-        if (!authToken) return;
-
-        const endpoint = type === 'user'
-            ? `http://127.0.0.1:8000/api/users/${id}`
-            : `http://127.0.0.1:8000/api/pilots/${id}`;
-
-        const response = await axios.get(endpoint, {
-            headers: { Authorization: `Bearer ${authToken}` }
-        });
-
-        const username = response.data?.user?.username || response.data?.pilot?.username || 'Unknown User';
-        usernames.value[id] = username;
-    } catch (error) {
-        usernames.value[id] = 'Unknown User';
-    }
-};
 
 const getGameTitle = computed(() => {
   const category = props.categories.find(cat => cat.game === props.service.game);

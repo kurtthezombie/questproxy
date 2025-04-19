@@ -17,8 +17,28 @@ class ListingService
         $this->booking = $booking;
     }
 
-    public function index() {
-        return $this->service->all();
+    public function index()
+    {
+        // Fetch only the necessary fields from the related models
+        $services = $this->service->with([
+            'pilot' => function ($query) {
+                $query->select('id', 'user_id');  // Select only id and user_id from pilot
+            },
+            'pilot.user' => function ($query) {
+                $query->select('id', 'username');  // Select only id and username from user
+            }
+        ])->get();
+
+        // Add the pilot_username to each service
+        $servicesWithUsername = $services->map(function ($service) {
+            // Add the username directly to the service
+            $service->pilot_username = $service->pilot->user->username;
+            // Now remove the nested 'pilot' and 'user' to only return what is needed
+            unset($service->pilot);
+            return $service;
+        });
+
+        return $servicesWithUsername;
     }
 
     public function show($id) {
