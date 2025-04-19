@@ -25,6 +25,7 @@ import Payment from '@/components/payment/Payment.vue'
 import PaymentCancel from '@/components/payment/PaymentCancel.vue'
 import BookingCard from '@/components/BookingCard.vue'
 import ReviewView from '@/views/ReviewView.vue'
+import CreateContractView from '@/views/CreateContractView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -168,6 +169,11 @@ const router = createRouter({
       name: 'Review',
       component: ReviewView,
     },
+    {
+      path: '/create-contract',
+      name: 'CreateContract',
+      component: CreateContractView,
+    },
   ]
 });
 
@@ -183,7 +189,6 @@ router.beforeEach((to, from, next) => {
     } else {
       if (to.name === 'dashboard') {
         if (userRole === 'gamer' || userRole === 'pilot') {
-          next({ name: 'home' });
         } else {
           next();
         }
