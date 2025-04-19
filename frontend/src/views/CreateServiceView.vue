@@ -53,7 +53,7 @@
         <!-- Game -->
         <div>
           <label class="block text-sm mb-1">Game</label>
-          <select v-model="formData.game" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2">
+          <select v-model="formData.game" class="w-full rounded-md bg-gray-900 text-white border border-gray-600 p-2">
             <option value="" disabled>Select a game</option>
             <option v-for="category in serviceStore.categories" :key="category.id" :value="category.game">
               {{ category.title }}
@@ -86,6 +86,7 @@
               type="number" 
               @input="formatPrice" 
               class="w-full pl-8 rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" 
+              min="0"
               placeholder="0.00" 
             />
           </div>
@@ -100,7 +101,8 @@
               </svg>
               <label class="text-sm">Duration</label>
             </div>
-            <input v-model="formData.duration" type="datetime-local" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" />
+            <input v-model="formData.duration" type="number" min="1" max="90" placeholder="Enter the number of days" 
+            class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" />
           </div>
           <div>
             <!-- Label with Availability Icon -->
@@ -198,7 +200,7 @@ const formData = reactive({
   game: '',
   description: '',
   price: null,
-  duration: '',
+  duration: 1,
   availability: 1,
   category_id: null
 });
