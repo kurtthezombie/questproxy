@@ -53,7 +53,7 @@
         <!-- Game -->
         <div>
           <label class="block text-sm mb-1">Game</label>
-          <select v-model="formData.game" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2">
+          <select v-model="formData.game" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2">
             <option value="" disabled>Select a game</option>
             <option v-for="category in serviceStore.categories" :key="category.id" :value="category.game">
               {{ category.title }}
@@ -70,7 +70,7 @@
             <label class="text-sm">Description</label>
           </div>
           <!-- Textarea -->
-          <textarea v-model="formData.description" class="w-full rounded-md bg-blue-900 bg-opacity-20 bg-opacity-20 text-white border border-gray-600 p-2" rows="3" placeholder="Describe what you need help with..."></textarea>
+          <textarea v-model="formData.description" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2" rows="3" placeholder="Describe what you need help with..."></textarea>
         </div>
         <!-- Price -->
         <div>
@@ -85,7 +85,7 @@
               v-model="formData.price" 
               type="number" 
               @input="formatPrice" 
-              class="w-full pl-8 rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" 
+              class="w-full pl-8 rounded-md bg-[#1e293b] text-white border border-gray-600 p-2" 
               placeholder="0.00" 
             />
           </div>
@@ -100,7 +100,13 @@
               </svg>
               <label class="text-sm">Duration</label>
             </div>
-            <input v-model="formData.duration" type="datetime-local" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" />
+            <input 
+              v-model="formData.duration" 
+              type="datetime-local" 
+              class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2" 
+              :min="now" 
+              :max="max" 
+            />
           </div>
           <div>
             <!-- Label with Availability Icon -->
@@ -111,7 +117,7 @@
               <label class="text-sm">Availability</label>
             </div>
             <!-- Availability Select -->
-            <select v-model="formData.availability" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2">
+            <select v-model="formData.availability" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2">
               <option :value="1">Available</option>
               <option :value="0">Not Available</option>
             </select>
@@ -133,7 +139,7 @@
           >
             <button 
               type="button" 
-              class="w-full bg-white hover:bg-gray-200 text-gray-800 py-2 rounded-md transition-colors duration-200"
+              class="w-full bg-gray-700 text-white hover:bg-gray-600 border border-gray-600 py-2 rounded-md transition-colors duration-200"
             >
               Cancel
             </button>
@@ -262,4 +268,9 @@ const callLogout = () => {
   localStorage.removeItem('tokenType');
   router.push({ name: 'login' });
 };
+
+const now = new Date().toISOString().slice(0, 16); // Current date and time
+const maxDate = new Date();
+maxDate.setMonth(maxDate.getMonth() + 3); // Add 3 months to current date
+const max = maxDate.toISOString().slice(0, 16); // Format as 'YYYY-MM-DDTHH:MM'
 </script>

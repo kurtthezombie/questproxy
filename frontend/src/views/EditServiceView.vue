@@ -55,7 +55,7 @@
         <!-- Game -->
         <div>
           <label class="block text-sm mb-1">Game</label>
-          <select v-model="formData.game" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2">
+          <select v-model="formData.game" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2">
             <option value="" disabled>Select a game</option>
             <option v-for="category in serviceStore.categories" :key="category.id" :value="category.game">
               {{ category.title }}
@@ -71,7 +71,7 @@
             </svg>
             <label class="text-sm">Description</label>
           </div>
-          <textarea v-model="formData.description" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" rows="3" placeholder="Describe your service..."></textarea>
+          <textarea v-model="formData.description" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2" rows="3" placeholder="Describe your service..."></textarea>
         </div>
 
         <!-- Price -->
@@ -85,7 +85,7 @@
             <input 
               v-model="formData.price" 
               type="number" 
-              class="w-full pl-8 rounded-md bg-gray-700 text-white border bg-blue-900 bg-opacity-20 p-2" 
+              class="w-full pl-8 rounded-md text-white border border-gray-700 bg-[#1e293b] p-2" 
               placeholder="0.00" 
             />
           </div>
@@ -101,7 +101,13 @@
               </svg>
               <label class="text-sm">Duration</label>
             </div>
-            <input v-model="formData.duration" type="datetime-local" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" />
+            <input 
+              v-model="formData.duration" 
+              type="datetime-local" 
+              class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2" 
+              :min="'2025-01-01T00:00'" 
+              :max="'2026-12-31T23:59'" 
+            />
           </div>
           <div>
             <div class="flex items-center space-x-2 mb-1">
@@ -110,7 +116,7 @@
               </svg>
               <label class="text-sm">Availability</label>
             </div>
-            <select v-model="formData.availability" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2">
+            <select v-model="formData.availability" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2">
               <option :value="1">Available</option>
               <option :value="0">Not Available</option>
             </select>
@@ -128,7 +134,7 @@
           </button>
           <button 
             type="button" 
-            class="w-full bg-white hover:bg-gray-200 text-gray-800 py-2 rounded-md transition-colors duration-200"
+            class="w-full bg-gray-700 text-white hover:bg-gray-600 border border-gray-600 py-2 rounded-md transition-colors duration-200"
             @click="router.back()"
           >
             Cancel

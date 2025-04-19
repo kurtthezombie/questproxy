@@ -85,8 +85,8 @@ onMounted(() => {
   <div class="min-h-screen bg-gray-900 p-5">
     <div class="flex justify-center mt-6 ">
       <div class="w-full max-w-7xl">
-        <h2 class="text-4xl font-bold mb-4  text-gray-600 text-white ">My Transaction History</h2>
-        <h3 class="text-lg text-gray-300">View and manage all your transaction records in one place</h3>
+        <h2 class="text-4xl font-bold mb-4 text-white ">My Transaction History</h2>
+        <h3 class="text-base text-gray-400">View and manage all your transaction records in one place</h3>
         
         <div class="overflow-x-auto border border-gray-700 shadow-md rounded-lg p-5 mt-7">
           <!--search bar-->

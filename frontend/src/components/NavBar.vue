@@ -1,6 +1,7 @@
 <template>
-  <header class="bg-gray-900 sticky top-0 z-50 p-4 shadow-lg border-b border-green-900">
-    <div class="container mx-auto flex justify-between items-center px-20">
+  <header class="bg-gray-900 sticky top-0 z-50 p-4 shadow-lg border-b border-green-900 relative">
+    <div class="mx-auto w-full px-4 md:px-8 xl:px-[160px] 2xl:px-[300px] flex justify-between items-center">
+      
       <!-- Logo Section -->
       <div class="flex items-center">
         <router-link to="/home" class="flex flex-row items-center">

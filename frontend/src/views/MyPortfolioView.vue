@@ -124,8 +124,8 @@ const generateParticleStyle = (index) => {
     <!--container-->
     <div class="flex justify-center min-h-screen max-w-full bg-gray-900">
         <div class="flex flex-col p-10 w-full max-w-5xl mx-auto">
-            <div class="gradient-bg flex justify-center flex-col items-center">
-                <div class="dust-container">
+            <div class="gradient-bg relative flex justify-center flex-col items-center">
+                <div class="dust-container absolute inset-0 z-0 pointer-events-none">
                     <!-- Generate 100 dust particles -->
                     <div 
                         v-for="index in 100" 
