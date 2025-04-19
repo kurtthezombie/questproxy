@@ -74,7 +74,7 @@ class ServiceController extends Controller
             'game' => 'required|string',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'duration' => 'required|int',
+            'duration' => 'required|integer|max:90',
             'availability' => 'required|boolean',
             'category_id' => 'required|exists:categories,id',
         ]);
@@ -106,7 +106,7 @@ class ServiceController extends Controller
             'game' => 'required|string',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'duration' => 'required|int',
+            'duration' => 'required|integer|max:90',
             'availability' => 'required|boolean',
         ]);
 
