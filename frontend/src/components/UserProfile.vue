@@ -28,14 +28,6 @@
               {{ roleDisplay }}
             </span>
           </div>
-          
-          <button 
-            class="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-            
-            @click="goToPortfolio"
-          >
-            Portfolio
-          </button>
         </div>
 
         <!-- Profile Content Section -->
@@ -75,22 +67,6 @@
           </template>
         </div>
 
-        <!-- Portfolio Preview -->
-        <div class="mt-6">
-          <h3 class="text-lg font-semibold text-white mb-2">Portfolio</h3>
-          <div class="flex items-center">
-            <div v-for="(portfolio, index) in portfolios.slice(0, 2)" :key="index">
-              <img :src="portfolio.p_content" alt="Portfolio Image" class="w-12 h-12 bg-gray-600 rounded-md mr-2 object-cover">
-            </div>
-            <div v-if="portfolios.length > 2" class="w-12 h-12 bg-gray-700 rounded-md flex items-center justify-center text-white text-lg cursor-pointer" @click="goToPortfolio">
-              +{{ portfolios.length - 2 }}
-            </div>
-            <div v-if="portfolios.length === 0" class="text-gray-400 text-sm">
-              No portfolio items
-            </div>
-          </div>
-        </div>
-        
         <!-- Pilot Service Details (if applicable) -->
         <div v-if="isPilot && pilotService" class="mt-6 p-3 bg-gray-700 rounded-md">
           <h3 class="font-semibold text-blue-300 mb-2">Pilot Service Details</h3>

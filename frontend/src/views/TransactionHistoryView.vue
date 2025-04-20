@@ -249,7 +249,6 @@ onMounted(() => {
                   {{ page }}
                 </button>
               </template>
-
             </div>
           </div>
         </div>
