@@ -80,6 +80,7 @@ const handleCancelVerification = async () => {
     // Here you would typically make an API call to cancel the verification and delete the record
     try {
         await cancelVerification(email.value);
+        localStorage.removeItem('authToken'); // <--- remove token
         showCancelModal.value = false;
         router.push({ name: 'signup' });
     } catch (error) {
