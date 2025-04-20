@@ -8,7 +8,6 @@
 <script>
 export default {
   mounted() {
-    // Handle payment cancellation logic here
     console.log('Payment was cancelled');
   }
 };

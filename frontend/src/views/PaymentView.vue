@@ -55,12 +55,12 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import NavBar from "@/components/NavBar.vue";
-import BookingCard from "@/components/BookingCard.vue"; // Updated Import
+import BookingCard from "@/components/BookingCard.vue"; 
 
 const route = useRoute();
 const service = ref(null);  
 const loading = ref(true);  
-const isModalOpen = ref(false); // Controls modal visibility
+const isModalOpen = ref(false); 
 
 const formatPrice = (price) => {
   return price ? `₱${Number(price).toLocaleString("en-US", { minimumFractionDigits: 2 })}` : "₱0.00";
@@ -97,18 +97,15 @@ const fetchServiceDetails = async () => {
   }
 };
 
-// Open the modal when clicking Buy Service
 const proceedToPayment = () => {
   console.log("Opening booking modal...");
   isModalOpen.value = true;
 };
 
-// Close modal
 const closeModal = () => {
   isModalOpen.value = false;
 };
 
-// Format duration
 const formatDuration = (datetime) => {
   if (!datetime) return "N/A";
   

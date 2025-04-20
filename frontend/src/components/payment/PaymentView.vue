@@ -26,12 +26,12 @@
       return {
         bookingId: null,
         isBookingCardOpen: true,
-        serviceId: 123, // Example service ID
+        serviceId: 123, 
       };
     },
     methods: {
       handleBookingConfirmed(bookingId) {
-        this.bookingId = bookingId; // Set the bookingId received from BookingCard
+        this.bookingId = bookingId; 
       },
       closeBookingCard() {
         this.isBookingCardOpen = false;

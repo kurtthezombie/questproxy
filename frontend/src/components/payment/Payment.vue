@@ -31,7 +31,7 @@ export default {
         );
 
         const checkoutUrl = response.data.data.checkout_url;
-        window.location.assign(checkoutUrl); // Use assign to trigger the redirect
+        window.location.assign(checkoutUrl); 
 
       } catch (error) {
         console.error("Payment initiation failed:", error);
