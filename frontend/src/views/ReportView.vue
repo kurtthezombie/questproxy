@@ -138,9 +138,9 @@ const handleSubmitReport = async () => {
 
             <!-- Textbox appears only when "Other" is selected -->
             <div v-if="selectedReasons.includes('Other')" class="mt-4">
-              <label for="otherReason" class="block text-sm font-medium text-gray-700">Please provide details:</label>
+              <label for="otherReason" class="block text-sm text-gray-300 mb-1">Please provide details:</label>
               <textarea id="otherReason" v-model="otherReasonText"
-                class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                class="w-full px-4 py-3 border border-gray-300 bg-[#1e293b] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 rows="6" placeholder="Please explain why you are reporting this user"></textarea>
             </div>
           </div>

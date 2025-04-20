@@ -53,7 +53,7 @@
         <!-- Game -->
         <div>
           <label class="block text-sm mb-1">Game</label>
-          <select v-model="formData.game" class="w-full rounded-md bg-gray-900 text-white border border-gray-600 p-2">
+          <select v-model="formData.game" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2">
             <option value="" disabled>Select a game</option>
             <option v-for="category in serviceStore.categories" :key="category.id" :value="category.game">
               {{ category.title }}
@@ -70,7 +70,7 @@
             <label class="text-sm">Description</label>
           </div>
           <!-- Textarea -->
-          <textarea v-model="formData.description" class="w-full rounded-md bg-blue-900 bg-opacity-20 bg-opacity-20 text-white border border-gray-600 p-2" rows="3" placeholder="Provide a detailed description of the service..."></textarea>
+          <textarea v-model="formData.description" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2" rows="3" placeholder="Describe what you need help with..."></textarea>
         </div>
         <!-- Price -->
         <div>
@@ -85,8 +85,7 @@
               v-model="formData.price" 
               type="number" 
               @input="formatPrice" 
-              class="w-full pl-8 rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" 
-              min="0"
+              class="w-full pl-8 rounded-md bg-[#1e293b] text-white border border-gray-600 p-2" 
               placeholder="0.00" 
             />
           </div>
@@ -102,7 +101,7 @@
               <label class="text-sm">Duration</label>
             </div>
             <input v-model="formData.duration" type="number" min="1" max="90" placeholder="Enter the number of days" 
-            class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2" />
+            class="w-full rounded-md bg-[#1e293b]  text-white border border-gray-600 p-2" />
           </div>
           <div>
             <!-- Label with Availability Icon -->
@@ -113,7 +112,7 @@
               <label class="text-sm">Availability</label>
             </div>
             <!-- Availability Select -->
-            <select v-model="formData.availability" class="w-full rounded-md bg-blue-900 bg-opacity-20 text-white border border-gray-600 p-2">
+            <select v-model="formData.availability" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2">
               <option :value="1">Available</option>
               <option :value="0">Not Available</option>
             </select>
@@ -135,7 +134,7 @@
           >
             <button 
               type="button" 
-              class="w-full bg-white hover:bg-gray-200 text-gray-800 py-2 rounded-md transition-colors duration-200"
+              class="w-full bg-gray-700 text-white hover:bg-gray-600 border border-gray-600 py-2 rounded-md transition-colors duration-200"
             >
               Cancel
             </button>
@@ -193,8 +192,6 @@ const userStore = useUserStore();
 const username = ref(userStore.userData?.username || '');
 const email = ref(userStore.userData?.email || '');
 const role = ref(userStore.userData?.role || '');
-
-
 
 const formData = reactive({
   game: '',
@@ -264,4 +261,5 @@ const callLogout = () => {
   localStorage.removeItem('tokenType');
   router.push({ name: 'login' });
 };
+
 </script>
