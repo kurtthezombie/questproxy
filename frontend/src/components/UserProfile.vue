@@ -1,6 +1,6 @@
 <template>
   <div class="p-6 bg-gray-900 min-h-screen">
-    <div class="max-w-5xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col md:flex-row relative">
+    <div class="max-w-6xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col md:flex-row md:space-x-6 relative">
       <!-- Edit Profile Button (Top Right) -->
       <button 
         v-if="isCurrentUser && !isEditing"
@@ -28,14 +28,6 @@
               {{ roleDisplay }}
             </span>
           </div>
-          
-          <button 
-            class="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-            
-            @click="goToPortfolio"
-          >
-            Portfolio
-          </button>
         </div>
 
         <!-- Profile Content Section -->
@@ -75,36 +67,20 @@
           </template>
         </div>
 
-        <!-- Portfolio Preview -->
-        <div class="mt-6">
-          <h3 class="text-lg font-semibold text-white mb-2">Portfolio</h3>
-          <div class="flex items-center">
-            <div v-for="(portfolio, index) in portfolios.slice(0, 2)" :key="index">
-              <img :src="portfolio.p_content" alt="Portfolio Image" class="w-12 h-12 bg-gray-600 rounded-md mr-2 object-cover">
-            </div>
-            <div v-if="portfolios.length > 2" class="w-12 h-12 bg-gray-700 rounded-md flex items-center justify-center text-white text-lg cursor-pointer" @click="goToPortfolio">
-              +{{ portfolios.length - 2 }}
-            </div>
-            <div v-if="portfolios.length === 0" class="text-gray-400 text-sm">
-              No portfolio items
-            </div>
-          </div>
-        </div>
-        
         <!-- Pilot Service Details (if applicable) -->
         <div v-if="isPilot && pilotService" class="mt-6 p-3 bg-gray-700 rounded-md">
           <h3 class="font-semibold text-blue-300 mb-2">Pilot Service Details</h3>
           <div class="grid grid-cols-2 gap-2 text-sm">
             <p class="text-gray-400">Experience:</p>
             <p class="font-medium text-white">{{ pilotService.experience || 'N/A' }} years</p>
-            
+
             <p class="text-gray-400">Status:</p>
             <p :class="`font-medium ${pilotService.active ? 'text-green-400' : 'text-red-400'}`">
               {{ pilotService.active ? 'Active' : 'Inactive' }}
             </p>
-            
+
             <p class="text-gray-400">Rating:</p>
-            <div class="flex items-center">
+            <div class="flex items-center col-span-1">
               <span class="text-yellow-400 mr-1">★</span>
               <span class="text-white">{{ pilotService.rating || '4.5' }}/5</span>
             </div>
@@ -113,19 +89,22 @@
       </div>
 
       <!-- Right Section: Services or Gamer Content -->
-      <div class="w-full md:w-2/3 pl-0 md:pl-4">
-        <div v-if="shouldShowServices">
+      <div class="w-full md:w-2/3 pl-0 md:pl-4 mt-4 md:mt-0">
+        <div v-if="shouldShowServices" class="space-y-4">
           <h3 class="text-lg text-center font-semibold text-white mb-4">Offered Services</h3>
           <div v-if="serviceStore.loading" class="flex justify-center items-center h-32">
             <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
           </div>
-          <div v-else-if="serviceStore.services.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div v-else-if="serviceStore.services.length > 0"
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 px-2 sm:px-4"
+          >
             <ServiceCard 
               v-for="service in serviceStore.services" 
               :key="service.id" 
               :service="service"
               :categories="serviceStore.categories"
               @click="handleServiceClick(service)"
+              class="w-full"
             />
           </div>
           <div v-else class="flex justify-center items-center h-32 text-gray-400 text-lg">
