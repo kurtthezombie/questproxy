@@ -16,6 +16,5 @@ class Instruction extends Model
         'additional_notes',
         'credentials_username',
         'credentials_password',
-        
     ];
 }

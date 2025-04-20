@@ -25,6 +25,11 @@ class Service extends Model
         return $this->belongsTo(Pilot::class, 'pilot_id');
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
     public function toSearchableArray():array 
     {
         return [
@@ -34,5 +39,4 @@ class Service extends Model
             //'pilot_name' => optional($this->pilot->user)->name ?? null,
         ];
     }
-    
 }
