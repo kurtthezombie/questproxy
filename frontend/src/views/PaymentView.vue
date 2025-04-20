@@ -1,53 +1,78 @@
 <template>
   <NavBar />
-  <div class="min-h-screen flex items-center justify-center bg-gray-900 text-white p-6">
-    <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-4xl w-full flex flex-col md:flex-row">
-      <!-- Service Details -->
-      <div class="flex-1 pr-0 md:pr-6 mb-6 md:mb-0">
-        <h2 class="text-2xl font-bold">
-          <span v-if="loading">Loading service details...</span>
-          <span v-else>{{ service ? formatGameTitle(service.game) : 'Service' }}</span>
-        </h2>
+  <div class="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4 py-5">
+    <div class="bg-blue-800 bg-opacity-5 p-8 rounded-xl border border-gray-700 w-[400px] h-[500px] flex flex-col -mt-20">
 
-        <p class="text-gray-400 mt-2">
+      <!-- Service Info -->
+      <div class="flex-1 overflow-y-auto">
+        <div class="flex justify-between items-center mb-2"> 
+          <div>
+            <a href="/services-history">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="size-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+              </svg>
+            </a>
+          </div>         
+          <div class="text-sm px-2 rounded-2xl bg-emerald-500 ml-auto border border-gray-700">
+            <span :class="service?.availability ? 'text-white  font-semibold' : 'bg-red-500 text-white'">
+              {{ service?.availability ? 'Available' : 'Not Available' }}
+            </span>
+          </div>
+        </div>
+        <h3 class="text-4xl font-bold text-white">
+          <span v-if="loading">Loading...</span>
+          <span v-else>{{ service ? formatGameTitle(service.game) : 'Service' }}</span>
+        </h3>
+        <p class="text-gray-300 text-md mb-6 leading-relaxed mt-1">
           <span v-if="loading" class="animate-pulse">Fetching description...</span>
           <span v-else>{{ service?.description || 'No description available' }}</span>
         </p>
+      </div>
+      
+      <div class="grid grid-cols-1 text-">
+        <div class="grid text-left">
+          <div class="flex items-center bg-gray-800 bg-opacity-60 px-3 py-2 rounded-md">
+            <!-- SVG Icon -->
+            <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div class="flex flex-col">
+              <!-- Duration label -->
+              <span class="text-gray-400 text-sm">Duration</span>
+              <!-- Loading or Duration value -->
+              <span v-if="loading" class="animate-pulse text-white">Loading...</span>
+              <span v-else class="text-white font-bold text-sm">{{ formatDuration(service?.duration) }}</span>
+            </div>
+          </div>
+        </div>
 
-        <div class="mt-4 space-y-2">
-          <p><strong>Price:</strong> 
-            <span v-if="loading" class="animate-pulse">₱...</span>
-            <span v-else>{{ service ? formatPrice(service.price) : '₱0.00' }}</span>
-          </p>
-
-          <p><strong>Duration:</strong> 
-            <span v-if="loading" class="animate-pulse">Loading...</span>
-            <span v-else>
-              {{ formatDuration(service?.duration) }}
+        <!-- Divider -->
+        <div class="border-t border-gray-700 dark:border-gray-700 my-1"></div>
+              
+        <div class=" pb-2 mt-2 ">
+          <div class="flex flex-col items-end">
+            <span class="text-gray-400 text-sm">Price</span>
+            <span v-if="loading" class="animate-pulse text-white text-3xl mb-5">₱...</span>
+            <span v-else class="font-semibold text-white text-3xl mb-5">
+              {{ service ? formatPrice(service.price) : '₱0.00' }}
             </span>
-          </p>
-
-          <p><strong>Status:</strong>
-            <span :class="service?.availability ? 'text-green-400' : 'text-red-400'">
-              {{ service?.availability ? 'Available' : 'Not Available' }}
-            </span>
-          </p>
+          </div>
         </div>
       </div>
 
-      <!-- Payment Action -->
-      <div class="flex flex-col justify-center items-center w-full md:w-1/3">
+      <!-- Action Area -->
+      <div class="mt-auto">
         <button 
-          class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg text-lg w-full transition-colors"
+          class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-md text-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full"
           @click="proceedToPayment"
-          :disabled="loading || !service?.availability"
-        >
+          :disabled="loading || !service?.availability">
           <span v-if="loading">Loading...</span>
           <span v-else-if="!service?.availability">Not Available</span>
-          <span v-else>Book & Pay Now</span>
+          <span v-else>Book Service</span>
         </button>
-        
-        <div v-if="error" class="mt-4 p-3 bg-red-900/50 text-red-300 rounded-lg text-sm w-full">
+
+        <div v-if="error" class="mt-4 bg-red-800/30 text-red-300 p-3 rounded-md text-sm">
           {{ error }}
         </div>
       </div>
@@ -170,4 +195,5 @@ onMounted(() => {
   }
   fetchServiceDetails();
 });
+
 </script>

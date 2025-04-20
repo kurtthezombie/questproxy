@@ -13,7 +13,7 @@
     <p class="text-gray-400 -mt-3">{{ service.description || 'No description available' }}</p>
     <div class="mt-2 flex justify-between items-center">
       <div class="flex flex-col text-gray-400">
-        <!-- Date with calendar icon -->
+        <!-- Day  -->
         <div class="flex items-center mb-1 mt-4">
           <svg class="w-4 h-4 text-gray-500 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -63,7 +63,6 @@ const router = useRouter();
 const toast = useToast();
 const emit = defineEmits(['serviceDeleted']);
 
-
 const getGameTitle = computed(() => {
   const category = props.categories.find(cat => cat.game === props.service.game);
   return category ? category.title : props.service.game || 'Unknown Game';
@@ -72,23 +71,6 @@ const getGameTitle = computed(() => {
 const formatPrice = (price) => {
   const num = Number(price || 0);
   return Number.isInteger(num) ? num.toLocaleString() : num.toFixed(2);
-};
-
-const formatDate = (duration) => {
-  const date = new Date(duration);
-  return isNaN(date) ? 'N/A' : date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-};
-
-const formatTime = (duration) => {
-  const date = new Date(duration);
-  return isNaN(date) ? 'N/A' : date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
 };
 
 const handleServiceClick = () => {

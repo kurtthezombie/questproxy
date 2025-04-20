@@ -76,16 +76,16 @@
         </div>
 
         <div class="px-4 py-5">
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-    <ServiceDisplay
-      v-for="service in filteredServices"
-      :key="service.id"
-      :service="service"
-      :categories="serviceStore.categories"
-      class="w-full"
-    />
-  </div>
-</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+            <ServiceDisplay
+              v-for="service in filteredServices"
+              :key="service.id"
+              :service="service"
+              :categories="serviceStore.categories"
+              class="w-full"
+            />
+          </div>
+        </div>
 
       </div>
     </template>

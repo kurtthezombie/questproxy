@@ -12,7 +12,7 @@
     <div 
       v-if="isDropdownOpen" 
       id="userDropdown" 
-      class="z-10 absolute right-0 mt-2 w-72 bg-[#1e293b] text-gray-200 divide-y divide-gray-100 rounded-lg shadow dark:bg-[#334155] dark:text-gray-300 dark:divide-gray-200">
+      class="z-10 absolute right-0 mt-2 w-60 bg-[#1e293b] text-gray-200 divide-y divide-gray-800 rounded-lg">
       
       <!-- User Info Section -->
       <div class="px-4 py-3 flex items-center space-x-4">
@@ -26,11 +26,10 @@
             v-if="username" 
             :to="{ name: 'userprofile', params: { id: userId } }"
             @click.native.prevent="navigateToProfile"
-            class="text-sm font-semibold text-gray-200 dark:text-gray-300 hover:underline -ml-4">
+            class="font-semibold text-gray-200 dark:text-gray-300 hover:no-underline -ml-4">
             {{ username }}
           </router-link>
-          <p class="text-xs text-green-400">
-
+          <p class="text-sm font-semibold text-green-400">
             {{ capitalizedRole }}
           </p>
         </div>
