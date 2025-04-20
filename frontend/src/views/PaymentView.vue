@@ -53,8 +53,8 @@
         <div class=" pb-2 mt-2 ">
           <div class="flex flex-col items-end">
             <span class="text-gray-400 text-sm">Price</span>
-            <span v-if="loading" class="animate-pulse text-white text-3xl mb-5">₱...</span>
-            <span v-else class="font-semibold text-white text-3xl mb-5">
+            <span v-if="loading" class="animate-pulse text-green-500 text-3xl mb-5">₱...</span>
+            <span v-else class="font-bold text-green-400 text-3xl mb-5">
               {{ service ? formatPrice(service.price) : '₱0.00' }}
             </span>
           </div>
