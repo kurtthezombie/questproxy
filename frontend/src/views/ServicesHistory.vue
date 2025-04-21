@@ -123,6 +123,7 @@ import ServiceDisplay from '@/components/ServiceDisplay.vue';
 const router = useRouter();
 const serviceStore = useServiceStore();
 const userStore = useUserStore();
+console.log("ID: ", userStore.userData.pilot_id)
 const searchQuery = ref(''); // Used to bind the search input
 
 const username = computed(() => userStore.userData?.username || '');
@@ -130,7 +131,7 @@ const email = computed(() => userStore.userData?.email || '');
 const role = computed(() => userStore.userData?.role || '');
 
 const filteredUserServices = computed(() => {
-  const userId = userStore.userData?.id;
+  const userId = userStore.userData?.pilot_id;
   return userId ? serviceStore.services.filter(service => service.pilot_id === userId) : [];
 });
 
@@ -154,7 +155,7 @@ const checkAuth = () => {
 };
 
 const fetchData = async () => {
-  const pilot_id = userStore.userData?.id;
+  const pilot_id = userStore.userData?.pilot_id;
   if (!pilot_id) {
     console.error("Pilot ID not found.");
     return;
