@@ -228,7 +228,7 @@ onMounted(() => {
                 </td>
               </tr>
 
-              <tr v-for="transaction in transactions" v-if="!isLoading" :key="transaction.id" class="hover:bg-base-300 hover:cursor-pointer duration-200 transition-all">
+              <tr v-for="transaction in transactions" v-if="!isLoading" :key="transaction.id" class="hover:bg-gray-800 hover:cursor-pointer duration-200 transition-all text-white">
                 <td>{{ transaction.payment_id }}</td>
                 <td>{{ transaction.payment?.amount }}</td>
                 <td>{{ transaction.status }}</td>
