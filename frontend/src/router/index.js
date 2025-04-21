@@ -26,6 +26,7 @@ import PaymentSuccess from '@/components/payment/PaymentSuccess.vue'
 import PaymentCancel from '@/components/payment/PaymentCancel.vue'
 import BookingCard from '@/components/BookingCard.vue'
 import ReviewView from '@/views/ReviewView.vue'
+import BeforePayment from '@/views/BeforePayment.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -170,6 +171,11 @@ const router = createRouter({
       path: '/review',
       name: 'Review',
       component: ReviewView,
+    },
+    {
+      path: '/before-payment',
+      name: 'BeforePayment',
+      component: BeforePayment,
     },
   ]
 });

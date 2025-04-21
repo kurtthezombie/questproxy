@@ -21,13 +21,13 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         return [
-            'payer_id' => 1,
+            'payer_id' => 4,
             'amount' => $this->faker->randomFloat(2,10,500),
             'method' => $this->faker->randomElement(['card','gcash','paymaya']),
             'details' => $this->faker->sentence(),
             'transaction_id' => 'TXN' . $this->faker->unique()->randomNumber(6, true),
             'payment_link' => $this->faker->url(),
-            'status' => $this->faker->randomElement(['pending','completed','failed']),
+            'status' => $this->faker->randomElement(['paid','unpaid']),
             'booking_id' => null,
         ];
     }

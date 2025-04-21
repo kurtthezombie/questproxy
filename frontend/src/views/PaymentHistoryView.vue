@@ -38,7 +38,7 @@
                   </svg>
                   <span>Export</span>
                 </template>
-              </button>
+              </button>tr
             </div>
           </div>
 
@@ -55,7 +55,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="payment in payments" :key="payment.id" class="border-t">
+              <tr v-for="payment in payments" :key="payment.id" class="border-t text-white">
                 <td class="py-2 px-4">{{ payment.transaction_id }}</td>
                 <td class="py-2 px-4">{{ (payment.amount / 100).toFixed(2) }} PHP</td>
                 <td class="py-2 px-4">{{ payment.status }}</td>
@@ -75,18 +75,22 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import NavBar from '@/components/NavBar.vue';
+import { useUserStore } from '@/stores/userStore';
 
 const payments = ref([]);
 const userId = ref('');
+const userStore = useUserStore();
 
 async function fetchPaymentHistory() {
   try {
     const userToken = localStorage.getItem('authToken');
+    const user_id = userId.value;
+    console.log("UserId: ", user_id);
     if (!userToken) {
       throw new Error('Unauthorized: Missing authentication token');
     }
 
-    const response = await axios.get(`http://127.0.0.1:8000/api/users/${userId.value}/payments/paid`, {
+    const response = await axios.get(`http://127.0.0.1:8000/api/users/${user_id}/payments/paid`, {
       headers: {
         Authorization: `Bearer ${userToken}`,
       },
@@ -99,15 +103,18 @@ async function fetchPaymentHistory() {
 }
 
 onMounted(() => {
-  const storedUserData = localStorage.getItem('userData');
-  if (storedUserData) {
-    const user = JSON.parse(storedUserData);
-    userId.value = user.id;
-    fetchPaymentHistory();
-  } else {
-    console.error('User not logged in');
+  const user = userStore.userData;
+  userId.value=user.id;
+  fetchPaymentHistory();
+  // const storedUserData = localStorage.getItem('userData');
+  // if (storedUserData) {
+  //   const user = JSON.parse(storedUserData);
+  //   userId.value = user.id;
+  //   fetchPaymentHistory();
+  // } else {
+  //   console.error('User not logged in');
     
-  }
+  // }
 });
 
 </script>

@@ -24,6 +24,7 @@ class PaymentController extends Controller
     {
         $success_url = $request->success_url;
         $cancel_url = $request->cancel_url;
+
         //get booking
         $booking = Booking::findOrFail($booking_id);
         if (!$booking) {
@@ -38,6 +39,7 @@ class PaymentController extends Controller
         $amount = $service->price * 100;
         $description = $service->description;
 
+
         //call response
         $secret_key = env('PAYMONGO_SECRET_KEY');
         $response = Http::withHeaders([
@@ -51,26 +53,28 @@ class PaymentController extends Controller
         ->post('https://api.paymongo.com/v1/checkout_sessions', [
                     'data' => [
                         'attributes' => [
-                            'send_email_receipt' => false,
-                            'show_description' => false,
+                            'send_email_receipt' => true,
+                            'show_description' => true,
                             'show_line_items' => true,
-                            'payment_method_types' => [
-                                "card","gcash","paymaya"
-                            ],
+                            'description' => $description,
+                            'cancel_url' => $cancel_url,
                             'line_items' => [
                                 [
                                     'currency' => 'PHP',
                                     'amount' => $amount,
                                     'description' => $description,
-                                    'quantity' => 1,
-                                    'name' => 'Service'
+                                    'name' => 'Service',
+                                    'quantity' => 1
                                 ]
                             ],
+                            'payment_method_types' => [
+                                "card","gcash","paymaya"
+                            ],
                             'success_url' => $success_url,
-                            'cancel_url' => $cancel_url
                         ]
                     ]
                 ]);
+
         //insert into payment db
         $responseData = $response->json();
         $checkout_id = $responseData['data']['id'];
