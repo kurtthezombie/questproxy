@@ -4,7 +4,7 @@ import toast from '@/utils/toast';
 
 
 const handlePayment = async () => {
-  const bookingId = 1;
+  const bookingId = 143;
 
   const payload = {
     success_url: `http://localhost:5173/home`,

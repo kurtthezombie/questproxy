@@ -142,6 +142,7 @@ const handleBookingConfirmed = (bookingData) => {
   confirmedBooking.value = bookingData;
   isModalOpen.value = false; 
 };
+
 const formatPrice = (price) => {
   return price
     ? `₱${Number(price).toLocaleString('en-US', { minimumFractionDigits: 2 })}`

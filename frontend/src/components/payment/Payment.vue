@@ -51,6 +51,7 @@ const paymentLoading = ref(false);
 const statusLoading = ref(false);
 const error = ref(null);
 
+console.log("Payment component props:", props.confirmedBooking); // Debugging
 const initiatePayment = async () => {
     if (!props.confirmedBooking || !props.confirmedBooking.id) {
         error.value = 'No booking found to proceed with payment.';
@@ -107,15 +108,11 @@ const checkPaymentStatus = async () => {
 
         const booking = response.data.data || response.data;
 
-        // Check if payment was already completed
         if (booking.status === 'completed' || booking.status === 'paid') {
             alert('Payment is already completed!');
-            // You might want to redirect to a success page
-            // router.push(`/payment-success/${props.confirmedBooking.id}`);
+            
         } 
-        // Check if there's a pending payment URL
         else if (booking.payment_url) {
-            // Redirect to the payment URL if payment is still pending
             window.location.href = booking.payment_url;
         } 
         else {
