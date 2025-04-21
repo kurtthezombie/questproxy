@@ -22,8 +22,8 @@ class PaymentController extends Controller
 
     public function pay(Request $request, $booking_id)
     {
-        $success_url = $request->successUrl;
-        $cancel_url = $request->cancelUrl;
+        $success_url = $request->success_url;
+        $cancel_url = $request->cancel_url;
 
         //get booking
         $booking = Booking::findOrFail($booking_id);

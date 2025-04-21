@@ -7,8 +7,8 @@ const handlePayment = async () => {
   const bookingId = 1;
 
   const payload = {
-    successUrl: `http://localhost:5173/home`,
-    cancelUrl: `http://localhost:5173/payments/${bookingId}`
+    success_url: `http://localhost:5173/home`,
+    cancel_url: `http://localhost:5173/payments/${bookingId}`
   };
 
   try {
