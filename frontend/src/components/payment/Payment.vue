@@ -5,6 +5,16 @@
             <span v-if="paymentLoading">Processing Payment...</span>
             <span v-else>Proceed to Payment ({{ formatPrice(service?.price) }})</span>
         </button>
+
+        <!-- Add this new button for checking payment status -->
+        <button v-if="confirmedBooking.id" 
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-md text-lg transition-all shadow-lg w-full mb-2"
+            @click="checkPaymentStatus"
+            :disabled="statusLoading">
+            <span v-if="statusLoading">Checking Status...</span>
+            <span v-else>Check Payment Status</span>
+        </button>
+
         <button @click="cancelBooking"
             class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white w-full">
             Cancel Booking
@@ -18,21 +28,27 @@
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue';
 import { initiatePayment as initiatePaymentApi } from '@/services/payment-service.js';
+import axios from 'axios';
 
 const props = defineProps({
-    confirmedBooking: {
-        type: Object,
-        required: true,
-    },
-    service: {
-        type: Object,
-        required: true,
-    },
+  confirmedBooking: {
+    type: Object,
+    required: true,
+    validator: (value) => {
+      console.log('Payment component received booking:', value); // Debugging
+      return value && value.id; // Ensure booking has an ID
+    }
+  },
+  service: {
+    type: Object,
+    required: true
+  }
 });
 
 const emit = defineEmits(['cancel-booking']);
 
 const paymentLoading = ref(false);
+const statusLoading = ref(false);
 const error = ref(null);
 
 const initiatePayment = async () => {
@@ -69,6 +85,51 @@ const initiatePayment = async () => {
     }
 };
 
+const checkPaymentStatus = async () => {
+    statusLoading.value = true;
+    error.value = null;
+
+    try {
+        const authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            throw new Error('You must be logged in to check payment status.');
+        }
+
+        // Fetch booking details which should include payment status
+        const response = await axios.get(
+            `http://127.0.0.1:8000/api/bookings/${props.confirmedBooking.id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            }
+        );
+
+        const booking = response.data.data || response.data;
+
+        // Check if payment was already completed
+        if (booking.status === 'completed' || booking.status === 'paid') {
+            alert('Payment is already completed!');
+            // You might want to redirect to a success page
+            // router.push(`/payment-success/${props.confirmedBooking.id}`);
+        } 
+        // Check if there's a pending payment URL
+        else if (booking.payment_url) {
+            // Redirect to the payment URL if payment is still pending
+            window.location.href = booking.payment_url;
+        } 
+        else {
+            // Show current status
+            alert(`Current payment status: ${booking.status || 'pending'}`);
+        }
+    } catch (err) {
+        console.error('Error checking payment status:', err);
+        error.value = err.response?.data?.message || err.message || 'Failed to check payment status.';
+    } finally {
+        statusLoading.value = false;
+    }
+};
+
 const cancelBooking = () => {
     emit('cancel-booking');
 };
@@ -76,4 +137,6 @@ const cancelBooking = () => {
 const formatPrice = (price) => {
     return price ? `₱${Number(price).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '₱0.00';
 };
+
+
 </script>

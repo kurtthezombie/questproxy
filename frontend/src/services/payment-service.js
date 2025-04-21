@@ -11,6 +11,7 @@ const getPayments = async () => {
 };
 
 const initiatePayment = async (bookingId, successUrl, cancelUrl, authToken = null) => {
+  console.log("INSIDE INITIATE PAYMENT");
   try {
     const config = {
       headers: {
@@ -22,6 +23,7 @@ const initiatePayment = async (bookingId, successUrl, cancelUrl, authToken = nul
       config.headers['Authorization'] = `Bearer ${authToken}`;
     }
 
+    console.log("BOOKING ID: ", bookingId);
     const response = await axios.post(
       `/api/payments/${bookingId}`,
       {

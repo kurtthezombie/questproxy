@@ -94,7 +94,7 @@
         </button>
 
         <Payment
-          v-else
+          v-if="confirmedBooking"
           :confirmedBooking="confirmedBooking"
           :service="service"
           @cancel-booking="cancelBooking"
@@ -138,9 +138,10 @@ const serviceId = computed(() => {
 });
 
 const handleBookingConfirmed = (bookingData) => {
+  console.log('Booking confirmed:', bookingData);
   confirmedBooking.value = bookingData;
+  isModalOpen.value = false; 
 };
-
 const formatPrice = (price) => {
   return price
     ? `₱${Number(price).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
