@@ -10,25 +10,24 @@
         {{ service.availability ? 'Available' : 'Not Available' }}
       </span>
     </div>
-    <p class="text-gray-400 -mt-3">{{ service.description || 'No description available' }}</p>
+    <p class="text-gray-300 -mt-2">{{ service.description || 'No description available' }}</p>
     <div class="mt-2 flex justify-between items-center">
-      <div class="flex flex-col text-gray-400">
+      <div class="flex flex-col text-gray-300">
         <!-- Day  -->
         <div class="flex items-center mb-1 mt-4">
-          <svg class="w-4 h-4 text-gray-500 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <svg class="w-5 h-5 text-gray-300 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span class="text-sm">{{ service.duration }} {{ service.duration === 1 ? 'day' : 'days' }}</span>
+          <span class="">{{ service.duration }} {{ service.duration === 1 ? 'day' : 'days' }}</span>
         </div>
       </div>
     </div>
     <div class="flex justify-between items-center mt-4">
       <div class="flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 0115 0" />
-            </svg>
-        <span class="font-medium text-gray-400">
+        <div class="w-7 h-7 rounded-full bg-green-900 flex items-center justify-center text-green-400 text-lg font-semibold mr-1">
+          {{ initial }}
+        </div>
+        <span class="font-medium font-semibold text-gray-300">
           {{ service.pilot_username || 'Unknown User' }}
         </span>
       </div>
@@ -36,7 +35,7 @@
     </div>
     <div class="mt-4 flex gap-2" v-if="isServiceHistory">
       <button @click.stop="$router.push(`/services/${service.id}/edit`)"
-              class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded text-black text-sm">
+              class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded text-sm">
         Edit
       </button>
       <button @click.stop="confirmDelete"
@@ -110,4 +109,10 @@ const confirmDelete = async () => {
     toast.error("Failed to delete service.");
   }
 };
+
+const initial = computed(() => {
+  if (!props.service.pilot_username) return '?';
+  return props.service.pilot_username.charAt(0).toUpperCase();
+});
+
 </script>
