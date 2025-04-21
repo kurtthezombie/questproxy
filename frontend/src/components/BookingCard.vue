@@ -81,92 +81,77 @@
   </div>
 </template>
 
-<script>
+
+<script setup>
+import { ref, computed } from 'vue';
 import axios from 'axios';
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from '@/stores/userStore';
 
-export default {
-  props: ["isOpen", "serviceId", "closeModal"],
-  data() {
-    return {
-      form: {
-        credentials_username: "",
-        credentials_password: "",
-        additional_notes: ""
+const props = defineProps({
+  isOpen: Boolean,
+  serviceId: {
+    type: Number,
+    required: true
+  },
+  closeModal: {
+    type: Function,
+    required: true
+  }
+});
+
+const emit = defineEmits(['booking-confirmed']);
+
+const userStore = useUserStore();
+const form = ref({
+  credentials_username: '',
+  credentials_password: '',
+  additional_notes: ''
+});
+const loading = ref(false);
+const error = ref(null);
+const showPassword = ref(false);
+
+const formValid = computed(() => {
+  return form.value.credentials_username && 
+         form.value.credentials_password;
+});
+
+const submitBooking = async () => {
+  loading.value = true;
+  error.value = null;
+
+  try {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken || !userStore.userData?.id) {
+      throw new Error('Please log in to complete your booking');
+    }
+
+    const response = await axios.post(
+      'http://127.0.0.1:8000/api/bookings/store',
+      {
+        client_id: userStore.userData.id,
+        service_id: props.serviceId,
+        ...form.value,
+        status: 'pending_payment'
       },
-      loading: false,
-      error: null,
-      showPassword: false
-    };
-  },
-  computed: {
-    formValid() {
-      return this.form.credentials_username.trim() && this.form.credentials_password.trim();
-    }
-  },
-  methods: {
-    async submitBooking() {
-      this.loading = true;
-      this.error = null;
-
-      try {
-        // 1. Get auth token and user data
-        const authToken = localStorage.getItem("authToken");
-        if (!authToken) throw new Error("No authentication token found");
-
-        const userStore = useUserStore();
-        if (!userStore.userData?.id) throw new Error("User data not available");
-
-        // 2. Create booking
-        const bookingResponse = await axios.post(
-          "http://127.0.0.1:8000/api/bookings/store",
-          {
-            client_id: userStore.userData.id,
-            service_id: this.serviceId,
-            credentials_username: this.form.credentials_username,
-            credentials_password: this.form.credentials_password,
-            additional_notes: this.form.additional_notes || "No notes provided"
-          },
-          {
-            headers: { Authorization: `Bearer ${authToken}` }
-          }
-        );
-
-        // 3. Get booking ID from response
-        let bookingId;
-        if (bookingResponse.data.status === 200 || bookingResponse.status === 200) {
-          const responseData = bookingResponse.data;
-          bookingId = responseData?.data?.booking?.id || responseData?.booking?.id || null;
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
         }
-
-        if (!bookingId) throw new Error("Failed to get booking ID");
-
-        // 4. Initiate payment with PayMongo
-        const successUrl = `${window.location.origin}/payments/success?booking_id=${bookingId}`;
-        const cancelUrl = `${window.location.origin}/bookings/${bookingId}?canceled=true`;
-
-        const paymentResponse = await axios.post(
-          `http://127.0.0.1:8000/api/payments/${bookingId}`,
-          {
-            success_url: successUrl,
-            cancel_url: cancelUrl
-          },
-          {
-            headers: { Authorization: `Bearer ${authToken}` }
-          }
-        );
-
-        // 5. Redirect to PayMongo checkout
-        if (paymentResponse.data.data?.checkout_url) {
-          window.location.href = paymentResponse.data.data.checkout_url;
-        } else {
-          throw new Error("No checkout URL received");
-        }
-
-      } finally {
-        this.loading = false;
       }
-    }
+    );
+
+    // Emit the complete booking data
+    emit('booking-confirmed', response.data.data || response.data);
+    props.closeModal();
+
+  } catch (err) {
+    error.value = err.response?.data?.message || 
+                 err.message || 
+                 'Failed to create booking';
+  } finally {
+    loading.value = false;
   }
 };
 </script>

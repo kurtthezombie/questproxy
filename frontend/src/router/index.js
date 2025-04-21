@@ -22,6 +22,7 @@ import MyReportsView from '@/views/MyReportsView.vue'
 import PaymentView from '@/views/PaymentView.vue'
 import PaymentHistoryView from '@/views/PaymentHistoryView.vue'
 import Payment from '@/components/payment/Payment.vue'
+import PaymentSuccess from '@/components/payment/PaymentSuccess.vue'
 import PaymentCancel from '@/components/payment/PaymentCancel.vue'
 import BookingCard from '@/components/BookingCard.vue'
 import ReviewView from '@/views/ReviewView.vue'
@@ -119,14 +120,16 @@ const router = createRouter({
       component: PaymentHistoryView,
     },
     {
-      path: '/payment-success/:transaction_id',
-      name: 'PaymentSuccess',
-      component: Payment,
+      path: '/payment/success/:bookingId',
+      name: 'payment-success',
+      component: PaymentSuccess,
+      meta: { requiresAuth: true }
     },
     {
-      path: '/payment-cancel',
-      name: 'PaymentCancel',
+      path: '/payment/cancel/:bookingId',
+      name: 'payment-cancel',
       component: PaymentCancel,
+      meta: { requiresAuth: true }
     },
     {
       path: '/bookings/:serviceId',

@@ -33,28 +33,24 @@
       <div class="grid grid-cols-1 text-">
         <div class="grid text-left">
           <div class="flex items-center bg-gray-800 bg-opacity-60 px-3 py-2 rounded-md">
-            <!-- SVG Icon -->
             <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div class="flex flex-col">
-              <!-- Duration label -->
               <span class="text-gray-400 text-sm">Duration</span>
-              <!-- Loading or Duration value -->
               <span v-if="loading" class="animate-pulse text-white">Loading...</span>
               <span v-else class="text-white font-bold text-sm">{{ formatDuration(service?.duration) }}</span>
             </div>
           </div>
         </div>
 
-        <!-- Divider -->
         <div class="border-t border-gray-700 dark:border-gray-700 my-1"></div>
               
-        <div class=" pb-2 mt-2 ">
+        <div class="pb-2 mt-2">
           <div class="flex flex-col items-end">
             <span class="text-gray-400 text-sm">Price</span>
-            <span v-if="loading" class="animate-pulse text-white text-3xl mb-5">₱...</span>
-            <span v-else class="font-semibold text-white text-3xl mb-5">
+            <span v-if="loading" class="animate-pulse text-green-500 text-3xl mb-5">₱...</span>
+            <span v-else class="font-bold text-green-400 text-3xl mb-5">
               {{ service ? formatPrice(service.price) : '₱0.00' }}
             </span>
           </div>
@@ -64,13 +60,30 @@
       <!-- Action Area -->
       <div class="mt-auto">
         <button 
+          v-if="!currentBooking"
           class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-md text-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full"
-          @click="proceedToPayment"
+          @click="openBookingModal"
           :disabled="loading || !service?.availability">
           <span v-if="loading">Loading...</span>
           <span v-else-if="!service?.availability">Not Available</span>
           <span v-else>Book Service</span>
         </button>
+
+        <template v-else>
+          <button 
+            class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-md text-lg transition-all shadow-lg w-full mb-2"
+            @click="initiatePayment"
+            :disabled="paymentLoading">
+            <span v-if="paymentLoading">Processing Payment...</span>
+            <span v-else>Proceed to Payment ({{ formatPrice(service?.price) }})</span>
+          </button>
+          
+          <button 
+            class="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-md text-lg transition-all shadow-lg w-full"
+            @click="resetBooking">
+            Cancel Booking
+          </button>
+        </template>
 
         <div v-if="error" class="mt-4 bg-red-800/30 text-red-300 p-3 rounded-md text-sm">
           {{ error }}
@@ -79,14 +92,12 @@
     </div>
   </div>
 
-  <!-- Booking Modal -->
   <BookingCard 
     v-if="service"
     :isOpen="isModalOpen"
     :serviceId="service.id"
-    :service="service"
     :closeModal="closeModal"
-    @bookingConfirmed="handleBookingConfirmation"
+    @booking-confirmed="handleBookingConfirmation"
   />
 </template>
 
@@ -95,15 +106,29 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import NavBar from "@/components/NavBar.vue";
-import BookingCard from "@/components/BookingCard.vue"; 
+import BookingCard from "@/components/BookingCard.vue";
+import { useUserStore } from "@/stores/userStore";
 
 const route = useRoute();
 const router = useRouter();
-const service = ref(null);  
-const loading = ref(true);  
+const userStore = useUserStore();
+const service = ref(null);
+const loading = ref(true);
 const isModalOpen = ref(false);
 const error = ref(null);
+const showPayment = ref(false);
+const paymentLoading = ref(false);
+const currentBooking = ref(null);
 
+onMounted(() => {
+  const savedBooking = localStorage.getItem(`current_booking_${route.params.serviceId}`);
+  if (savedBooking) {
+    currentBooking.value = JSON.parse(savedBooking);
+  }
+  fetchServiceDetails();
+});
+
+// Formatting functions (unchanged)
 const formatPrice = (price) => {
   return price ? `₱${Number(price).toLocaleString("en-US", { minimumFractionDigits: 2 })}` : "₱0.00";
 };
@@ -115,21 +140,15 @@ const formatGameTitle = (game) => {
 
 const formatDuration = (duration) => {
   if (!duration) return 'N/A';
-  
-  // Handle both numeric (days) and datetime strings
   if (typeof duration === 'number') {
     return `${duration} ${duration === 1 ? 'day' : 'days'}`;
   }
-
   try {
-    // Try to parse as datetime if it's a string
     const date = new Date(duration);
-    if (!isNaN(date)) {
-      return date.toLocaleString();
-    }
-    return duration; // Return as-is if not a valid date
+    if (!isNaN(date)) return date.toLocaleString();
+    return duration;
   } catch {
-    return duration; // Fallback
+    return duration;
   }
 };
 
@@ -161,7 +180,6 @@ const fetchServiceDetails = async () => {
   } catch (err) {
     console.error("Service fetch error:", err);
     error.value = err.response?.data?.message || err.message || "Failed to load service details";
-    // Redirect back if service doesn't exist
     if (err.response?.status === 404) {
       router.push({ name: 'services' });
     }
@@ -170,7 +188,7 @@ const fetchServiceDetails = async () => {
   }
 };
 
-const proceedToPayment = () => {
+const openBookingModal = () => {
   if (!service.value?.availability) {
     error.value = "This service is not currently available for booking";
     return;
@@ -182,10 +200,75 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 
-const handleBookingConfirmation = (bookingId) => {
-  console.log("Booking confirmed with ID:", bookingId);
-  // You can add additional handling here if needed
+const handleBookingSuccess = () => {
+  showPayment.value = true;
   closeModal();
+};
+
+const resetBooking = () => {
+  currentBooking.value = null;
+  localStorage.removeItem(`current_booking_${route.params.serviceId}`);
+  error.value = null;
+};
+
+const handleBookingConfirmation = (bookingData) => {
+  currentBooking.value = bookingData;
+  localStorage.setItem(`current_booking_${route.params.serviceId}`, JSON.stringify(bookingData));
+  showPayment.value = true;
+  closeModal();
+};
+
+const initiatePayment = async () => {
+  paymentLoading.value = true;
+  error.value = null;
+
+  try {
+    if (!currentBooking.value) {
+      throw new Error("No booking found. Please create a booking first.");
+    }
+
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) throw new Error("Authentication required");
+
+    const paymentResponse = await axios.post(
+      `http://127.0.0.1:8000/api/payments/${currentBooking.value.id}`,
+      {
+        success_url: `${window.location.origin}/payment/success/${currentBooking.value.id}`,
+        cancel_url: `${window.location.origin}/payment/cancel/${currentBooking.value.id}`,
+        metadata: {
+          service_id: service.value.id,
+          client_id: currentBooking.value.client_id
+        }
+      },
+      {
+        headers: { 
+          Authorization: `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const paymentData = paymentResponse.data?.data || paymentResponse.data;
+    const checkoutUrl = paymentData?.checkout_url || paymentData?.attributes?.checkout_url;
+    
+    if (!checkoutUrl) {
+      throw new Error("No checkout URL received");
+    }
+    
+    window.location.href = checkoutUrl;
+
+  } catch (err) {
+    console.error("Payment error:", err);
+    error.value = err.response?.data?.message || 
+                 err.message || 
+                 "Failed to process payment";
+    // Clear invalid booking if needed
+    if (err.response?.status === 404) {
+      resetBooking();
+    }
+  } finally {
+    paymentLoading.value = false;
+  }
 };
 
 onMounted(() => {
@@ -195,5 +278,4 @@ onMounted(() => {
   }
   fetchServiceDetails();
 });
-
 </script>
