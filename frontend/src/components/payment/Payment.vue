@@ -1,84 +1,79 @@
 <template>
-  <button 
-    @click="initiatePayment"
-    class="pay-button"
-    :disabled="loading"
-  >
-    Complete Payment (₱{{ formatPrice(servicePrice) }})
-  </button>
+    <div>
+        <button class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-md text-lg transition-all shadow-lg w-full mb-2"
+            @click="initiatePayment" :disabled="paymentLoading">
+            <span v-if="paymentLoading">Processing Payment...</span>
+            <span v-else>Proceed to Payment ({{ formatPrice(service?.price) }})</span>
+        </button>
+        <button @click="cancelBooking"
+            class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white w-full">
+            Cancel Booking
+        </button>
+        <div v-if="error" class="mt-4 bg-red-800/30 text-red-300 p-3 rounded-md text-sm">
+            {{ error }}
+        </div>
+    </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { useUserStore } from '@/stores/userStore';
+import { ref, defineProps, defineEmits } from 'vue';
+import { initiatePayment as initiatePaymentApi } from '@/services/payment-service.js';
 
 const props = defineProps({
-  serviceId: {
-    type: Number,
-    required: true
-  }
+    confirmedBooking: {
+        type: Object,
+        required: true,
+    },
+    service: {
+        type: Object,
+        required: true,
+    },
 });
 
-const emit = defineEmits(['payment-complete']);
+const emit = defineEmits(['cancel-booking']);
 
-const userStore = useUserStore();
-const loading = ref(false);
+const paymentLoading = ref(false);
 const error = ref(null);
-const servicePrice = ref(0); 
-
-const authToken = localStorage.getItem('authToken');
-
-onMounted(async () => {
-  try {
-    const res = await axios.get(
-      `http://127.0.0.1:8000/api/services/${props.serviceId}`
-    );
-    servicePrice.value = res.data.data.service.price;
-  } catch (err) {
-    console.error('Failed to fetch service price:', err);
-  }
-});
 
 const initiatePayment = async () => {
-  loading.value = true;
-  error.value = null;
+    if (!props.confirmedBooking || !props.confirmedBooking.id) {
+        error.value = 'No booking found to proceed with payment.';
+        return;
+    }
 
-  try {
-    const latestBookingRes = await axios.get(
-      `http://127.0.0.1:8000/api/bookings/latest?service_id=${props.serviceId}&user_id=${userStore.userData.id}`,
-      {
-        headers: { Authorization: `Bearer ${authToken}` }
-      }
-    );
+    paymentLoading.value = true;
+    error.value = null;
 
-    const bookingId = latestBookingRes.data.data.booking.id; 
-    const paymentResponse = await axios.post(
-      `http://127.0.0.1:8000/api/payments/${bookingId}`,
-      {
-        success_url: `${window.location.origin}/payment/success/${bookingId}`,
-        cancel_url: `${window.location.origin}/payment/cancel/${bookingId}`
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
+    try {
+        const authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            throw new Error('You must be logged in to make a payment.');
         }
-      }
-    );
 
-    const checkoutUrl = paymentResponse.data.data.checkout_url;
-    window.location.href = checkoutUrl;
+        const successUrl = window.location.origin + `/payment-success/${props.confirmedBooking.id}`;
+        const cancelUrl = window.location.origin + `/payment-cancelled/${props.confirmedBooking.id}`;
 
-  } catch (err) {
-    console.error('Payment failed:', err);
-    error.value = err.response?.data?.message || err.message || 'Payment failed';
-  } finally {
-    loading.value = false;
-  }
+        const checkoutUrl = await initiatePaymentApi(
+            props.confirmedBooking.id,
+            successUrl,
+            cancelUrl,
+            authToken
+        );
+
+        window.location.replace(checkoutUrl);
+    } catch (err) {
+        console.error('Payment initiation failed:', err);
+        error.value = err.response?.data?.message || err.message || 'Failed to initiate payment.';
+    } finally {
+        paymentLoading.value = false;
+    }
+};
+
+const cancelBooking = () => {
+    emit('cancel-booking');
 };
 
 const formatPrice = (price) => {
-  return Number(price).toFixed(2);
+    return price ? `₱${Number(price).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '₱0.00';
 };
 </script>

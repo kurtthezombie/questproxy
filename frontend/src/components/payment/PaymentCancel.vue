@@ -39,27 +39,33 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from 'vue-router';
-import NavBar from "@/components/NavBar.vue";
+import { useRoute, useRouter } from "vue-router"
+import NavBar from "@/components/NavBar.vue"
+import { ref, onMounted } from "vue"
 
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
+
+const serviceId = ref(null)
+const bookingId = ref(null)
+
+onMounted(() => {
+  serviceId.value = route.query.service_id || route.params.service_id || null
+  bookingId.value = route.query.booking_id || route.params.booking_id || null
+})
 
 const tryAgain = () => {
-  // Get the booking ID from the URL parameters
-  const bookingId = route.params.bookingId;
-  
-  if (bookingId) {
-    // Get service ID from the booking - in a real app you would fetch this from the API
-    // For now we'll assume there's service information stored somewhere or redirect to services
-    router.push('/services');
+  if (serviceId.value) {
+    router.push(`/services/${serviceId.value}`)
+  } else if (bookingId.value) {
+    router.push(`/bookings/${bookingId.value}`)
   } else {
-    // If no booking ID, just go to services page
-    router.push('/services');
+    router.push("/services")
   }
-};
+}
 
 const goToHome = () => {
-  router.push('/');
-};
+  router.push("/")
+}
+
 </script>

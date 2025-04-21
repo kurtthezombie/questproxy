@@ -120,7 +120,7 @@ const router = createRouter({
       component: PaymentHistoryView,
     },
     {
-      path: '/payment/success/:bookingId',
+      path: '/payment/success/:booking_id',
       name: 'payment-success',
       component: PaymentSuccess,
       meta: { requiresAuth: true }

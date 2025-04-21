@@ -71,52 +71,77 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import axios from 'axios';
-import NavBar from '@/components/NavBar.vue';
+import { ref, onMounted } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import NavBar from "@/components/NavBar.vue"
+import { verifyPayment } from "@/services/payment-service"
+import axios from "axios"
 
-const route = useRoute();
-const payment = ref({});
-const loading = ref(true);
-const paymentVerified = ref(false);
-const error = ref(null);
+const route = useRoute()
+const router = useRouter()
+
+const transactionId = ref(route.query.transaction_id || route.params.transaction_id || "N/A")
+const serviceName = ref("Your Service")
+const amount = ref("₱0.00")
+const loading = ref(true)
+const error = ref(null)
+const bookingId = ref(route.params.booking_id || null)
+
+// Initialize refs outside onMounted to ensure they are always defined
+const paymentVerificationResult = ref(null)
+const bookingDetails = ref(null)
+const serviceDetails = ref(null)
 
 onMounted(async () => {
   try {
-    // First get the payment record using booking ID from route
-    const authToken = localStorage.getItem('authToken');
-    if (!authToken) throw new Error('Session expired');
+    if (transactionId.value !== "N/A") {
+      // Verify payment and get details
+      paymentVerificationResult.value = await verifyPayment(transactionId.value)
 
-    // 1. Find payment record by booking ID
-    const paymentsResponse = await axios.get(
-      `http://127.0.0.1:8000/api/payments?booking_id=${route.params.id}`,
-      {
-        headers: { Authorization: `Bearer ${authToken}` }
+      // If we have a booking ID, fetch booking and service details
+      if (bookingId.value) {
+        try {
+          const authToken = localStorage.getItem("authToken")
+          const bookingResponse = await axios.get(`http://127.0.0.1:8000/api/bookings/${bookingId.value}`, {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json",
+            },
+          })
+
+          bookingDetails.value = bookingResponse.data.data.booking
+
+          if (bookingDetails.value && bookingDetails.value.service_id) {
+            const serviceResponse = await axios.get(
+              `http://127.0.0.1:8000/api/services/${bookingDetails.value.service_id}`,
+            )
+
+            serviceDetails.value = serviceResponse.data.data.service
+            if (serviceDetails.value) {
+              serviceName.value = serviceDetails.value.name || serviceDetails.value.game || "Game Service"
+              amount.value = `₱${parseFloat(serviceDetails.value.price).toFixed(2)}`
+            }
+          }
+        } catch (err) {
+          console.error("Error fetching booking details:", err)
+          error.value = "Error fetching booking details."
+        }
       }
-    );
-
-    const paymentRecord = paymentsResponse.data.data.payment[0];
-    if (!paymentRecord) throw new Error('Payment record not found');
-
-    // 2. Verify payment with PayMongo
-    const verificationResponse = await axios.get(
-      `http://127.0.0.1:8000/api/payments/success/${paymentRecord.transaction_id}`,
-      {
-        headers: { Authorization: `Bearer ${authToken}` }
-      }
-    );
-
-    payment.value = paymentRecord;
-    paymentVerified.value = true;
-    
+    }
   } catch (err) {
-    error.value = err.response?.data?.message || 
-                err.message || 
-                'Payment verification failed';
-    console.error('Payment error:', err);
+    error.value = err.message || "Failed to verify payment"
+    console.error("Payment verification error:", err)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-});
+})
+
+const goToBookings = () => {
+  router.push("/bookings")
+}
+
+const goToHome = () => {
+  router.push("/")
+}
+
 </script>
