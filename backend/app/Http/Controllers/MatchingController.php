@@ -27,7 +27,8 @@ class MatchingController extends Controller
                 ->where('availability', true);
         })->whereHas('rank', function($query) use ($request) {
             $query->where('points', '>=', $request->points);
-        })->get();
+        })->where('user_id', '!=', $request->user()->id)
+        ->get();
 
         //return if no pilots are found
         if ($matchingPilot->isEmpty()){
