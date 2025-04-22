@@ -20,6 +20,7 @@ class InstructionService
         $instruction->booking_id = $booking_id;
         $instruction->credentials_username = Crypt::encryptString($data['credentials_username']);
         $instruction->credentials_password = Crypt::encryptString($data['credentials_password']);
+        $instruction->additional_notes = $data['additional_notes'];
 
         if (!$instruction->save()) {
             throw new Exception('Failed to create instruction.');

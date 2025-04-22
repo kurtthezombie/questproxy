@@ -48,7 +48,7 @@ class BookingController extends Controller
             $this->instructionService->create($booking->id,$data);
             
             //return success response
-            return $this->successResponse('Booking and instruction created successfully.', 200);
+            return $this->successResponse('Booking and instruction created successfully.', 200, ['booking' => $booking]);
         } catch (Exception $e) {
             return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
