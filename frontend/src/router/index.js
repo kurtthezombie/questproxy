@@ -26,6 +26,7 @@ import PaymentCancel from '@/components/payment/PaymentCancel.vue'
 import BookingCard from '@/components/BookingCard.vue'
 import ReviewView from '@/views/ReviewView.vue'
 import BeforePayment from '@/views/BeforePayment.vue'
+import PilotMatchingView from '@/views/PilotMatchingView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -173,6 +174,12 @@ const router = createRouter({
       path: '/before-payment',
       name: 'BeforePayment',
       component: BeforePayment,
+    },
+    {
+      path: '/pilot-matching',
+      name: 'PilotMatching',
+      component: PilotMatchingView,
+      meta: { requiresAuth: true },
     },
   ]
 });
