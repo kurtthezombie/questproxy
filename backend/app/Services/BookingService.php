@@ -46,4 +46,21 @@ class BookingService
 
         return $booking;
     }
+
+    public function getBookingsByPilot()
+    {
+        $user = auth()->user();
+
+        if (!$user || !$user->pilot) {
+            throw new Exception("Pilot not found for the authenticated user.");
+        }
+
+        $pilotId = $user->pilot->id;
+
+        $bookings = $this->booking->whereHas('service', function ($query) use ($pilotId) {
+            $query->where('pilot_id', $pilotId);
+        })->with(['service','service.pilot'])->get();
+
+        return $bookings;
+    }
 }
