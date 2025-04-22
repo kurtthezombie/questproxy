@@ -24,6 +24,8 @@ import PaymentHistoryView from '@/views/PaymentHistoryView.vue'
 import Payment from '@/components/payment/Payment.vue'
 import PaymentCancel from '@/components/payment/PaymentCancel.vue'
 import BookingCard from '@/components/BookingCard.vue'
+import ReviewView from '@/views/ReviewView.vue'
+import BeforePayment from '@/views/BeforePayment.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -162,12 +164,24 @@ const router = createRouter({
       component: MyReportsView,
       meta: { requiresAuth: true },
     },
+    {
+      path: '/review',
+      name: 'Review',
+      component: ReviewView,
+    },
+    {
+      path: '/before-payment',
+      name: 'BeforePayment',
+      component: BeforePayment,
+    },
   ]
 });
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('authToken');
   const userRole = localStorage.getItem('userRole');
+
+  const guestOnlyRoutes = ['login', 'signup', 'home'];
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isAuthenticated) {
@@ -184,7 +198,11 @@ router.beforeEach((to, from, next) => {
       }
     }
   } else {
-    next();
+    if (isAuthenticated && guestOnlyRoutes.includes(to.name)) {
+      next({ name: 'homepage' }); // or wherever you want to redirect logged-in users
+    } else {
+      next();
+    }
   }
 });
 

@@ -65,7 +65,7 @@ const getMemberSince = (createdAt) => {
         class="w-full min-w-[260px] max-w-full sm:w-[90%] md:w-[850px] rounded-xl shadow-md shadow-green-900 border border-gray-700"
       >
         <!-- Table Header -->
-        <div class="flex font-semibold text-gray-300 bg-gray-800 py-3 px-10 text-center rounded-t-xl">
+        <div class="flex font-semibold text-gray-300 bg-blue-900 bg-opacity-20 py-3 px-10 text-center rounded-t-xl">
           <div class="w-1/4 text-center">RANK</div>
           <div class="w-3/4 text-left">GAME PILOT</div>
           <div class="w-1/4 text-center">POINTS</div>
@@ -85,7 +85,7 @@ const getMemberSince = (createdAt) => {
 
           <!-- Avatar + Username -->
           <div class="w-3/4 flex items-center gap-3">
-            <div class="bg-white bg-opacity-20 text-2xl text-green-500 font-bold rounded-full w-10 h-10 flex items-center justify-center">
+            <div class="bg-blue-800 bg-opacity-20 text-2xl text-green-500 font-bold rounded-full w-10 h-10 flex items-center justify-center">
               {{ getInitial(record.pilot_username) }}
             </div>
             <div class="flex flex-col text-left">

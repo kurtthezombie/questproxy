@@ -93,12 +93,12 @@ onUnmounted(() => window.removeEventListener("keydown", closeOnEscape));
             <transition name="fade">
                 <div v-if="modelValue" class="fixed inset-0 flex items-center justify-center bg-black/50"
                     @click.self="closeModal">
-                    <div class="card bg-gray-200 p-6 shadow-lg w-96">
+                    <div class="card bg-gray-900 p-6 shadow-lg w-96">
                         <!-- Header -->
                         <div class="flex justify-between items-center">
-                            <h2 class="card-title text-black">Edit Portfolio Item</h2>
+                            <h2 class="card-title text-white">Edit Portfolio Item</h2>
                             <button @click="closeModal"
-                                class="text-gray-500 hover:text-gray-800 cursor-pointer rounded-full hover:bg-red-200 p-2">
+                                class="text-white hover:text-gray-800 cursor-pointer rounded-full hover:bg-red-200 p-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d='M6 18 18 6M6 6l12 12' />
@@ -106,13 +106,13 @@ onUnmounted(() => window.removeEventListener("keydown", closeOnEscape));
                             </button>
                         </div>
 
-                        <hr class="my-3 border-gray-300" />
+                        <hr class="my-3 border-gray-700" />
 
                         <!-- image preview -->
                         <div class="mb-4 flex flex-col justify-center items-center">
                             <img :src="form.imagePreview" alt="Portfolio Image"
-                                class="w-full max-h-48 object-cover rounded-md border" />
-                            <label class="btn mt-4">
+                                class="w-full max-h-48 object-cover rounded-md border border-gray-700" />
+                            <label class="btn mt-4 text-white bg-green-600 shadow-none border border-green-600 font-thin">
                                 Change Image
                                 <input type="file" accept="image/*" class="hidden" @change="handleImageChange">
                             </label>
@@ -120,17 +120,17 @@ onUnmounted(() => window.removeEventListener("keydown", closeOnEscape));
 
                         <!-- Caption Input -->
                         <div class="mb-4">
-                            <label class="block font-semibold text-gray-700">Caption</label>
+                            <label class="block font-semibold text-white">Caption</label>
                             <input :value="form.caption" @input="form.caption = $event.target.value" type="text"
-                                class="input input-bordered w-full mt-1" />
+                                class="input input-bordered w-full mt-1 bg-[#1e293b] text-white shadow-none border border-gray-700" />
                         </div>
 
                         <!-- Cancel Button -->
                         <div class="flex justify-end gap-x-1">
-                            <button @click="emit('close')" class="btn bg-gray-500 text-white">Cancel</button>
+                            <button @click="emit('close')" class="btn text-white bg-gray-700 border font-thin border-gray-700 shadow-none">Cancel</button>
                             <button 
                                 @click="handleUpdatePortfolio"
-                                class="btn bg-green-900 text-white hover:bg-green-700 flex items-center gap-2"
+                                class="btn bg-green-600 border border-green-900 shadow-none text-white font-thin hover:bg-green-700 flex items-center gap-2"
                                 :disabled="isUnchanged || loadingBtn">
                                 <span v-if="loadingBtn" class="loading loading-spinner"></span>
                                 <span v-if="!loadingBtn">Update</span>

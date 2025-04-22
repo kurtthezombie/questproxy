@@ -139,4 +139,15 @@ class BookingController extends Controller
             return $this->failedResponse('Error: ' . $e->getMessage(), 500);
         }
     }
+
+    public function getBookingByPilot()
+    {
+        try {
+            $bookings = $this->bookingService->getBookingsByPilot();
+            
+            return $this->successResponse('Bookings retrieved.', 200,['data' => $bookings]);
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
+        }
+    }
 }

@@ -6,17 +6,40 @@
     <div class="container mx-auto py-5 max-w-7xl">
       <!-- Header Section -->
       <div>
-        <div class="p-6 bg-gray-800 rounded-xl shadow-md flex flex-col mb-8 border border-gray-600">
-          <h1 class="text-3xl mb-2 font-bold">
-            Welcome, <span class="text-green-400">{{ username }}</span>
-          </h1>
-          <h3 class="mb-5 text-gray-400">
-            Ready to enhance your gaming experience today?
-          </h3>
+        <div class="relative bg-blue-800 bg-opacity-5 p-16 rounded-xl shadow-md flex flex-row justify-between items-center mb-8 overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0">
+            <div class="dust-container">
+              <!-- Generate 100 dust particles -->
+              <div 
+                v-for="index in 100" 
+                :key="index" 
+                class="dust"
+                :style="generateParticleStyle(index)"
+              ></div>
+            </div>
+          </div>
+          <!-- Text Content -->
+          <div>
+            <h1 class="text-5xl mb-2 font-bold">
+              Welcome, <span class="text-green-400">{{ username }}</span>
+            </h1>
+            <h3 class="mb-5 text-lg text-gray-300">
+              Ready to enhance your gaming experience today?
+            </h3>
+          </div>
+
+          <!-- SVG Icon -->
+          <div class="mr-40">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="90" height="90" fill="none" stroke="#047857" stroke-width="2">
+              <path d="M6 12L9 10L12 3L15 10L18 12L15 14L12 21L9 14L6 12Z" transform="scale(0.8) translate(1.5, 3)" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6 12L9 10L12 3L15 10L18 12L15 14L12 21L9 14L6 12Z" transform="translate(16, 14) scale(0.4)" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
         </div>
+
         <!-- Search Bar -->
         <div class="relative w-full max-w-7xl">
-          <div class="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-700 rounded-full p-2 focus-within:border-2 focus-within:border-green-400">
+          <div class="absolute left-2 top-1/2 -translate-y-1/2 bg-blue-900 bg-opacity-50 rounded-full p-2 focus-within:border-2 focus-within:border-green-400">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               class="h-7 w-7 text-white"
@@ -31,7 +54,7 @@
             v-model="searchQuery"
             type="text"
             placeholder="Search game"
-            class="bg-gray-800 text-gray-300 border border-gray-600 rounded-full pl-16 pr-4 py-4 h-15 shadow-md w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300"
+            class="bg-blue-800 bg-opacity-5 text-gray-300 border border-gray-700 rounded-full pl-16 pr-4 py-4 h-15 shadow-md w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300"
           />
         </div>
       </div>
@@ -48,7 +71,7 @@
               v-for="category in filteredCategories" 
               :key="category.id"
               :to="{ name: 'ServiceView', params: { title: category.game } }"
-              class="bg-gray-800 p-6 rounded-xl border border-gray-600 group hover:border-green-400 hover:shadow-green-500/50 hover:-translate-y-2 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center w-[290px] min-h-[120px]">
+              class="bg-blue-900 bg-opacity-20 p-6 rounded-xl border border-gray-700 group hover:border-green-400 hover:shadow-green-500/50 hover:-translate-y-2 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center w-[290px] min-h-[120px]">
               <!-- Category Title -->
               <h3 class="font-bold text-gray-300 text-center text-lg group-hover:font-bold group-hover:text-green-400 group-hover:text-xl">
                 {{ category.title }}
@@ -70,6 +93,7 @@ import { useLoader } from '@/services/loader-service';
 import NavBar from '@/components/NavBar.vue';
 import { useUserStore } from '@/stores/userStore';
 import { useServiceStore } from '@/stores/serviceStore';
+import '@/assets/css/style.css'; 
 
 const { loadShow, loadHide } = useLoader();
 const router = useRouter();
@@ -127,5 +151,23 @@ const callLogout = () => {
   localStorage.removeItem('authToken');
   localStorage.removeItem('tokenType');
   router.push({ name: 'login' });
+};
+
+// Function to generate random styles for dust particles
+const generateParticleStyle = (index) => {
+  const left = Math.random() * 100;
+  const top = Math.random() * 100;
+  const size = Math.random() * 3 + 2;
+  const duration = Math.random() * 10 + 5;
+  const delay = Math.random() * 5;
+  
+  return {
+    left: `${left}%`,
+    top: `${top}%`,
+    width: `${size}px`,
+    height: `${size}px`,
+    animationDuration: `${duration}s`,
+    animationDelay: `${delay}s`,
+  };
 };
 </script>

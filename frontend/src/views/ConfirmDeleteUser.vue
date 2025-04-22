@@ -28,8 +28,11 @@
     import { ref } from 'vue';
     import { useRoute } from 'vue-router';
     import { useLoader } from '@/services/loader-service';
+    import router from '@/router';
+    import loginService from '@/services/login-service';
+    import { useUserStore } from '@/stores/userStore';
 
-    
+    const userStore = useUserStore();
     const route = useRoute();
     const userId = ref(route.query.id);
     const { loadShow, loadHide } = useLoader();
@@ -43,8 +46,10 @@
                     'Authorization' : `Bearer ${localStorage.getItem('authToken')}`,
                 },
             });
+            userStore.clearUser();
+            localStorage.clear();
             alert('Account has been deleted.');
-            window.location.href = '/';
+            router.push({ name: 'login' });
         } catch (error) {
             console.log('Error deleting account: ', error);
         } finally {

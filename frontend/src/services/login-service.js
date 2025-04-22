@@ -182,6 +182,7 @@ const logout = async () => {
     });
     userStore.clearUser();
     localStorage.removeItem('authToken');
+    localStorage.clear();
     console.log('Logout successful!');
   } else {
     console.log('No token found, cannot log out.');
