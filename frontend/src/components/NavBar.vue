@@ -20,6 +20,7 @@
       <!-- Desktop Nav -->
       <nav class="hidden lg:flex items-center gap-">
         <router-link to="/home" class="text-white hover:text-green-500 transition">Home</router-link>
+        <router-link to="/pilot-matching" class="text-white hover:text-green-500 transition">Pilot Matching</router-link>
         <router-link to="/leaderboards" class="text-white hover:text-green-500 transition">Leaderboard</router-link>
         <router-link v-if="role === 'game pilot'" to="/services-history" class="text-white hover:text-green-500 transition">Service</router-link>
         <router-link v-if="role === 'game pilot'" to="/myportfolios" class="text-white hover:text-green-500 transition">Portfolio</router-link>
@@ -38,6 +39,7 @@
       </div>
       <div class="flex justify-center items-center flex-col w-full bg-blue-800 bg-opacity-5 text-center rounded-md">
         <router-link to="/home" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Home</router-link>
+        <router-link to="/pilot-matching" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Pilot Matching</router-link>
         <router-link to="/leaderboards" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Leaderboard</router-link>
         <router-link v-if="role === 'game pilot'" to="/services-history" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Service</router-link>
         <router-link v-if="role === 'game pilot'" to="/myportfolios" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Portfolio</router-link>

@@ -179,6 +179,7 @@ const router = createRouter({
       path: '/pilot-matching',
       name: 'PilotMatching',
       component: PilotMatchingView,
+      meta: { requiresAuth: true },
     },
   ]
 });
