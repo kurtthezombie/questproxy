@@ -42,15 +42,21 @@ const handleSearchPilot = async () => {
   
   try {
     const data = await findMatchingPilot(formData.value);
+    let message = '';
 
     //do something if data is here:
     if (data.pilot && data.pilot_details) {
       foundPilot.value = data.pilot_details;
-      console.log('Pilot found:', foundPilot.value);
+
       openModal();
+      message = "Successfully found a pilot!";
+    } else {
+      message = "No pilot found for the selected criteria.";
     }
 
-    toast.success('Search successful!');
+    clearFields();
+    
+    toast.success(message);
   } catch (error) {
     console.error('Search failed: ', error);
     toast.error('Search failed');
@@ -58,6 +64,14 @@ const handleSearchPilot = async () => {
     loading.value = false;
   }
 };
+
+const clearFields = () => {
+  formData.value = {
+      game: '',
+      service: '',
+      points: null,
+    };
+}
 
 
 onMounted(() => {
@@ -147,6 +161,7 @@ onMounted(() => {
           </div>
         </div>
         <div class="modal-action">
+          <a :href="`/users/${foundPilot.user_id}`" class="btn btn-success hover:bg-green-300">View Profile</a>
           <button class="btn" @click="closeModal">Close</button>
         </div>
       </div>
