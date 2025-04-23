@@ -10,33 +10,34 @@ const getPayments = async () => {
   }
 };
 
-const initiatePayment = async (bookingId, successUrl, cancelUrl, authToken = null) => {
-  console.log("INSIDE INITIATE PAYMENT");
+const initiatePayment = async (bookingId, successUrl, cancelUrl, authToken) => {
   try {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-
-    if (authToken) {
-      config.headers['Authorization'] = `Bearer ${authToken}`;
-    }
-
-    console.log("BOOKING ID: ", bookingId);
+    console.log('Initiating payment for booking:', bookingId);
+    
     const response = await axios.post(
-      `/api/payments/${bookingId}`,
+      `http://127.0.0.1:8000/api/payments/${bookingId}`,
       {
         success_url: successUrl,
-        cancel_url: cancelUrl,
+        cancel_url: cancelUrl
       },
-      config
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
+      }
     );
 
-    return response.data.data.checkout_url;
-  } catch (error) {
-    console.error('Payment initiation failed:', error);
-    throw error;
+    console.log('Payment initiation response:', response.data);
+    return response.data.checkout_url;
+
+  } catch (err) {
+    console.error('Payment initiation error details:', {
+      status: err.response?.status,
+      data: err.response?.data,
+      message: err.message
+    });
+    throw err;
   }
 };
 
