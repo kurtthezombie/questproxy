@@ -84,7 +84,7 @@ class PaymentController extends Controller
         DB::beginTransaction();
         try {
             $payment = Payment::create([
-                'amount' => $amount,
+                'amount' => $amount/100,
                 'description' => $description,
                 'transaction_id' => $checkout_id,
                 'payment_link' => $checkout_url,
