@@ -9,6 +9,9 @@ export const useServiceStore = defineStore('service', () => {
     const loading = ref(false);
     const error = ref(null);
     const message = ref('');
+    const myBookings = ref([]);
+    const bookingsLoading = ref(false);
+    const bookingsError = ref(null);
 
     const hasServices = computed(() => services.value.length > 0);
     const categoriesLoaded = computed(() => categories.value.length > 0);
@@ -237,6 +240,35 @@ export const useServiceStore = defineStore('service', () => {
         }
     };
 
+    const fetchBookingsByPilot = async () => {
+        bookingsLoading.value = true;
+        bookingsError.value = null;
+        try {
+          const token = localStorage.getItem('authToken');
+          if (!token) throw new Error('No authentication token found');
+          
+          const response = await axios.get('http://127.0.0.1:8000/api/pilot/bookings', {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+      
+          console.log('Bookings API Response:', response.data); // Debug log
+      
+          // Handle different response structures
+          myBookings.value = response.data?.data || 
+                            response.data || 
+                            [];
+          
+        } catch (err) {
+          console.error('Booking fetch error:', err);
+          bookingsError.value = err.response?.data?.message || 
+                              err.message || 
+                              'Failed to load bookings';
+        } finally {
+          bookingsLoading.value = false;
+        }
+      };
 
 
     return {
@@ -246,8 +278,12 @@ export const useServiceStore = defineStore('service', () => {
         error,
         message,
         hasServices,
-        categoriesLoaded, 
-
+        categoriesLoaded,
+        myBookings,
+        bookingsLoading,
+        bookingsError,
+       
+        fetchBookingsByPilot,
         fetchCategories,
         createService,
         fetchUserServices,

@@ -58,55 +58,149 @@
         <div class="relative ml-4 mt-3 mr-4">
           <!-- Tab Buttons Container -->
           <div class="flex justify-start items-center px-4 space-x-6 py-2 border-b border-gray-700">
-            <button class="flex items-center text-green-400 pb-2 hover:text-emerald-400">
-              <svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <button 
+                class="flex items-center pb-2"
+                :class="activeTab === 'services' ? 'text-green-400' : 'text-gray-500 hover:text-white'"
+                @click="activeTab = 'services'">
+              <svg class="w-5 h-5 mr-2" :class="activeTab === 'services' ? 'text-green-400' : 'text-gray-500'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-7 4h8m1-10V6a2 2 0 00-2-2H9a2 2 0 00-2 2v2M4 7h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V9a2 2 0 012-2z" />
               </svg>
               Available Services 
-              <span class="bg-emerald-500 text-white rounded-full px-2 ml-1 mr-10"></span>
+              <span class="bg-emerald-500 text-white rounded-full px-2 ml-1 mr-10">{{ filteredUserServices.length }}</span>
             </button>
-            <button class="flex items-center text-gray-500 hover:text-white">
-              <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <button 
+                class="flex items-center pb-2"
+                :class="activeTab === 'bookings' ? 'text-green-400' : 'text-gray-500 hover:text-white'"
+                @click="showBookings">
+              <svg class="w-5 h-5 mr-2" :class="activeTab === 'bookings' ? 'text-green-400' : 'text-gray-500'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2z" />
               </svg>
               My Bookings 
-              <span class="bg-gray-600 text-white rounded-full px-2 ml-1 mr-10"></span>
+              <span class="bg-emerald-500 text-white rounded-full px-2 ml-1 mr-10">{{ serviceStore.myBookings?.length || 0 }}</span>
             </button>
-            <div class="flex items-center space-x-2 mb-1">
-              <button class="flex items-center text-gray-500 hover:text-white">
-                <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Service History 
-                <span class="bg-gray-600 text-white rounded-full px-2 ml-1"></span>
-              </button>
+            <button 
+                class="flex items-center pb-2"
+                :class="activeTab === 'history' ? 'text-green-400' : 'text-gray-500 hover:text-white'"
+                @click="activeTab = 'history'">
+              <svg class="w-5 h-5 mr-2" :class="activeTab === 'history' ? 'text-green-400' : 'text-gray-500'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Service History 
+              <span class="bg-emerald-500 text-white rounded-full px-2 ml-1">{{ serviceHistory.length }}</span>
+            </button>
+          </div>
+
+          <!-- Active Tab Indicator -->
+          <div class="absolute top-full h-[2px] bg-emerald-400 rounded transition-all duration-300"
+               :style="{
+                 width: activeTab === 'services' ? '150px' : activeTab === 'bookings' ? '120px' : '140px',
+                 left: activeTab === 'services' ? '16px' : activeTab === 'bookings' ? '186px' : '326px'
+               }"></div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="px-4 py-6">
+          <!-- Services Tab -->
+          <div v-if="activeTab === 'services'">
+            <div v-if="!filteredUserServices.length" class="text-center mt-10 text-gray-400">
+              No services available.
+            </div>
+            <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+              <ServiceDisplay
+                v-for="service in filteredAndSearchedServices"
+                :key="service.id"
+                :service="service"
+                :categories="serviceStore.categories"
+                :isServiceHistory="true"
+                @serviceDeleted="handleServiceDeleted"
+                class="w-full"
+              />
             </div>
           </div>
 
-          <!-- Underline Outside the Container -->
-          <div class="absolute top-full h-[2px] bg-emerald-400 rounded" style="width: 200px;"></div>
-        </div>
+          <!-- Bookings Tab -->
+          <div v-if="activeTab === 'bookings'">
+            <div v-if="serviceStore.bookingsLoading" class="flex justify-center items-center py-10">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+            </div>
+            <div v-else-if="serviceStore.bookingsError" class="text-red-500 text-center py-10">
+              {{ serviceStore.bookingsError }}
+            </div>
+            <div v-else-if="!serviceStore.myBookings?.length" class="text-center text-gray-400 py-10">
+              No bookings found for your services.
+            </div>
+            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div v-for="booking in serviceStore.myBookings" :key="booking.id" 
+                   class="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all">
+                <div class="flex justify-between items-start">
+                  <h3 class="text-xl font-bold text-white">
+                    {{ booking.service?.game || 'Unknown Service' }}
+                  </h3>
+                  <span :class="{
+                    'bg-emerald-500': booking.status === 'completed',
+                    'bg-yellow-500': booking.status === 'pending',
+                    'bg-red-500': booking.status === 'cancelled'
+                  }" class="text-xs px-2 py-1 rounded-full text-white">
+                    {{ booking.status }}
+                  </span>
+                </div>
+                
+                <p class="text-gray-400 mt-1 text-sm">
+                  {{ booking.service?.description || 'No description available' }}
+                </p>
+                
+                <div class="mt-3 text-gray-300 text-sm">
+                  <div class="flex items-center mb-1">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    Client: {{ booking.client?.username || 'Unknown' }}
+                  </div>
+                  
+                  <div class="flex justify-between items-center mt-2">
+                    <span class="text-green-400 font-bold">
+                      ₱{{ booking.service?.price?.toLocaleString() || '0' }}
+                    </span>
+                    <span class="text-gray-400 text-xs">
+                      {{ formatDate(booking.created_at) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <!-- No Services Message -->
-        <div v-if="!filteredUserServices.length" class="text-center mt-10 text-gray-400">
-          No services available.
-        </div>
-
-        <!-- Services Grid -->
-        <div class="px-4 py-5">
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-            <ServiceDisplay
-              v-for="service in filteredAndSearchedServices"
-              :key="service.id"
-              :service="service"
-              :categories="serviceStore.categories"
-              :isServiceHistory="true"
-              @serviceDeleted="handleServiceDeleted"
-              class="w-full"
-            />
+          <!-- History Tab -->
+          <div v-if="activeTab === 'history'">
+            <div v-if="!serviceHistory.length" class="text-center text-gray-400 py-10">
+              No service history found.
+            </div>
+            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div v-for="history in serviceHistory" :key="history.id" 
+                   class="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all">
+                <h2 class="text-xl font-semibold text-white mb-2">
+                  {{ history.service?.name || 'Unknown Service' }}
+                </h2>
+                <p class="text-sm text-gray-400 mb-1">
+                  <strong>Client:</strong> {{ history.client?.username || 'Unknown' }}
+                </p>
+                <p class="text-sm text-gray-400 mb-1">
+                  <strong>Status:</strong> 
+                  <span :class="{
+                    'text-green-400': history.status === 'completed',
+                    'text-yellow-400': history.status === 'pending',
+                    'text-red-400': history.status === 'cancelled'
+                  }">
+                    {{ history.status }}
+                  </span>
+                </p>
+                <p class="text-sm text-gray-400">
+                  <strong>Completed At:</strong> {{ formatDate(history.updated_at) }}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-
       </template>
     </div>
   </div>
@@ -123,9 +217,10 @@ import ServiceDisplay from '@/components/ServiceDisplay.vue';
 const router = useRouter();
 const serviceStore = useServiceStore();
 const userStore = useUserStore();
-console.log("ID: ", userStore.userData.pilot_id)
-const searchQuery = ref(''); // Used to bind the search input
+const searchQuery = ref('');
+const activeTab = ref('services');
 
+// Computed properties
 const username = computed(() => userStore.userData?.username || '');
 const email = computed(() => userStore.userData?.email || '');
 const role = computed(() => userStore.userData?.role || '');
@@ -135,16 +230,39 @@ const filteredUserServices = computed(() => {
   return userId ? serviceStore.services.filter(service => service.pilot_id === userId) : [];
 });
 
-// Computed property to filter the services based on searchQuery
+const serviceHistory = computed(() => {
+  return serviceStore.myBookings?.filter(booking => 
+    ['completed', 'expired'].includes(booking.status)
+  ) || [];
+});
+
 const filteredAndSearchedServices = computed(() => {
   if (!searchQuery.value) {
     return filteredUserServices.value;
   }
+  const query = searchQuery.value.toLowerCase();
   return filteredUserServices.value.filter(service =>
-    service.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    service.description.toLowerCase().includes(searchQuery.value.toLowerCase())
+    service.name.toLowerCase().includes(query) ||
+    service.description.toLowerCase().includes(query)
   );
 });
+
+// Methods
+const showBookings = async () => {
+  activeTab.value = 'bookings';
+  if (!serviceStore.myBookings?.length) {
+    await serviceStore.fetchBookingsByPilot();
+  }
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  return new Date(dateString).toLocaleString();
+};
+
+const handleServiceDeleted = (deletedId) => {
+  serviceStore.services = serviceStore.services.filter(service => service.id !== deletedId);
+};
 
 const checkAuth = () => {
   if (!localStorage.getItem('authToken')) {
@@ -164,22 +282,9 @@ const fetchData = async () => {
   try {
     await serviceStore.fetchServicesByPilot(pilot_id); 
     await serviceStore.fetchCategories();
-    console.log("Fetched services:", serviceStore.services);
   } catch (error) {
     console.error("Error fetching data:", error);
   }
-};
-
-const handleServiceDeleted = (deletedId) => {
-  serviceStore.services = serviceStore.services.filter(service => service.id !== deletedId);
-};
-
-const callLogout = () => {
-  userStore.clearUser();
-  serviceStore.clearServices();
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('tokenType');
-  router.push({ name: 'login' });
 };
 
 onMounted(async () => {
