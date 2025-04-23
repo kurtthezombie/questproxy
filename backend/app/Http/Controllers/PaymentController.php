@@ -103,7 +103,10 @@ class PaymentController extends Controller
         return $this->successResponse(
             'Payment record created, redirect to checkout url.',
             201,
-            ['checkout_url'=> $checkout_url]
+            [
+                'checkout_url'=> $checkout_url,
+                'transaction_id' => $payment->transaction_id,
+                ]
         );
     }
 
