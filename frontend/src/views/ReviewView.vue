@@ -7,8 +7,7 @@ import { fetchServiceData, submitReview } from '@/services/review.service';
 
 //fetch serviceId from route state
 const route = useRoute();
-const serviceId = ref('1');
-// const serviceId = ref(route.state?.serviceId);
+const serviceId = ref(route.params.id);
 
 const isLoading = ref(false);
 const review = reactive({

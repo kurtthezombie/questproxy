@@ -167,9 +167,10 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: '/review',
+      path: '/review/:id',
       name: 'Review',
       component: ReviewView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/before-payment',
