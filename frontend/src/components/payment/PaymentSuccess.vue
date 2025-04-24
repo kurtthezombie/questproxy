@@ -1,5 +1,5 @@
 <template>
-  <NavBar />
+  <!-- <NavBar />
   <div class="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4 py-5">
     <div class="bg-blue-800 bg-opacity-5 p-8 rounded-xl border border-gray-700 w-full max-w-md">
       <div v-if="loading" class="text-center py-10">
@@ -67,11 +67,11 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+/* import { ref, onMounted } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import NavBar from "@/components/NavBar.vue"
 import { verifyPayment } from "@/services/payment-service"
@@ -143,5 +143,5 @@ const goToBookings = () => {
 const goToHome = () => {
   router.push("/")
 }
-
+ */
 </script>
