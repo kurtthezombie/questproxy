@@ -35,7 +35,7 @@ class PaymentController extends Controller
         try {
             $payment = Payment::create([
                 'amount' => $service->price,
-                'description' => $service->description,
+                'details' => $service->description,
                 'payer_id' => Auth::user()->id,
                 'booking_id' => $booking_id,
             ]);
@@ -129,7 +129,7 @@ class PaymentController extends Controller
         }
 
         $payment_method_used = $data['data']['attributes']['payment_method_used'];
-        $status = $data['data']['attributes']['status'];
+        $status = $data['data']['attributes']['payments'][0]['attributes']['status'];
         
         if ($status == 'paid'){
             //update tables
@@ -141,9 +141,9 @@ class PaymentController extends Controller
             return $this->successResponse('Payment successful.',200, ['payment_status' => $status]);
         }
 
-        return $this->failedResponse('Payment not completed.', 500);
+        return $this->failedResponse('Payment not completed', 500);
     }
-
+ 
     public function paymentsPaid($user_id){
         $payments = Payment::where('payer_id',$user_id)
                     ->where('status','paid')
