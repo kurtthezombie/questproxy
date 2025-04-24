@@ -22,25 +22,38 @@ class PaymentController extends Controller
 
     public function pay(Request $request, $booking_id)
     {
-        $success_url = $request->success_url;
         $cancel_url = $request->cancel_url;
 
-        //get booking
         $booking = Booking::findOrFail($booking_id);
-        if (!$booking) {
-            return $this->failedResponse('No booking found.',404);
-        }
-        //get service
         $service = $booking->service;
         if (!$service) {
             return $this->failedResponse('No service retrieved.',404);
-        }   
+        }
+
+        //payment initial creation
+        DB::beginTransaction();
+        try {
+            $payment = Payment::create([
+                'amount' => $service->price,
+                'description' => $service->description,
+                'payer_id' => Auth::user()->id,
+                'booking_id' => $booking_id,
+            ]);
+            
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->failedResponse($e->getMessage(), 500);
+        }
+
+        //set success url
+        //$success_url = 'BUTNGI UG ROUTE sa page nato after payment nya i append ang id sa payment';
+        $success_url = env('APP_FRONTEND_URL') . '/verify-payment/' . $payment->id;
+
         //set amount to payment gateway format
         $amount = $service->price * 100;
-        $description = $service->description;
 
-
-        //call response
+        //call <response></response>
         $secret_key = env('PAYMONGO_SECRET_KEY');
         $response = Http::withHeaders([
             'Accept' => 'application/json',
@@ -56,13 +69,13 @@ class PaymentController extends Controller
                             'send_email_receipt' => true,
                             'show_description' => true,
                             'show_line_items' => true,
-                            'description' => $description,
+                            'description' => $service->description,
                             'cancel_url' => $cancel_url,
                             'line_items' => [
                                 [
                                     'currency' => 'PHP',
                                     'amount' => $amount,
-                                    'description' => $description,
+                                    'description' => $service->description,
                                     'name' => 'Service',
                                     'quantity' => 1
                                 ]
@@ -75,53 +88,45 @@ class PaymentController extends Controller
                     ]
                 ]);
 
-        //insert into payment db
+        //take response data
         $responseData = $response->json();
-        $checkout_id = $responseData['data']['id'];
-        $checkout_url = $responseData['data']['attributes']['checkout_url'];
-        $status = $responseData['data']['attributes']['status'];
         
-        DB::beginTransaction();
-        try {
-            $payment = Payment::create([
-                'amount' => $amount/100,
-                'description' => $description,
-                'transaction_id' => $checkout_id,
-                'payment_link' => $checkout_url,
-                'status' => $status,
-                'payer_id' => Auth::user()->id,
-                'booking_id' => $booking_id,
-            ]);
-            
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return $this->failedResponse($e->getMessage(),500);
+        if (!$response->successful() || !isset($responseData['data'])) {
+            return $this->failedResponse('Payment gateway error or invalid response data.', 500);
         }
-        //redirect to checkout_url
-        //return redirect()->away($checkout_url);
+
+        //update payment record
+        $payment->transaction_id = $responseData['data']['id'];
+        $payment->payment_link = $responseData['data']['attributes']['checkout_url'];
+        $payment->status = $responseData['data']['attributes']['status'];
+        $payment->save();
+        
+
         return $this->successResponse(
             'Payment record created, redirect to checkout url.',
             201,
-            ['checkout_url'=> $checkout_url]
+            ['checkout_url'=> $payment->payment_link]
         );
     }
 
-    public function success($transaction_id){
+    public function success($id){
         //retrieve session check if paid
-        $payment = Payment::where('transaction_id',$transaction_id)->first();
+        $payment = Payment::findOrFail($id);
         
-        if (!$payment){
-            return $this->failedResponse('Transaction not found',404);
-        }
         $checkout_session_id = $payment->transaction_id;
         $url = "https://api.paymongo.com/v1/checkout_sessions/{$checkout_session_id}";
+
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Authorization' => 'Basic ' . base64_encode(env('PAYMONGO_SECRET_KEY') . ':'),
             'Content-Type' => 'application/json'
         ])->get($url);
+
         $data = $response->json();
+
+        if (!isset($data['data'])) {
+            return $this->failedResponse('Invalid response from PayMongo.', 500);
+        }
 
         $payment_method_used = $data['data']['attributes']['payment_method_used'];
         $status = $data['data']['attributes']['status'];
@@ -133,8 +138,10 @@ class PaymentController extends Controller
             $payment->save();
 
             //return response
-            return $this->successResponse('Payment successful.',200);
+            return $this->successResponse('Payment successful.',200, ['payment_status' => $status]);
         }
+
+        return $this->failedResponse('Payment not completed.', 500);
     }
 
     public function paymentsPaid($user_id){
