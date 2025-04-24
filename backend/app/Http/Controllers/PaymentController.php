@@ -48,7 +48,7 @@ class PaymentController extends Controller
 
         //set success url
         //$success_url = 'BUTNGI UG ROUTE sa page nato after payment nya i append ang id sa payment';
-        $success_url = env('APP_FRONTEND_URL') . '/api/payment/success/' . $payment->id;
+        $success_url = env('APP_FRONTEND_URL') . '/verify-payment/' . $payment->id;
 
         //set amount to payment gateway format
         $amount = $service->price * 100;
@@ -138,7 +138,7 @@ class PaymentController extends Controller
             $payment->save();
 
             //return response
-            return $this->successResponse('Payment successful.',200);
+            return $this->successResponse('Payment successful.',200, ['payment_status' => $status]);
         }
 
         return $this->failedResponse('Payment not completed.', 500);
