@@ -151,7 +151,7 @@ onMounted(() => {
           </div>
 
           <div class="flex justify-end w-full">
-            <button class="btn btn-success" @click="handleSubmit">Submit Agreement</button>
+            <button class="btn btn-success" type="submit">Submit Agreement</button>
           </div>
         </form>
       </div>
