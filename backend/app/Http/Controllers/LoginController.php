@@ -34,15 +34,35 @@ class LoginController extends Controller
             $token = $user->createToken($user->name.'Auth-Token',['*'])->plainTextToken;
     
             $pilot = $user->pilot;
-    
-            return response()->json([
-                'message' => 'Login successful.',
-                'token_type' => 'Bearer',
-                'token' => $token,
-                'authenticated_user' => $user,
-                'pilot_id' => $pilot ? $pilot->id : null,
-                'status' => true,
-            ],200);
+            $gamer = $user->gamer;
+
+            if ($pilot) {
+                return response()->json([
+                    'message' => 'Login successful.',
+                    'token_type' => 'Bearer',
+                    'token' => $token,
+                    'authenticated_user' => $user,
+                    'pilot_id' => $pilot ? $pilot->id : null,
+                    'status' => true,
+                ],200);
+            } else if($gamer) {
+                return response()->json([
+                    'message' => 'Login successful.',
+                    'token_type' => 'Bearer',
+                    'token' => $token,
+                    'authenticated_user' => $user,
+                    'gamer_id' => $gamer->id,  // Return gamer id for gamer users
+                    'status' => true,
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'Login successful, but no associated pilot or gamer role.',
+                    'token_type' => 'Bearer',
+                    'token' => $token,
+                    'authenticated_user' => $user,
+                    'status' => true,
+                ], 200);
+            }
         } catch (Exception $e) {
             return $this->failedResponse($e->getMessage(), 500);
         }
