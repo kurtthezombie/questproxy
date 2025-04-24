@@ -1,12 +1,13 @@
 <script setup>
 import toast from '@/utils/toast';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import NavBar from '@/components/NavBar.vue';
 import { ref, reactive, computed, onMounted } from 'vue';
 import { fetchServiceData, submitReview } from '@/services/review.service';
 
 //fetch serviceId from route state
 const route = useRoute();
+const router = useRouter();
 const serviceId = ref(route.params.id);
 
 const isLoading = ref(false);
@@ -62,9 +63,11 @@ const handleSubmitReview = async () => {
     };
 
     await submitReview(formData);
-    toast.success('Review submitted successfully!');
+
     clearForm();
-  } catch {
+    router.push({ name: 'thankyou' });
+  } catch (error){
+    console.error(error); // Check if there's any error in the console
     toast.error('Failed to submit review.');
   }
 }
