@@ -129,7 +129,7 @@ class PaymentController extends Controller
         }
 
         $payment_method_used = $data['data']['attributes']['payment_method_used'];
-        $status = $data['data']['attributes']['status'];
+        $status = $data['data']['attributes']['payments'][0]['attributes']['status'];
         
         if ($status == 'paid'){
             //update tables

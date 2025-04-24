@@ -23,8 +23,9 @@ const animateHeart = () => {
 const handleVerifyPayment = async (id) => {
   try{
     const response = await api.get(`payments/success/${id}`);
+    console.log('Payment verification response:', response);
 
-    paymentStatus.value = response.data.payment_status;
+    paymentStatus.value = response.payment_status;
 
     if (paymentStatus.value === 'paid') {
       loading.value = false;
