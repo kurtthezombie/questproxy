@@ -29,6 +29,7 @@ import ReviewView from '@/views/ReviewView.vue'
 import BeforePayment from '@/views/BeforePayment.vue'
 import PilotMatchingView from '@/views/PilotMatchingView.vue'
 import VerifyPaymentView from '@/views/VerifyPaymentView.vue'
+import ThankYouView from '@/views/ThankYouView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -170,9 +171,10 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: '/review',
+      path: '/review/:id',
       name: 'Review',
       component: ReviewView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/before-payment',
@@ -190,6 +192,11 @@ const router = createRouter({
       name: 'VerifyPayment',
       component: VerifyPaymentView,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/thank-you',
+      name: 'thankyou',
+      component: ThankYouView,
     },
   ]
 });

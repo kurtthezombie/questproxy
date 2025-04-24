@@ -11,7 +11,11 @@ export const useUserStore = defineStore('user', () => {
 
     //actions
     const setUser = (data,authToken) => {
-        userData.value = { ...data, pilot_id: data.pilot_id || data.pilot?.id || null };
+        userData.value = { 
+            ...data, 
+            pilot_id: data.pilot_id || data.pilot?.id || null,
+            gamer_id: data.gamer_id || data.gamer?.id || null,
+        };
         token.value = authToken;
 
         console.log('Stored user data: ', userData.value);
