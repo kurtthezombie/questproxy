@@ -109,36 +109,43 @@ class PaymentController extends Controller
         );
     }
 
-    public function success($id){
-        //retrieve session check if paid
-        $payment = Payment::findOrFail($id);
-        
-        $checkout_session_id = $payment->transaction_id;
-        $url = "https://api.paymongo.com/v1/checkout_sessions/{$checkout_session_id}";
+    public function success($id)
+    {
+        try {
+            //retrieve session check if paid
+            $payment = Payment::findOrFail($id);
 
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Authorization' => 'Basic ' . base64_encode(env('PAYMONGO_SECRET_KEY') . ':'),
-            'Content-Type' => 'application/json'
-        ])->get($url);
+            $checkout_session_id = $payment->transaction_id;
+            $url = "https://api.paymongo.com/v1/checkout_sessions/{$checkout_session_id}";
 
-        $data = $response->json();
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Authorization' => 'Basic ' . base64_encode(env('PAYMONGO_SECRET_KEY') . ':'),
+                'Content-Type' => 'application/json'
+            ])
+            ->withoutVerifying()
+            ->get($url);
 
-        if (!isset($data['data'])) {
-            return $this->failedResponse('Invalid response from PayMongo.', 500);
-        }
+            $data = $response->json();
 
-        $payment_method_used = $data['data']['attributes']['payment_method_used'];
-        $status = $data['data']['attributes']['payments'][0]['attributes']['status'];
-        
-        if ($status == 'paid'){
-            //update tables
-            $payment->method = $payment_method_used;
-            $payment->status = $status;
-            $payment->save();
+            if (!isset($data['data'])) {
+                return $this->failedResponse('Invalid response from PayMongo.', 500);
+            }
 
-            //return response
-            return $this->successResponse('Payment successful.',200, ['payment_status' => $status]);
+            $payment_method_used = $data['data']['attributes']['payment_method_used'];
+            $status = $data['data']['attributes']['payments'][0]['attributes']['status'];
+
+            if ($status == 'paid') {
+                //update tables
+                $payment->method = $payment_method_used;
+                $payment->status = $status;
+                $payment->save();
+
+                //return response
+                return $this->successResponse('Payment successful.', 200, ['payment_status' => $status]);
+            }
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return $this->failedResponse($e->getMessage(), 500);
         }
 
         return $this->failedResponse('Payment not completed', 500);

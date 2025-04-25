@@ -71,8 +71,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
             </div>
-            <h3 class="text-xl font-semibold mb-2">Verified Pilots</h3>
-            <p class="text-gray-400 text-justify">All our pilots undergo rigorous verification to ensure they have the skills they claim.</p>
+            <h3 class="text-xl font-semibold mb-2">Skilled Pilots</h3>
+            <p class="text-gray-400 text-justify">Entrusted with our accounts are top-tier gamers, recognized for their superior gaming expertise</p>
           </div>
 
           <!-- Card 2 -->
@@ -198,7 +198,7 @@ import '@/assets/css/style.css';
 import router from '@/router';
 
 const handleStartNow = async () => {
-  router.push({ name: 'login' });
+  router.push({ name: 'signup' });
 }
 </script>
 

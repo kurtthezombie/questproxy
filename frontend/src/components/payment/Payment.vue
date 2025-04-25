@@ -33,7 +33,7 @@
   </template>
   
   <script setup>
-  import { ref, defineProps, defineEmits } from 'vue';
+  import { ref } from 'vue';
   import { initiatePayment } from '@/services/payment-service';
   import axios from 'axios';
   
