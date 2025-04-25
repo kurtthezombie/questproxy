@@ -74,6 +74,29 @@ class BookingService
         return $bookings;
     }
 
+    public function getMyBookings()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            throw new Exception("Authenticated user not found.");
+        }
+
+        $bookings = $this->booking->where('client_id', $user->id)
+            ->with(['service','service.pilot'])
+            ->get();
+
+        return $bookings->map(function ($booking) {
+            return [
+                'booking' => $booking,
+                'created_at' => $booking->created_at,
+                'serviceTitle' => $booking->service->description,
+                'gameTitle' => $booking->service->category->title,
+                'pilotName' => $booking->service->pilot->user->username,
+            ];
+        });
+    }
+
     private function sendCompletionEmail($booking)
     {
         $service = $booking->service;

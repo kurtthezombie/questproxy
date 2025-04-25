@@ -150,4 +150,19 @@ class BookingController extends Controller
             return $this->failedResponse($e->getMessage(), 500);
         }
     }
+
+    public function booksByMe()
+    {
+        try {
+            $bookings = $this->bookingService->getMyBookings();
+
+            if ($bookings->isEmpty()) {
+                return $this->successResponse('User has not booked yet.', 200);
+            }
+
+            return $this->successResponse('Bookings retrieved.', 200, ['bookings' => $bookings]);
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
+        }
+    }
 }
