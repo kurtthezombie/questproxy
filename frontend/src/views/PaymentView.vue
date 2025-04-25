@@ -97,7 +97,7 @@
           v-if="confirmedBooking"
           :confirmedBooking="confirmedBooking"
           :service="service"
-          @cancel-booking="cancelBooking"
+          @cancel-booking="handleCancelBooking"
         />
 
         <div v-if="error" class="mt-4 bg-red-800/30 text-red-300 p-3 rounded-md text-sm">
@@ -137,8 +137,9 @@ const serviceId = computed(() => {
   return parseInt(route.params.serviceId);
 });
 
+
 const handleBookingConfirmed = (bookingData) => {
-  console.log('Booking confirmed:', bookingData);
+  console.log('Received bookingData:', bookingData);
   confirmedBooking.value = bookingData;
   isModalOpen.value = false; 
 };
@@ -211,7 +212,7 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 
-const cancelBooking = () => {
+const handleCancelBooking = () => {
   confirmedBooking.value = null;
 };
 

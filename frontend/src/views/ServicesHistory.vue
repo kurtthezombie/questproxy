@@ -34,15 +34,12 @@
           <div class="flex items-center mt-8 space-x-4 px-4 w-full">
             <div class="relative w-full max-w-7xl">
               <div class="absolute left-2 top-1/2 -translate-y-1/2 bg-blue-900 bg-opacity-50 rounded-full p-2 focus-within:border-2 focus-within:border-green-400">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  class="h-7 w-7 text-white"
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                    d="M10 3a7 7 0 015.65 11.35l4.35 4.35M15 10a5 5 0 10-10 0 5 5 0 0010 0z" />
-                </svg>
+                <svg class="h-[1.5em] opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </g>
+              </svg>
               </div>
               <input
                 v-model="searchQuery"
@@ -55,49 +52,65 @@
         </div>
 
         <!-- Navigation Buttons -->
-        <div class="relative ml-4 mt-3 mr-4">
+        <div class="relative mt-3">
           <!-- Tab Buttons Container -->
-          <div class="flex justify-start items-center px-4 space-x-6 py-2 border-b border-gray-700">
+          <div class="flex justify-start items-center space-x-8 px-5">
             <button 
-                class="flex items-center pb-2"
-                :class="activeTab === 'services' ? 'text-green-400' : 'text-gray-500 hover:text-white'"
-                @click="activeTab = 'services'">
-              <svg class="w-5 h-5 mr-2" :class="activeTab === 'services' ? 'text-green-400' : 'text-gray-500'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-7 4h8m1-10V6a2 2 0 00-2-2H9a2 2 0 00-2 2v2M4 7h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V9a2 2 0 012-2z" />
+              class="flex rounded transition-colors duration-200 items-center pl-[100px] pr-20 py-5"
+              :class="activeTab === 'services' 
+                ? 'text-green-400 bg-[#1e293b]' 
+                : 'text-gray-500 hover:text-white hover:bg-gray-600'"
+              @click="activeTab = 'services'">
+              <svg class="w-5 h-5 mr-2" 
+                :class="activeTab === 'services' ? 'text-green-400' : 'text-gray-500'" 
+                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" 
+                  d="M9 12h6m-7 4h8m1-10V6a2 2 0 00-2-2H9a2 2 0 00-2 2v2M4 7h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V9a2 2 0 012-2z" />
               </svg>
               Available Services 
-              <span class="bg-emerald-500 text-white rounded-full px-2 ml-1 mr-10">{{ filteredUserServices.length }}</span>
+              <span class="bg-emerald-500 text-white rounded-full px-2 ml-1 mr-10">
+                {{ filteredUserServices.length }}
+              </span>
             </button>
+
             <button 
-                class="flex items-center pb-2"
-                :class="activeTab === 'bookings' ? 'text-green-400' : 'text-gray-500 hover:text-white'"
-                @click="showBookings">
-              <svg class="w-5 h-5 mr-2" :class="activeTab === 'bookings' ? 'text-green-400' : 'text-gray-500'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2z" />
+              class="flex rounded transition-colors duration-200 items-center pl-[100px] pr-20 py-5"
+              :class="activeTab === 'bookings' 
+                ? 'text-green-400 bg-[#1e293b]' 
+                : 'text-gray-500 hover:text-white hover:bg-gray-600'"
+              @click="showBookings">
+              <svg class="w-5 h-5 mr-2" 
+                :class="activeTab === 'bookings' ? 'text-green-400' : 'text-gray-500'" 
+                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" 
+                  d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2z" />
               </svg>
               My Bookings 
-              <span class="bg-emerald-500 text-white rounded-full px-2 ml-1 mr-10">{{ serviceStore.myBookings?.length || 0 }}</span>
+              <span class="bg-emerald-500 text-white rounded-full px-2 ml-1 mr-10">
+                {{ serviceStore.myBookings?.length || 0 }}
+              </span>
             </button>
+
             <button 
-                class="flex items-center pb-2"
-                :class="activeTab === 'history' ? 'text-green-400' : 'text-gray-500 hover:text-white'"
-                @click="activeTab = 'history'">
-              <svg class="w-5 h-5 mr-2" :class="activeTab === 'history' ? 'text-green-400' : 'text-gray-500'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              class="flex rounded transition-colors duration-200 items-center pl-[100px] pr-[100px] py-5"
+              :class="activeTab === 'history' 
+                ? 'text-green-400 bg-[#1e293b]' 
+                : 'text-gray-500 hover:text-white hover:bg-gray-600'"
+              @click="activeTab = 'history'">
+              <svg class="w-5 h-5 mr-2" 
+                :class="activeTab === 'history' ? 'text-green-400' : 'text-gray-500'" 
+                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" 
+                  d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Service History 
-              <span class="bg-emerald-500 text-white rounded-full px-2 ml-1">{{ serviceHistory.length }}</span>
+              <span class="bg-emerald-500 text-white rounded-full px-2 ml-1 mr-10">
+                {{ serviceHistory.length }}
+              </span>
             </button>
-          </div>
-
-          <!-- Active Tab Indicator -->
-          <div class="absolute top-full h-[2px] bg-emerald-400 rounded transition-all duration-300"
-               :style="{
-                 width: activeTab === 'services' ? '150px' : activeTab === 'bookings' ? '120px' : '140px',
-                 left: activeTab === 'services' ? '16px' : activeTab === 'bookings' ? '186px' : '326px'
-               }"></div>
+          </div>  
         </div>
-
+        
         <!-- Tab Content -->
         <div class="px-4 py-6">
           <!-- Services Tab -->
@@ -131,26 +144,26 @@
             </div>
             <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div v-for="booking in serviceStore.myBookings" :key="booking.id" 
-                   class="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all">
+                   class="bg-blue-900 bg-opacity-20 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all">
                 <div class="flex justify-between items-start">
-                  <h3 class="text-xl font-bold text-white">
+                  <h3 class="text-xl font-bold text-white mt-1">
                     {{ booking.service?.game || 'Unknown Service' }}
                   </h3>
                   <span :class="{
-                    'bg-emerald-500': booking.status === 'completed',
-                    'bg-yellow-500': booking.status === 'pending',
-                    'bg-red-500': booking.status === 'cancelled'
-                  }" class="text-xs px-2 py-1 rounded-full text-white">
+                    'bg-emerald-500 font-bold': booking.status === 'completed',
+                    'bg-blue-500 font-bold': booking.status === 'pending',
+                    'bg-red-500 font-bold': booking.status === 'cancelled'
+                  }" class="text-xs px-2 py-1 rounded-full text-white capitalize mt-2 mr-1">
                     {{ booking.status }}
                   </span>
                 </div>
                 
-                <p class="text-gray-400 mt-1 text-sm">
+                <p class="text-gray-300 mt-1 mb-5 ">
                   {{ booking.service?.description || 'No description available' }}
                 </p>
                 
-                <div class="mt-3 text-gray-300 text-sm">
-                  <div class="flex items-center mb-1">
+                <div class="mt-3 text-gray-300">
+                  <div class="flex items-center mb-5">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
@@ -158,11 +171,11 @@
                   </div>
                   
                   <div class="flex justify-between items-center mt-2">
-                    <span class="text-green-400 font-bold">
+                    <span class="text-2xl font-bold text-green-400">
                       ₱{{ booking.service?.price?.toLocaleString() || '0' }}
                     </span>
-                    <span class="text-gray-400 text-xs">
-                      {{ formatDate(booking.created_at) }}
+                    <span class="text-gray-400">
+                      {{ timeAgo(booking.created_at) }}
                     </span>
                   </div>
                 </div>
@@ -190,7 +203,7 @@
                     'text-green-400': history.status === 'completed',
                     'text-yellow-400': history.status === 'pending',
                     'text-red-400': history.status === 'cancelled'
-                  }">
+                  }" class="capitalize">">
                     {{ history.status }}
                   </span>
                 </p>
@@ -213,6 +226,10 @@ import { useServiceStore } from '@/stores/serviceStore';
 import { useUserStore } from '@/stores/userStore';
 import NavBar from '@/components/NavBar.vue';
 import ServiceDisplay from '@/components/ServiceDisplay.vue';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime)
 
 const router = useRouter();
 const serviceStore = useServiceStore();
@@ -287,9 +304,16 @@ const fetchData = async () => {
   }
 };
 
+
 onMounted(async () => {
   if (checkAuth()) {
     await fetchData();
   }
 });
+
+const timeAgo = (dateString) => {
+  return dayjs(dateString).fromNow()
+}
+
+
 </script>

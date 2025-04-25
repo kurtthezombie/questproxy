@@ -38,7 +38,7 @@
                   </svg>
                   <span>Export</span>
                 </template>
-              </button>tr
+              </button>
             </div>
           </div>
 

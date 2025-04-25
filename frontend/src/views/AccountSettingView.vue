@@ -65,13 +65,13 @@
             </div>
 
             <div class="bg-blue-800 bg-opacity-5 rounded-lg p-4 border border-gray-700">
-              <nav class="space-y-4 text-base">
-                <!-- Personal Information -->
-                <a href="#" class="flex items-center gap-2 text-green-400 font-medium text-left w-full">
-                  <i class="fas fa-id-card-alt"></i> Personal Information
-                </a>
-              </nav>
+              <h2 class="text-green-400 font-medium text-lg mb-4 flex items-center gap-2">
+                <UserInfo/>
+            </h2>
 
+            <!-- Embedded User Info Component -->
+            
+            
               <!-- Divider -->
               <div class="border-t border-gray-700 dark:border-gray-700 my-1"></div>
               
@@ -210,6 +210,9 @@ import loginService from '@/services/login-service';
 import { useRouter } from 'vue-router';
 import { useLoader } from '@/services/loader-service';
 import NavBar from '@/components/NavBar.vue';
+import UserInfo from '@/components/UserInfo.vue'
+
+
 
 const { loadShow, loadHide } = useLoader();
 const router = useRouter();
@@ -225,6 +228,7 @@ const contactNumber = ref('');
 const userId = ref('');
 const message = ref(''); 
 const isConfirmationModalOpen = ref(false); 
+
 
 const getMemberSince = (createdAt) => {
   if (!createdAt) return '';

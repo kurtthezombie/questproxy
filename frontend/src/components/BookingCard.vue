@@ -123,7 +123,7 @@
     console.log('Booking created:', response.data); // Add this for debugging
     
     // Emit the complete booking data
-    emit("booking-confirmed", response.data.data || response.data);
+    emit('booking-confirmed', response.data.booking);
     props.closeModal();
     
   } catch (err) {

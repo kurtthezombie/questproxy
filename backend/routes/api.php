@@ -132,7 +132,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::controller(PaymentController::class)->group(function() {
         Route::get('payments', 'index');
         Route::post('payments/{booking_id}', 'pay');
-        Route::get('payments/success/{transaction_id}', 'success');
+        Route::get('payments/success/{id}', 'success');
         Route::get('users/{user_id}/payments/paid', 'paymentsPaid');
     });
 
