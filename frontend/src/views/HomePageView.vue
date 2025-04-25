@@ -40,15 +40,12 @@
         <!-- Search Bar -->
         <div class="relative w-full max-w-7xl">
           <div class="absolute left-2 top-1/2 -translate-y-1/2 bg-blue-900 bg-opacity-50 rounded-full p-2 focus-within:border-2 focus-within:border-green-400">
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              class="h-7 w-7 text-white"
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                d="M10 3a7 7 0 015.65 11.35l4.35 4.35M15 10a5 5 0 10-10 0 5 5 0 0010 0z" />
-            </svg>
+            <svg class="h-[1.5em] opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </g>
+              </svg>
           </div>
           <input
             v-model="searchQuery"
