@@ -16,4 +16,9 @@ class Category extends Model
         'game',
         'category_type'
     ];
+
+    public function services()
+    {
+        return $this->hasMany(Service::class);
+    }
 }
