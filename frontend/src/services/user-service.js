@@ -1,4 +1,4 @@
-import axios from 'axios';
+/* import axios from 'axios';
 
 const userService = {
   getUserProfile: async (userId) => {
@@ -84,3 +84,4 @@ const userService = {
 };
 
 export default userService;
+ */

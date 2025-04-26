@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white flex flex-col">
     <!-- Header -->
-    <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
+    <NavBar/>
      
     <!-- Main Content -->
     <div class="flex-1 py-10">

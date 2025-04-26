@@ -85,7 +85,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" 
                   d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2z" />
               </svg>
-              My Bookings 
+              Service Bookings
               <span class="bg-emerald-500 text-white rounded-full px-2 ml-1 mr-10">
                 {{ serviceStore.myBookings?.length || 0 }}
               </span>
