@@ -67,7 +67,8 @@ class BookingService
 
         $bookings = $this->booking->whereHas('service', function ($query) use ($pilotId) {
             $query->where('pilot_id', $pilotId);
-        })->with(['service','service.pilot', 'client'])->get();
+        })->with(['service','service.pilot', 'client', 'instruction'])
+        ->get();
 
         return $bookings;
     }

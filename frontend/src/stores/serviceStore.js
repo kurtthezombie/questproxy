@@ -272,15 +272,18 @@ export const useServiceStore = defineStore('service', () => {
 
       const markBookingAsCompleted = async (bookingId) => {
         try {
-            // const response = await axios.put(
-            //     `http://127.0.0.1:8000/api/bookings/${bookingId}/status`,
-            //     { status: 'completed' },
-            //     {
-            //       headers: {
-            //         Authorization: `Bearer ${token}`
-            //       }
-            //     }
-            // );
+            const token = localStorage.getItem('authToken');
+            if (!token) throw new Error('No authentication token found');
+            
+            const response = await axios.put(
+                `http://127.0.0.1:8000/api/bookings/${bookingId}/status`,
+                { status: 'completed' },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`
+                  }
+                }
+            );
             console.log("MARK BOOKING AS COMPLETED: ", bookingId);
         } catch (error) {
             console.error('Error marking booking as completed:', error);

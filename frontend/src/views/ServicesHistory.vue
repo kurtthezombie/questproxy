@@ -77,7 +77,7 @@
               </svg>
               My Bookings
               <span class="bg-emerald-500 text-white rounded-full px-2 ml-2">
-                {{ serviceStore.myBookings.length || 0 }}
+                {{ serviceStore.myBookings.filter(booking => booking.status === 'pending').length || 0 }}
               </span>
             </button>
 
@@ -139,7 +139,12 @@
               </div>
               <div class=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div v-for="booking in filteredBookings" :key="booking.id"
-                  class="bg-blue-900 bg-opacity-20 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all">
+                  class="bg-blue-900 bg-opacity-20 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all hover:cursor-pointer hover:scale-105 duration-200 transition-transform"
+                  @click="openBookingModal(booking)"
+                  >
+                  <div class="text-sm bg-gray-700 p-1 rounded-xl text-white w-fit">
+                    <p>bk-{{ booking.id }}</p>
+                  </div>
                   <div class="flex justify-between items-start">
                     <h3 class="text-xl font-bold text-white mt-1">
                       {{ booking.service?.game || 'Unknown Service' }}
@@ -153,7 +158,7 @@
                     </span>
                   </div>
 
-                  <p class="text-gray-300 mt-1 mb-5 ">
+                  <p class="text-gray-300 mt-1 mb-5">
                     {{ booking.service?.description || 'No description available' }}
                   </p>
 
@@ -170,11 +175,6 @@
                       <span class="text-gray-400">
                         {{ timeAgo(booking.created_at) }}
                       </span>
-                      <button v-if="booking.status === 'pending'"
-                        @click="markAsCompleted(booking.id)"
-                        class="mt-4 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
-                        Mark as Completed
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -215,6 +215,14 @@
         </div>
       </template>
     </div>
+   
+    <!-- Pass the selected booking and modal state to the dialog -->
+    <ViewBookingDialog 
+      :selectedBooking="selectedBooking" 
+      :isModalOpen="isModalOpen"
+      @close="closeModal"
+    />
+
   </div>
 </template>
 
@@ -227,6 +235,7 @@ import NavBar from '@/components/NavBar.vue';
 import ServiceDisplay from '@/components/ServiceDisplay.vue';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import ViewBookingDialog from '@/components/booking/ViewBookingDialog.vue';
 
 dayjs.extend(relativeTime)
 
@@ -235,6 +244,11 @@ const serviceStore = useServiceStore();
 const userStore = useUserStore();
 const searchQuery = ref('');
 const activeTab = ref('services');
+
+
+//modal vars
+const isModalOpen = ref(false); 
+const selectedBooking = ref(null);
 
 // Computed properties
 const username = computed(() => userStore.userData?.username || '');
@@ -311,13 +325,14 @@ const fetchData = async () => {
   }
 };
 
-const markAsCompleted = async (bookingId) => {
-  try {
-    await serviceStore.markBookingAsCompleted(bookingId);
-    await serviceStore.fetchBookingsByPilot();
-  } catch (error) {
-    console.error("Error marking booking as completed:", error);
-  }
+const openBookingModal = (booking) => {
+  selectedBooking.value = booking;
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+  selectedBooking.value = null;
 };
 
 

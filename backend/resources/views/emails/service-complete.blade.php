@@ -48,7 +48,7 @@
         <h2>Hello {{ $details->client_name }}!</h2>
         <p>We are happy to inform you that your service <strong>{{ $details->description }}</strong> with <strong>{{ $details->pilot_name }}</strong> has been completed successfully.</p>
         <p>Thank you for choosing our service! You can now leave a review for the service you received.</p>
-        <p>To leave a review, please click the link below:</p>
+        <p>To leave a review, please click the button below:</p>
         <a href="{{ env('APP_FRONTEND_URL') }}/review/{{ $details->id }}">Leave a Review</a>
         <hr> <br>
         <p>If you did not request this service, no further action is required.</p>
