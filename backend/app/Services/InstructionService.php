@@ -20,6 +20,7 @@ class InstructionService
         $instruction->booking_id = $booking_id;
         $instruction->credentials_username = Crypt::encryptString($data['credentials_username']);
         $instruction->credentials_password = Crypt::encryptString($data['credentials_password']);
+        $instruction->additional_notes = $data['additional_notes'];
 
         if (!$instruction->save()) {
             throw new Exception('Failed to create instruction.');
@@ -63,8 +64,8 @@ class InstructionService
         }
 
         // Decrypt and set values directly on the instruction object
-        $instruction->credential_username = Crypt::decryptString($instruction->credential_username);
-        $instruction->credential_password = Crypt::decryptString($instruction->credential_password);
+        $instruction->credentials_username = Crypt::decryptString($instruction->credentials_username);
+        $instruction->credentials_password = Crypt::decryptString($instruction->credentials_password);
         
         return $instruction;
     }

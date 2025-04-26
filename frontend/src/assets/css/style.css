@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -80,11 +79,15 @@ nav a.router-link-exact-active {
 
 .relative-container {
   position: relative;
+<<<<<<< HEAD
+  z-index: 1;
+=======
   z-index: 1; /* Allow the circle to be placed behind content */
 }
 
 .font-poppins {
   font-family: 'Poppins', sans-serif !important;
+>>>>>>> origin/main
 }
 
 /* Responsive Media Queries */
@@ -117,4 +120,45 @@ nav a.router-link-exact-active {
   nav a {
     font-size: 1rem;
   }
+}
+
+/* Dust container styles */
+.dust-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Dust particle styles */
+.dust {
+  position: absolute;
+  background-color: rgba(0, 255, 0, 0.5); /* Green dust */
+  border-radius: 50%;
+  animation: floatDust 10s infinite linear; /* Make animation smoother and slower */
+  opacity: 0.8;
+}
+
+/* Dust floating animation */
+@keyframes floatDust {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-80px) scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-150px) scale(1);
+    opacity: 0;
+  }
+}
+
+.btn {
+  position: relative;
+  z-index: 10;
 }

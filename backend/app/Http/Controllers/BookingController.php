@@ -48,7 +48,7 @@ class BookingController extends Controller
             $this->instructionService->create($booking->id,$data);
             
             //return success response
-            return $this->successResponse('Booking and instruction created successfully.', 200);
+            return $this->successResponse('Booking and instruction created successfully.', 200, ['booking' => $booking]);
         } catch (Exception $e) {
             return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
@@ -64,14 +64,10 @@ class BookingController extends Controller
         return $this->successResponse('Booking deleted.', 204);
     }
 
-    public function updateStatus(Request $request, $booking_id)
+    public function markAsCompleted($booking_id)
     {
-        $request->validate([
-            'status' => 'required|string',
-        ]);
-
         try {
-            $updated = $this->bookingService->updateStatus($request->status,$booking_id);
+            $updated = $this->bookingService->markAsCompleted($booking_id);
             return $this->successResponse('Booking status updated successfully', 200);
         } catch (Exception $e) {
             return $this->failedResponse('Error: ' . $e->getMessage(), 500);
@@ -137,6 +133,32 @@ class BookingController extends Controller
             );
         } catch(Exception $e) {
             return $this->failedResponse('Error: ' . $e->getMessage(), 500);
+        }
+    }
+
+    public function getBookingByPilot()
+    {
+        try {
+            $bookings = $this->bookingService->getBookingsByPilot();
+            
+            return $this->successResponse('Bookings retrieved.', 200,['data' => $bookings]);
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
+        }
+    }
+
+    public function booksByMe()
+    {
+        try {
+            $bookings = $this->bookingService->getMyBookings();
+
+            if ($bookings->isEmpty()) {
+                return $this->successResponse('User has not booked yet.', 200);
+            }
+
+            return $this->successResponse('Bookings retrieved.', 200, ['bookings' => $bookings]);
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
         }
     }
 }

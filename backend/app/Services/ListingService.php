@@ -3,19 +3,42 @@
 namespace App\Services;
 
 use App\Models\Service;
+use App\Models\Booking;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ListingService
 {
     protected $service;
+    protected $booking;
 
-    public function __construct(Service $service){
+    public function __construct(Service $service, Booking $booking){
         $this->service = $service;
+        $this->booking = $booking;
     }
 
-    public function index() {
-        return $this->service->all();
+    public function index()
+    {
+        // Fetch only the necessary fields from the related models
+        $services = $this->service->with([
+            'pilot' => function ($query) {
+                $query->select('id', 'user_id');  // Select only id and user_id from pilot
+            },
+            'pilot.user' => function ($query) {
+                $query->select('id', 'username');  // Select only id and username from user
+            }
+        ])->get();
+
+        // Add the pilot_username to each service
+        $servicesWithUsername = $services->map(function ($service) {
+            // Add the username directly to the service
+            $service->pilot_username = $service->pilot->user->username;
+            // Now remove the nested 'pilot' and 'user' to only return what is needed
+            unset($service->pilot);
+            return $service;
+        });
+
+        return $servicesWithUsername;
     }
 
     public function show($id) {
@@ -60,6 +83,14 @@ class ListingService
     public function destroy($id) {
         $service = $this->service->findOrFail($id);
 
+        $hasActiveBookings = $this->booking->where('service_id', $service->id)
+            ->whereNotIn('status', ['completed','cancelled'])
+            ->exists();
+
+        if ($hasActiveBookings) {
+            throw new Exception('Cannot delete service with active bookings (pending or in-progress).',500);
+        }
+
         if(!$service->delete()) {
             throw new Exception("Failed to delete service {$id}.");
         }
@@ -68,7 +99,27 @@ class ListingService
     }
 
     public function serviceByPilot($pilot_id){
-        return $this->service->where('pilot_id', $pilot_id)->get();
+        $services = $this->service->with([
+            'pilot' => function ($query) {
+                $query->select('id', 'user_id');  // Select only id and user_id from pilot
+            },
+            'pilot.user' => function ($query) {
+                $query->select('id', 'username');  // Select only id and username from user
+            }
+        ])
+        ->where('pilot_id', $pilot_id)
+        ->get();
+    
+        // Add the pilot_username to each service
+        $servicesWithUsername = $services->map(function ($service) {
+            // Add the username directly to the service
+            $service->pilot_username = $service->pilot->user->username;
+            // Now remove the nested 'pilot' and 'user' to only return what is needed
+            unset($service->pilot);
+            return $service;
+        });
+    
+        return $servicesWithUsername;
     }
 
     public function getServiceByCategory($category_id)

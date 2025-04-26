@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Mail\ServiceCompletionMail;
 use App\Models\Booking;
 use Exception;
+use Mail;
 
 class BookingService
 {
@@ -39,11 +41,74 @@ class BookingService
         return $booking;
     }
 
-    public function updateStatus($status, $booking_id){
+    public function markAsCompleted($booking_id){
         $booking = $this->booking->findOrFail($booking_id);
-        $booking->status = $status;
+        $booking->status = 'completed';
         $booking->save();
 
+        $booking->load([
+            'service.pilot.user',
+            'client', 
+        ]);
+        $this->sendCompletionEmail($booking);
+
         return $booking;
+    }
+
+    public function getBookingsByPilot()
+    {
+        $user = auth()->user();
+
+        if (!$user || !$user->pilot) {
+            throw new Exception("Pilot not found for the authenticated user.");
+        }
+
+        $pilotId = $user->pilot->id;
+
+        $bookings = $this->booking->whereHas('service', function ($query) use ($pilotId) {
+            $query->where('pilot_id', $pilotId);
+        })->with(['service','service.pilot', 'client', 'instruction'])
+        ->get();
+
+        return $bookings;
+    }
+
+    public function getMyBookings()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            throw new Exception("Authenticated user not found.");
+        }
+
+        $bookings = $this->booking->where('client_id', $user->id)
+            ->with(['service','service.pilot'])
+            ->get();
+
+        return $bookings->map(function ($booking) {
+            return [
+                'booking' => $booking,
+                'created_at' => $booking->created_at,
+                'serviceTitle' => $booking->service->description,
+                'gameTitle' => $booking->service->category->title,
+                'pilotName' => $booking->service->pilot->user->username,
+            ];
+        });
+    }
+
+    private function sendCompletionEmail($booking)
+    {
+        $service = $booking->service;
+        $client = $booking->client;
+        $pilot = $service->pilot->user;
+
+        $details = (object) [
+            'client_name' => $client->name,
+            'description' => $service->description,
+            'pilot_name' => $pilot->username,
+            'id' => $service->id,
+        ];
+
+        Mail::to($client->email)->send(new ServiceCompletionMail($details));
     }
 }

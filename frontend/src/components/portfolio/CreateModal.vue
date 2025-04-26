@@ -67,12 +67,12 @@ onUnmounted(() => window.removeEventListener("keydown", closeOnEscape));
         <transition name="fade">
             <div v-if="modelValue" class="fixed inset-0 flex items-center justify-center bg-black/50"
                 @click.self="closeModal">
-                <div class="card bg-white p-6 shadow-lg w-96">
+                <div class="card bg-gray-900 p-6 shadow-lg w-96">
                     <!--Header-->
                     <div class="flex justify-between items-center">
-                        <h2 class="card-title text-black">Add Portfolio Item</h2>
+                        <h2 class="card-title text-white">Add Portfolio Item</h2>
                         <button @click="closeModal"
-                            class="text-gray-500 hover:text-gray-800 cursor-pointer rounded-full hover:bg-gray-200 p-3">
+                            class="text-gray-300 hover:text-gray-800 cursor-pointer rounded-full hover:bg-gray-200 p-3">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d='M6 18 18 6M6 6l12 12' />
@@ -81,7 +81,7 @@ onUnmounted(() => window.removeEventListener("keydown", closeOnEscape));
                     </div>
 
                     <!-- Divider -->
-                    <hr class="my-3 border-gray-300" />
+                    <hr class="my-3 border-gray-700" />
 
                     <!-- Content -->
                     <div class="space-y-4">
@@ -106,10 +106,10 @@ onUnmounted(() => window.removeEventListener("keydown", closeOnEscape));
 
                         <!-- Caption Input -->
                         <input v-model="caption" type="text" placeholder="Caption"
-                            class="input w-full" />
+                            class="input w-full bg-[#1e293b] text-white shadow-none border border-gray-700" />
 
                         <!-- Submit Button-->
-                        <button @click="submitForm" class="w-full btn btn-success text-white">Submit</button>
+                        <button @click="submitForm" class="w-full btn bg-green-600 border border-green-600 shadow-none text-white hover:bg-green-700">Submit</button>
                     </div>
                 </div>
             </div>

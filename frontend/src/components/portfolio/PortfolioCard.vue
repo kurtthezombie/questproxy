@@ -70,25 +70,21 @@ onMounted(() => {
 <template>
     <div class="flex justify-center">
         <div
-            class="mt-3 w-full bg-gray-200 rounded-sm shadow-md hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer rounded-xl hover:shadow-lg hover:shadow-lime-500
-            flex flex-col justify-between 
-            ">
+            class="mt-3 w-full bg-gray-900 bg-opacity-5  rounded-sm border border-gray-700 hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer rounded-xl flex flex-col justify-between">
             <!-- Portfolio Image -->
             <div class="flex justify-center rounded-md">
                 <!-- Edit & Delete Buttons (Top Right of Image) -->
                 <div v-if="isOwner" class="absolute top-2 right-2 flex space-x-2">
-                    <button 
+                    <button
                         class="p-2 bg-gray-400 text-white rounded-md shadow-md hover:bg-blue-700 transition"
-                        @click="openEditModal(portfolio)"
-                        >
+                        @click="openEditModal(portfolio)">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-4">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
                         </svg>
                     </button>
-                    <button 
-                        @click="handleDelete(portfolio.id)"
+                    <button @click="handleDelete(portfolio.id)"
                         class="p-2 bg-gray-400 text-white rounded-md shadow-md hover:bg-red-700 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-4">
@@ -98,20 +94,20 @@ onMounted(() => {
                     </button>
                 </div>
                 <img v-if="portfolio.p_content" :src="portfolio.p_content"
-                    class="w-full aspect-[4/3] object-cover rounded-t-md" 
-                    alt="Portfolio Image"
-                    @click="openImage(portfolio.p_content)" />
+                    class="w-full aspect-[4/3] object-cover rounded-t-md"
+                    alt="Portfolio Image" @click="openImage(portfolio.p_content)" />
                 <span v-else class="text-white font-semibold">No Image</span>
             </div>
             <hr>
             <!-- Portfolio Caption -->
-             <div class="mb-3 p-2 px-3">
-                <div class="mt-1 text-start text-xl text-gray-800 font-medium">
-                {{ portfolio?.caption || "" }}
+            <div class="mb-3 p-2 px-3">
+                <div class="mt-1 text-start text-xl text-white font-medium">
+                    {{ portfolio?.caption || "" }}
                 </div>
-                <div class="mt-1 text-sm text-gray-600">{{ formattedTime }}</div>
-             </div>
+                <div class="mt-1 text-sm text-white">{{ formattedTime }}</div>
+            </div>
         </div>
+
         <!-- Image Preview Modal -->
         <div v-if="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90 mt-10">
             <div class="relative p-4 rounded-lg shadow-lg max-w-3xl">

@@ -16,6 +16,7 @@ use App\Http\Controllers\PilotController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -117,20 +118,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::controller(BookingController::class)->group(function() {
+        Route::get('bookings/my-bookings', 'booksByMe');
+        Route::get('bookings/instructions/{booking_id}', 'getBookingInstructions');
         Route::get('bookings/{booking_id}', 'show');
         Route::post('bookings/store', 'store');
         Route::delete('bookings/{booking_id}', 'destroy');
-        Route::put('bookings/{booking_id}/status', 'updateStatus');
+        Route::put('bookings/{booking_id}/status', 'markAsCompleted');
         Route::put('bookings/{booking_id}/instruction', 'updateInstruction');
         Route::get('bookings/service/{service_id}', 'booksByService');
         Route::get('bookings/client/{client_id}', 'booksByClient');
-        Route::get('/bookings/{id}/instructions', 'getBookingInstructions');
+        Route::get('/pilot/bookings', 'getBookingByPilot');
     });
 
     Route::controller(PaymentController::class)->group(function() {
         Route::get('payments', 'index');
         Route::post('payments/{booking_id}', 'pay');
-        Route::get('payments/success/{transaction_id}', 'success');
+        Route::get('payments/success/{id}', 'success');
         Route::get('users/{user_id}/payments/paid', 'paymentsPaid');
     });
 
@@ -141,15 +144,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::controller(NotificationController::class)->group(function() {
-        Route::get('notifications', 'NotificationController@index');
-        Route::post('pilot/notifications/{id}/read', 'NotificationController@markAsRead');
-        Route::delete('pilot/notifications/{id}', 'NotificationController@destroy');
-        Route::post('pilot/notifications/read-all', 'NotificationController@markAllAsRead');
+        Route::get('notifications', 'index');
+        Route::post('pilot/notifications/{id}/read', 'markasread');
+        Route::delete('pilot/notifications/{id}', 'destroy');
+        Route::post('pilot/notifications/read-all', 'markAllAsRead');
+    });
+
+    Route::controller(ReviewController::class)->group(function() {
+        Route::get('reviews/{id}/info', 'fetchServiceInfo');
+        Route::post('reviews', 'store');
     });
 
     Route::post('match-pilot',[MatchingController::class,'matchPilot']);
 });
-
 
 //login
 Route::post('login', [LoginController::class, 'login']);

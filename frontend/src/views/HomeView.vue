@@ -1,8 +1,10 @@
 <template>
-  <div class="min-h-screen bg-gray-100 text-white">
-    <header class="bg-gray-900 sticky top-0 z-50 p-4 shadow-lg border-b border-green-900">
-      <div class="container mx-auto flex justify-between items-center px-20">
-        <div class="flex items-center">
+  <div class="min-h-screen bg-gray-900 text-white">
+    <header class="bg-gray-900 sticky top-0 z-50 p-4 shadow-lg border-b border-green-900 relative">
+      <div class="mx-auto w-full px-4 md:px-8 xl:px-[160px] 2xl:px-[300px] flex justify-between items-center">
+
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
           <router-link to="/" class="flex flex-row items-center">
             <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
             <span class="text-2xl font-bold text-white">QuestProxy</span>
@@ -19,25 +21,31 @@
             <RouterLink to="/login" class="flex justify-center items-center border-1 border-green-500 text-white hover:bg-green-500 hover:text-white py-2 px-4 text-sm transition-all block rounded-md">Login</RouterLink>
           </div>
         </nav>
-
       </div>
     </header>
 
     <!-- Intro Section -->
-    <section class="relative bg-gradient-to-r from-[#0f172a] via-[#1f2937] to-gray-400 text-white py-32 px-6 lg:px-24">
-
+    <section class="relative bg-blue-800 bg-opacity-5 p-16 rounded-xl shadow-md mb-8 overflow-hidden text-white py-32 px-6 lg:px-24">
+      <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0">
+        <div class="dust-container">
+          <!-- Generate 100 dust particles -->
+          <div 
+            v-for="index in 100" 
+            :key="index" 
+            class="dust"
+            :style="generateParticleStyle(index)"
+          ></div>
+        </div>
+      </div>
       <div class="max-w-7xl mx-auto flex flex-col items-start space-y-6">
         <span class="bg-green-800 text-green-300 px-4 py-1 rounded-full text-sm font-semibold">Level Up Your Gaming Experience</span>
-        
         <h1 class="text-5xl sm:text-6xl font-extrabold">
           Connect with Elite <br />
           <span class="text-green-400">Gaming Pilots</span>
         </h1>
-
         <p class="text-lg text-gray-200 max-w-2xl">
           QuestProxy bridges the gap between gamers and skilled pilots, helping you overcome challenges and master advanced strategies.
         </p>
-
         <div class="flex items-center space-x-2 mt-8">
           <button class="btn btn-success btn-lg text-black rounded-full"
             @click="handleStartNow"
@@ -62,8 +70,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
             </div>
-            <h3 class="text-xl font-semibold mb-2">Verified Pilots</h3>
-            <p class="text-gray-400 text-justify">All our pilots undergo rigorous verification to ensure they have the skills they claim.</p>
+            <h3 class="text-xl font-semibold mb-2">Skilled Pilots</h3>
+            <p class="text-gray-400 text-justify">Entrusted with our accounts are top-tier gamers, recognized for their superior gaming expertise</p>
           </div>
 
           <!-- Card 2 -->
@@ -92,8 +100,19 @@
     </section>
 
     <!-- About Section -->
-    <section id="about" class="relative isolate overflow-hidden pt-36 lg:pb-14 bg-gray-800 py-10 sm:py-5">
-    <div class="mx-auto max-w-7xl px-6 lg:px-0">
+    <section id="about" class="relative isolate overflow-hidden pt-36 lg:pb-14 bg-blue-800 bg-opacity-5 py-10 sm:py-5 border border-gray-800">
+      <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0">
+        <div class="dust-container">
+          <!-- Generate 100 dust particles -->
+          <div 
+            v-for="index in 100" 
+            :key="index" 
+            class="dust"
+            :style="generateParticleStyle(index)"
+          ></div>
+        </div>
+      </div>
+      <div class="mx-auto max-w-7xl px-6 lg:px-0">
       <div class="w-full min-h-[600px] flex flex-col justify-center space-y-10">
         <h2 class="text-5xl sm:text-6xl font-bold tracking-tight text-white">
           About <span class="text-green-500">QuestProxy</span>
@@ -178,7 +197,26 @@ import '@/assets/css/style.css';
 import router from '@/router';
 
 const handleStartNow = async () => {
-  router.push({ name: 'login' });
+  router.push({ name: 'signup' });
 }
+</script>
 
+<script>
+// Function to generate random styles for dust particles
+const generateParticleStyle = (index) => {
+  const left = Math.random() * 100;
+  const top = Math.random() * 100;
+  const size = Math.random() * 3 + 2;
+  const duration = Math.random() * 10 + 5;
+  const delay = Math.random() * 5;
+  
+  return {
+    left: `${left}%`,
+    top: `${top}%`,
+    width: `${size}px`,
+    height: `${size}px`,
+    animationDuration: `${duration}s`,
+    animationDelay: `${delay}s`,
+  };
+};
 </script>

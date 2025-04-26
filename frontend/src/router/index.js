@@ -22,8 +22,15 @@ import MyReportsView from '@/views/MyReportsView.vue'
 import PaymentView from '@/views/PaymentView.vue'
 import PaymentHistoryView from '@/views/PaymentHistoryView.vue'
 import Payment from '@/components/payment/Payment.vue'
+import PaymentSuccess from '@/components/payment/PaymentSuccess.vue'
 import PaymentCancel from '@/components/payment/PaymentCancel.vue'
 import BookingCard from '@/components/BookingCard.vue'
+import ReviewView from '@/views/ReviewView.vue'
+import BeforePayment from '@/views/BeforePayment.vue'
+import PilotMatchingView from '@/views/PilotMatchingView.vue'
+import VerifyPaymentView from '@/views/VerifyPaymentView.vue'
+import ThankYouView from '@/views/ThankYouView.vue'
+import MyBookingsView from '@/views/MyBookingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -118,14 +125,16 @@ const router = createRouter({
       component: PaymentHistoryView,
     },
     {
-      path: '/payment-success/:transaction_id',
-      name: 'PaymentSuccess',
-      component: Payment,
+      path: '/payment/success/:booking_id',
+      name: 'payment-success',
+      component: PaymentSuccess,
+      meta: { requiresAuth: true }
     },
     {
-      path: '/payment-cancel',
-      name: 'PaymentCancel',
+      path: '/payment/cancel/:bookingId',
+      name: 'payment-cancel',
       component: PaymentCancel,
+      meta: { requiresAuth: true }
     },
     {
       path: '/bookings/:serviceId',
@@ -162,12 +171,47 @@ const router = createRouter({
       component: MyReportsView,
       meta: { requiresAuth: true },
     },
+    {
+      path: '/review/:id',
+      name: 'Review',
+      component: ReviewView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/before-payment',
+      name: 'BeforePayment',
+      component: BeforePayment,
+    },
+    {
+      path: '/pilot-matching',
+      name: 'PilotMatching',
+      component: PilotMatchingView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/verify-payment/:id',
+      name: 'VerifyPayment',
+      component: VerifyPaymentView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/thank-you',
+      name: 'thankyou',
+      component: ThankYouView,
+    },
+    {
+      path: '/mybookings',
+      name: 'mybookings',
+      component: MyBookingsView,
+    },
   ]
 });
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('authToken');
   const userRole = localStorage.getItem('userRole');
+
+  const guestOnlyRoutes = ['login', 'signup', 'home'];
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isAuthenticated) {
@@ -184,7 +228,19 @@ router.beforeEach((to, from, next) => {
       }
     }
   } else {
-    next();
+    if (isAuthenticated && guestOnlyRoutes.includes(to.name)) {
+      next({ name: 'homepage' }); // or wherever you want to redirect logged-in users
+    } else {
+      if (to.name === 'dashboard') {
+        if (userRole === 'gamer' || userRole === 'pilot') {
+          next({ name: 'home' });
+        } else {
+          next();
+        }
+      } else {
+        next();
+      }
+    }
   }
 });
 

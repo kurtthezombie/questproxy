@@ -41,6 +41,11 @@ class User extends Authenticatable
         return $this->hasOne(Pilot::class, 'user_id');
     }
 
+    public function gamer()
+    {
+        return $this->hasOne(Gamer::class);
+    }
+
     public function reportsMade()
     {
         return $this->hasMany(Report::class, 'reporting_user_id');

@@ -16,6 +16,7 @@ class Review extends Model
         'comment',
         'service_id',
         'pilot_id',
+        'user_id',
     ];
 
     public function service(){
