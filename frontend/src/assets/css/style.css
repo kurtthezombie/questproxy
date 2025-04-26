@@ -79,7 +79,15 @@ nav a.router-link-exact-active {
 
 .relative-container {
   position: relative;
+<<<<<<< HEAD
   z-index: 1;
+=======
+  z-index: 1; /* Allow the circle to be placed behind content */
+}
+
+.font-poppins {
+  font-family: 'Poppins', sans-serif !important;
+>>>>>>> origin/main
 }
 
 /* Responsive Media Queries */
