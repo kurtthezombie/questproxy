@@ -1,18 +1,17 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import axios from 'axios';
-import { useUserStore } from '@/stores/userStore'; // Import useUserStore to access user data for submitBooking
-
+import { useUserStore } from '@/stores/userStore'; 
 export const useServiceStore = defineStore('service', () => {
 
     const services = ref([]);
     const categories = ref([]);
-    const loading = ref(false); // Main loading for services/categories
-    const error = ref(null); // Main error for services/categories
+    const loading = ref(false); 
+    const error = ref(null); 
     const message = ref('');
-    const myBookings = ref([]); // State to hold bookings for the current user (client or pilot)
-    const bookingsLoading = ref(false); // Loading state for bookings
-    const bookingsError = ref(null); // Error state for bookings
+    const myBookings = ref([]); 
+    const bookingsLoading = ref(false); 
+    const bookingsError = ref(null); 
 
     const hasServices = computed(() => services.value.length > 0);
     const categoriesLoaded = computed(() => categories.value.length > 0);
@@ -22,8 +21,8 @@ export const useServiceStore = defineStore('service', () => {
         categories.value = [];
         error.value = null;
         message.value = '';
-        myBookings.value = []; // Clear bookings as well
-        bookingsError.value = null; // Clear booking errors
+        myBookings.value = []; 
+        bookingsError.value = null; 
     };
 
     const fetchCategories = async () => {
@@ -44,12 +43,12 @@ export const useServiceStore = defineStore('service', () => {
     // Ensure useUserStore is used within the action where it's needed
     const submitBooking = async (serviceId, additionalNotes, credentialsUsername, credentialsPassword) => {
         try {
-          const userStore = useUserStore(); // Access userStore here
+          const userStore = useUserStore(); 
           const authToken = localStorage.getItem('authToken');
 
           if (!authToken) {
             console.error('Authentication token missing.');
-            throw new Error('Authentication token missing.'); // Throw error to be caught by caller
+            throw new Error('Authentication token missing.'); 
           }
 
           // Ensure userStore.userData and userStore.userData.id are available
@@ -61,7 +60,7 @@ export const useServiceStore = defineStore('service', () => {
           const response = await axios.post(
             'http://127.0.0.1:8000/api/bookings/store',
             {
-              client_id: userStore.userData.id, // Use userStore data
+              client_id: userStore.userData.id, 
               service_id: serviceId,
               additional_notes: additionalNotes,
               credentials_username: credentialsUsername,
@@ -78,7 +77,7 @@ export const useServiceStore = defineStore('service', () => {
           return response.data;
         } catch (error) {
           console.error('Booking submission error:', error);
-          throw error; // Re-throw the error for handling in the component
+          throw error; 
         }
       };
 
@@ -114,8 +113,8 @@ export const useServiceStore = defineStore('service', () => {
             } else {
                 error.value = err.message || 'Error creating service';
             }
-            message.value = ''; // Clear success message on error
-            // No need for a second timeout here as error is set
+            message.value = ''; 
+            
             throw new Error(error.value);
         } finally {
             loading.value = false;
@@ -166,16 +165,14 @@ export const useServiceStore = defineStore('service', () => {
             console.log("Fetched service by ID:", response.data);
 
             if (response.data.service) {
-                // Assuming 'service' ref exists in the component using this store
-                // service.value = response.data.service;
-                return response.data.service; // Return the fetched service
+                
+                return response.data.service; 
             } else if (response.data.data && response.data.data.service) {
-                 // Assuming 'service' ref exists in the component using this store
-                // service.value = response.data.data.service;
-                 return response.data.data.service; // Return the fetched service
+                 
+                 return response.data.data.service; 
             } else {
                 error.value = "Invalid service data received.";
-                 throw new Error(error.value); // Throw error for handling in component
+                 throw new Error(error.value); 
             }
         } catch (err) {
             error.value = err.message || "Error fetching service details.";
@@ -207,7 +204,7 @@ export const useServiceStore = defineStore('service', () => {
         } catch (err) {
           error.value = err.message || 'Failed to fetch services for pilot.';
           console.error('Error fetching services for pilot:', err);
-           throw err; // Re-throw the error
+           throw err; 
         } finally {
           loading.value = false;
         }
@@ -243,7 +240,7 @@ export const useServiceStore = defineStore('service', () => {
             return response.data;
         } catch (err) {
             error.value = err.message || 'Error updating service';
-            throw err; // Re-throw the error
+            throw err; 
         } finally {
             loading.value = false;
         }
@@ -274,7 +271,7 @@ export const useServiceStore = defineStore('service', () => {
             }, 2000);
         } catch (err) {
             error.value = err.message || 'Error deleting service';
-            throw err; // Re-throw the error
+            throw err; 
         } finally {
             loading.value = false;
         }
@@ -290,23 +287,20 @@ export const useServiceStore = defineStore('service', () => {
 
           const response = await axios.get('http://127.0.0.1:8000/api/pilot/bookings', {
             headers: {
-              Authorization: `Bearer ${token}` // Assuming 'Bearer' token type for this endpoint
+              Authorization: `Bearer ${token}` 
             }
           });
 
-          console.log('Bookings API Response (Initial):', response.data); // Debug log
+          console.log('Bookings API Response (Initial):', response.data); 
 
           // Handle different response structures
           const initialBookings = response.data?.data ||
                                  response.data ||
                                  [];
 
-          // --- Frontend Workaround: Fetch Client Details if missing ---
-          // This is an N+1 approach and less efficient than backend eager loading,
-          // but necessary if backend changes are not possible.
+          
           const bookingsWithClientData = await Promise.all(initialBookings.map(async (booking) => {
-            // Check if client data is already available and has a username
-            // Added a check for booking.client_id existence
+            
             if (!booking.client || !booking.client.username) {
               const clientId = booking.client_id;
               if (clientId) {
@@ -314,12 +308,12 @@ export const useServiceStore = defineStore('service', () => {
                   // Fetch the client's user details using their ID
                   const clientResponse = await axios.get(`http://127.0.0.1:8000/api/users/${clientId}`, {
                     headers: {
-                      Authorization: `Bearer ${token}` // Use the same token for this call
+                      Authorization: `Bearer ${token}` 
                     }
                   });
-                  // Assuming the user data is in response.data.user
+                  
                   if (clientResponse.data && clientResponse.data.user) {
-                    // Attach the fetched user data to the booking object
+                    
                     booking.client = clientResponse.data.user;
                     console.log(`Fetched client username for booking ${booking.id}: ${booking.client.username}`);
                   } else {
@@ -340,11 +334,11 @@ export const useServiceStore = defineStore('service', () => {
             } else {
                 console.log(`Client data already available for booking ${booking.id}.`);
             }
-            return booking; // Return the potentially updated booking
+            return booking; 
           }));
           // --- End of Frontend Workaround ---
 
-          myBookings.value = bookingsWithClientData; // Update the state with enriched bookings
+          myBookings.value = bookingsWithClientData; 
           console.log('My Bookings ref updated with client data:', myBookings.value); // Final debug log
 
         } catch (err) {
@@ -352,19 +346,16 @@ export const useServiceStore = defineStore('service', () => {
           bookingsError.value = err.response?.data?.message ||
                               err.message ||
                               'Failed to load bookings';
-           throw err; // Re-throw the error
+           throw err; 
         } finally {
           bookingsLoading.value = false;
         }
       };
 
-    // Action to fetch bookings for a specific client (used on User Profile page for Gamers)
-    // NOTE: This action assumes the backend endpoint /api/bookings/client/{clientId}
-    // returns the bookings data directly in a 'bookings' key, and that the backend
-    // eager-loads the 'service' relationship.
+    
     const fetchBookingsByClient = async (clientId) => {
-        bookingsLoading.value = true; // Use specific loading for bookings
-        bookingsError.value = null; // Clear booking errors
+        bookingsLoading.value = true; 
+        bookingsError.value = null; 
         try {
             const token = localStorage.getItem('authToken');
             if (!token) throw new Error('No authentication token found');
@@ -378,7 +369,7 @@ export const useServiceStore = defineStore('service', () => {
 
             console.log('Bookings by Client API Response:', response.data); // Debug log
 
-            // Assuming the backend now returns { bookings: [...] } and eager-loads 'service'
+            
             myBookings.value = response.data?.bookings || [];
 
         } catch (err) {
@@ -386,7 +377,7 @@ export const useServiceStore = defineStore('service', () => {
             bookingsError.value = err.response?.data?.message ||
                                   err.message ||
                                   'Failed to load bookings for this user.';
-             throw err; // Re-throw the error
+             throw err; 
         } finally {
             bookingsLoading.value = false;
         }
@@ -405,17 +396,17 @@ export const useServiceStore = defineStore('service', () => {
         bookingsLoading, // Loading state for bookings
         bookingsError, // Error state for bookings
 
-        fetchBookingsByPilot, // For pilot's own bookings page (now includes client fetch)
-        fetchBookingsByClient, // For displaying bookings on gamer profile
+        fetchBookingsByPilot, 
+        fetchBookingsByClient, 
         fetchCategories,
-        createService, // Assuming you have this
-        fetchUserServices, // Assuming you have this
-        fetchServiceById, // Assuming you have this
+        createService, 
+        fetchUserServices, 
+        fetchServiceById, 
         clearServices,
-        updateService, // Assuming you have this
-        deleteService, // Assuming you have this
-        fetchServicesByPilot, // For displaying services on pilot profile
-        submitBooking // Assuming you have this
+        updateService, 
+        deleteService, 
+        fetchServicesByPilot, 
+        submitBooking 
 
     };
 });
