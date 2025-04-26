@@ -30,13 +30,35 @@ class UserController extends Controller
     public function show($id)
     {
         try {
-            $user = User::findOrFail($id);
+            // Start by finding the user by their ID
+            $user = User::find($id);
 
-            return $this->successResponse("User {$id} is found.",200,['user' => $user]);
-        } catch(ModelNotFoundException $e){
-            return $this->failedResponse("User {$id} not found.",404);
-        } catch(Exception $e){
-            return $this->failedResponse('An error occurred: ' . $e->getMessage(), 500);
+            // If the user is not found, return a 404 response
+            if (!$user) {
+                return $this->failedResponse("User {$id} not found.", 404);
+            }
+
+            
+            if ($user->role === 'pilot' || $user->role === 'game pilot') {
+                // Eager-load the pilot relationship for pilot roles
+                $user->load('pilot');
+            } elseif ($user->role === 'gamer') {
+                // Eager-load the gamer relationship for gamer roles
+                $user->load('gamer');
+            }
+
+           
+
+            // Return a success response with the user data, including the eager-loaded relationships
+            return $this->successResponse('User profile retrieved.', 200, ['user' => $user]);
+
+        } catch (ModelNotFoundException $e) {
+            // Catch ModelNotFoundException specifically for 404 errors
+            return $this->failedResponse("User {$id} not found.", 404);
+        } catch (Exception $e) {
+            
+            Log::error("Error fetching user profile for ID {$id}: " . $e->getMessage());
+            return $this->failedResponse("An error occurred while retrieving the user profile.", 500);
         }
     }
 
