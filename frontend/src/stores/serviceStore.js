@@ -253,7 +253,7 @@ export const useServiceStore = defineStore('service', () => {
             }
           });
       
-          console.log('Bookings API Response:', response.data); // Debug log
+          //console.log('Bookings API Response:', response.data); // Debug log
       
           // Handle different response structures
           myBookings.value = response.data?.data || 
