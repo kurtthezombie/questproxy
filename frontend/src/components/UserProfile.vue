@@ -1,497 +1,467 @@
-<template>
-  <div class="p-6 bg-gray-900 min-h-screen">
-    <div class="max-w-5xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col md:flex-row relative">
-      <!-- Edit Profile Button (Top Right) -->
-      <button 
-        v-if="isCurrentUser && !isEditing"
-        @click="openEditModal"
-        class="absolute top-4 right-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition flex items-center"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-        </svg>
-        Edit Profile
-      </button>
+<script setup>
+import { ref, onMounted, computed, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore'; 
+import { useServiceStore } from '@/stores/serviceStore'; 
+import axios from 'axios';
+import PortfolioCard from '@/components/portfolio/PortfolioCard.vue'; 
+import ServiceDisplayCard from '@/components/ServiceDisplay.vue';
+import toast from '@/utils/toast'; 
+import dayjs from 'dayjs'; 
 
-      <!-- Left Section: Profile & Portfolio -->
-      <div class="w-full md:w-1/3 pr-0 md:pr-4 mb-6 md:mb-0">
-        <div class="flex flex-col items-center">
-          <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-            {{ userInitial }}
-          </div>
-          <h2 class="mt-2 text-xl font-bold text-white">{{ profileData.username || 'Loading...' }}</h2>
-          <p class="text-sm text-gray-400">{{ profileData.email }}</p>
-          
-          <!-- Role Badge -->
-          <div class="mt-1">
-            <span :class="`${roleBadgeClass} text-white text-xs font-medium px-2.5 py-0.5 rounded`">
-              {{ roleDisplay }}
-            </span>
-          </div>
-          
-          <button 
-            class="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+const route = useRoute();
+const router = useRouter();
+const userStore = useUserStore(); 
+const serviceStore = useServiceStore(); 
+
+// --- Refs ---
+const userId = ref(null); 
+const profileUsername = ref(null); 
+const profileData = ref(null);
+const pilotDetails = ref(null);
+const gamerDetails = ref(null);
+const portfolios = ref([]);
+const points = ref(0);
+const categories = ref([]); 
+const isLoading = ref(false); 
+const error = ref(null);
+
+// --- Computed Properties ---
+const isOwnProfile = computed(() => {
+  
+  return userStore.isLoggedIn && userStore.userData?.id === Number(userId.value);
+});
+
+const loggedInUserRole = computed(() => userStore.userData?.role);
+
+const initials = computed(() => {
+ 
+  return profileUsername.value
+    ?.split(" ")
+    .map(word => word[0])
+    .join("")
+    .toUpperCase() || '?';
+});
+
+const memberSince = computed(() => {
+  if (!profileData.value?.created_at) return '';
+  return dayjs(profileData.value.created_at).format('MMMM YYYY'); 
+});
+
+// Computed property to check if the profile is a pilot profile
+const isPilotProfile = computed(() => {
+  return profileData.value?.role === 'pilot' || profileData.value?.role === 'game pilot';
+});
+
+
+// --- Main Data Fetching Function ---
+const fetchUserProfile = async () => {
+  
+  const authToken = localStorage.getItem('authToken');
+
+  if (!userId.value) {
+      console.error("fetchUserProfile called without a valid userId.");
+      error.value = 'Cannot fetch profile: User ID is missing from route.';
+      isLoading.value = false; 
+      return;
+  }
+  // Check if token exists in localStorage
+  if (!authToken) {
+      console.error("fetchUserProfile called without an auth token in localStorage.");
+      error.value = 'Authentication token is missing. Please log in.';
+      isLoading.value = false; 
+      return;
+  }
+
+  console.log(`Fetching profile for User ID: ${userId.value}`);
+  console.log('Auth Token from localStorage:', authToken); 
+
+  isLoading.value = true; // Set loading state at the start
+
+  try {
+    
+    const response = await axios.get(`http://127.0.0.1:8000/api/users/${userId.value}`, {
+        headers: { Authorization: `Bearer ${authToken}` } 
+    });
+
+    // The user object is directly under 'user' key in the response for this endpoint based on UserController@show
+    if (response.data && response.data.user) {
+      profileData.value = response.data.user;
+      console.log('Profile Data:', profileData.value); 
+      profileUsername.value = profileData.value.username; 
+
+      // Reset related details before fetching new ones
+      pilotDetails.value = null;
+      gamerDetails.value = null;
+      portfolios.value = [];
+      points.value = 0;
+      // services.value = []; // No longer need to reset local services
+      serviceStore.services = []; 
+
+      // Fetch related data based on role and the newly obtained username/IDs
+      const role = profileData.value.role;
+      
+      const pilotId = profileData.value.pilot?.id;
+      const gamerId = profileData.value.gamer?.id;
+      const fetchedUserId = profileData.value.id; // Use the ID from the fetched data
+
+      // Now that we have the username, we can fetch points
+      const promises = [fetchPoints()];
+
+      if ((role === 'game pilot' || role === 'pilot')) {
+          if(pilotId) {
+              console.log(`Identified Pilot ID: ${pilotId}. Attempting to fetch services.`); // Log pilot ID before fetching services
+              promises.push(fetchPilotDetails(pilotId));
+              // Use the serviceStore action to fetch pilot services
+              promises.push(serviceStore.fetchServicesByPilot(pilotId));
+          } else {
+              console.warn(`User is a pilot but pilot details (including ID) are missing for user ID: ${userId.value}. Cannot fetch services.`);
+              
+          }
+          // Use fetchedUserId for consistency
+          promises.push(fetchPortfolios(fetchedUserId)); // Fetch portfolios using fetchedUserId
+
+      } else if (role === 'gamer') { // Check for gamer role
+          if (gamerId) {
+              console.log(`Identified Gamer ID: ${gamerId}. Attempting to fetch gamer details.`); // Log gamer ID before fetching details
+              promises.push(fetchGamerDetails(gamerId));
+          } else {
+               console.warn(`User is a gamer but gamer details (including ID) are missing for user ID: ${userId.value}. Cannot fetch gamer details.`);
+               
+          }
+      }
+
+      await Promise.all(promises);
+
+    } else {
+      throw new Error('User data not found in response');
+    }
+     error.value = null;
+  } catch (err) {
+    console.error('Error fetching user profile:', err);
+     if (err.response) {
+         if (err.response.status === 401) {
+            error.value = 'Unauthorized. Please log in again.';
             
-            @click="goToPortfolio"
-          >
-            Portfolio
+         } else if (err.response.status === 404) {
+             error.value = `User with ID '${userId.value}' not found.`; 
+         } else {
+            error.value = `Failed to load user profile. Server responded with status ${err.response.status}.`;
+         }
+     } else if (err.request) {
+        error.value = 'Failed to load user profile. No response from server.';
+     } else {
+        error.value = `Failed to load user profile: ${err.message}`;
+     }
+    toast.error(error.value);
+  } finally {
+      isLoading.value = false; 
+  }
+};
+
+// --- Helper Fetching Functions ---
+
+const fetchPilotDetails = async (pilotId) => {
+    const authToken = localStorage.getItem('authToken'); 
+    if (!pilotId || !authToken) return; 
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/pilots/${pilotId}`, {
+             headers: { Authorization: `Bearer ${authToken}` } 
+        });
+        pilotDetails.value = response.data.pilot;
+    } catch (err) {
+        console.error('Error fetching pilot details:', err);
+        toast.warning('Could not load pilot-specific details.');
+    }
+};
+
+const fetchGamerDetails = async (gamerId) => {
+    const authToken = localStorage.getItem('authToken'); 
+    if (!gamerId || !authToken) {
+        console.warn("fetchGamerDetails: Missing gamerId or authToken.");
+        return; // Check for both ID and token
+    }
+    console.log(`Fetching details for Gamer ID: ${gamerId}`); // Log gamer ID
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/gamers/edit/${gamerId}`, {
+             headers: { Authorization: `Bearer ${authToken}` } 
+        });
+        console.log('fetchGamerDetails Response Status:', response.status); // Log status
+        console.log('fetchGamerDetails Response Data:', response.data); // Log data
+
+        // Assuming the gamer details are directly in response.data.gamer
+        gamerDetails.value = response.data.gamer;
+        console.log('Gamer Details ref updated:', gamerDetails.value); 
+
+    } catch (err) {
+        console.error('Error fetching gamer details:', err);
+        toast.warning('Could not load gamer-specific details.');
+    }
+};
+
+// Reverted fetchPortfolios function
+const fetchPortfolios = async (fetchedUserId) => {
+    const authToken = localStorage.getItem('authToken'); 
+    if (!fetchedUserId || !authToken) return; 
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/portfolios/user/${fetchedUserId}`, { 
+            headers: { Authorization: `Bearer ${authToken}` } 
+        });
+        const baseURL = "http://127.0.0.1:8000/storage/";
+        portfolios.value = response.data.portfolios.map(p => ({
+            ...p,
+            p_content: baseURL + p.p_content
+        }));
+    } catch (err) {
+        console.error('Error fetching portfolios:', err);
+        toast.warning('Could not load portfolios.');
+    }
+};
+
+
+// Fetch Points now uses the profileUsername ref, which is set after the initial fetch
+const fetchPoints = async () => {
+  const authToken = localStorage.getItem('authToken'); 
+  if (!profileUsername.value || !authToken) { 
+       console.warn("Cannot fetch points yet, username or token not available.");
+       return;
+  }
+  try {
+    const response = await axios.get(`http://127.0.0.1:8000/api/portfolios/user/points/${profileUsername.value}`, {
+        headers: { Authorization: `Bearer ${authToken}` } 
+    });
+    points.value = response.data.points ?? 0;
+  } catch (err) {
+    console.error("Failed to fetch points: ", err);
+  }
+};
+
+// Removed local fetchPilotServices function
+
+const fetchCategories = async () => { 
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/categories`);
+        categories.value = response.data.categories || [];
+    } catch (err) {
+        console.error('Error fetching categories:', err);
+    }
+};
+
+// --- Lifecycle Hooks and Watchers ---
+
+onMounted(() => {
+  fetchCategories();
+  
+});
+
+// *** Watch for route param 'id' changes ***
+watch(() => route.params.id, async (newId) => {
+  if (newId && newId !== userId.value) { 
+    console.log(`Route ID changed to: ${newId}`);
+    isLoading.value = true; 
+    error.value = null;
+    userId.value = newId; 
+    profileUsername.value = null; 
+
+    // Reset data
+    profileData.value = null;
+    pilotDetails.value = null;
+    gamerDetails.value = null; 
+    portfolios.value = [];
+    points.value = 0;
+    serviceStore.services = []; 
+
+    // Call the main fetch function using the new ID
+    await fetchUserProfile();
+
+    // isLoading.value = false; // Moved to finally block in fetchUserProfile
+  } else if (!newId) {
+      console.log("Route ID is undefined or null.");
+       error.value = "User ID parameter missing in URL.";
+       isLoading.value = false; 
+  }
+}, { immediate: true }); 
+
+
+// --- Methods ---
+const goToAccountSettings = () => { 
+    router.push({ name: 'account-settings' });
+}
+
+const goToMyPortfolio = () => { 
+    router.push({ name: 'MyPortfolio' });
+}
+
+const goToReportUser = () => { 
+    
+    if(profileUsername.value) {
+        router.push({ name: 'ReportView', params: { username: profileUsername.value } });
+    } else {
+        toast.error("Cannot report user: username not loaded.");
+    }
+}
+
+// Method to navigate to the public portfolio view
+const goToPublicPortfolio = () => {
+    if (profileUsername.value) {
+        router.push({ name: 'PortfolioView', params: { username: profileUsername.value } });
+    } else {
+        toast.error("Cannot view portfolio: username not loaded.");
+    }
+}
+</script>
+
+<template>
+  <div class="min-h-screen bg-gray-900 text-white p-4 md:p-10">
+    <div v-if="isLoading" class="flex justify-center items-center h-screen">
+      <span class="loading loading-bars loading-xl text-accent scale-[3]"></span>
+    </div>
+
+    <div v-else-if="error" class="text-center py-20">
+      <h2 class="text-2xl text-red-500 font-semibold">Error</h2>
+      <p>{{ error }}</p>
+      <div class="mt-4 flex justify-center gap-3">
+        <button @click="router.push({ name: 'homepage' })" class="btn btn-primary">Go Home</button>
+        <button v-if="userId" @click="fetchUserProfile" class="btn btn-secondary">Retry</button>
+      </div>
+    </div>
+
+    <div v-else-if="profileData" class="max-w-5xl mx-auto space-y-8">
+      <section class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
+        <div class="p-6 md:p-8 flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
+          <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-green-600 flex items-center justify-center text-4xl md:text-5xl font-semibold text-white flex-shrink-0">
+            {{ initials }}
+          </div>
+
+          <div class="flex-grow text-center md:text-left">
+            <h1 class="text-3xl md:text-4xl font-bold">{{ profileData.username }}</h1>
+            <p class="text-gray-400 capitalize">{{ profileData.role?.replace('game ', '') }}</p>
+
+            <div v-if="isPilotProfile" class="mt-3 flex flex-wrap justify-center md:justify-start items-center gap-2 md:gap-4 text-sm">
+              <div class="bg-emerald-950 text-emerald-400 px-3 py-1 rounded-full flex items-center border border-emerald-800">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="yellow" class="mr-1">
+                  <path d="M12 2L15 8L22 8.5L17 12.5L18 19.5L12 16.5L6 19.5L7 12.5L2 8.5L9 8L12 2Z"/>
+                </svg>
+                <span class="font-semibold">Points:</span>
+                <span class="font-bold ml-1">{{ points }}</span>
+              </div>
+
+              <div class="flex items-center gap-1 text-blue-400 font-semibold bg-blue-950 px-3 py-1 rounded-full border border-blue-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A10.97 10.97 0 0112 15c2.21 0 4.25.672 5.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Member since {{ memberSince }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-850 border-t border-gray-700 p-4 flex flex-wrap justify-center md:justify-end gap-3">
+          <button v-if="isOwnProfile" @click="goToAccountSettings" class="btn btn-sm btn-outline btn-info">
+            Account Settings
+          </button>
+          <button v-if="isOwnProfile && isPilotProfile" @click="goToMyPortfolio" class="btn btn-sm btn-outline btn-success">
+            Manage Portfolio
+          </button>
+          <button v-if="!isOwnProfile && isPilotProfile" @click="goToPublicPortfolio" class="btn btn-sm btn-outline btn-primary">
+            View Portfolio
+          </button>
+          <button v-if="!isOwnProfile" @click="goToReportUser" class="btn btn-sm btn-outline btn-warning">
+            Report User
           </button>
         </div>
+      </section>
 
-        <!-- Profile Content Section -->
-        <div class="mt-6">
-          <!-- For Pilots: Bio & Skills -->
-          <template v-if="isPilot">
-            <div class="mb-4">
-              <h3 class="text-lg font-semibold text-white mb-2">Bio</h3>
-              <p class="text-gray-300 text-sm">
-                {{ profileData.bio || 'No bio provided' }}
-              </p>
-            </div>
-
-            <div class="mb-4">
-              <h3 class="text-lg font-semibold text-white mb-2">Skills</h3>
-              <div v-if="profileData.skills" class="flex flex-wrap gap-2">
-                <span 
-                  v-for="(skill, index) in profileData.skills.split(',')" 
-                  :key="index"
-                  class="bg-gray-700 text-white text-xs px-2 py-1 rounded"
-                >
-                  {{ skill.trim() }}
-                </span>
-              </div>
-              <p v-else class="text-gray-400 text-sm">No skills listed</p>
-            </div>
-          </template>
-
-          <!-- For Gamers: Preferences -->
-          <template v-else-if="isGamer">
-            <div class="mb-4">
-              <h3 class="text-lg font-semibold text-white mb-2">Gamer Preferences</h3>
-              <p class="text-gray-300 text-sm">
-                {{ profileData.gamer_preference || 'No preferences provided' }}
-              </p>
-            </div>
-          </template>
+      <section v-if="pilotDetails || gamerDetails" class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
+        <div class="border-b border-gray-700 p-4">
+          <h2 class="text-2xl font-semibold">Details</h2>
         </div>
 
-        <!-- Portfolio Preview -->
-        <div class="mt-6">
-          <h3 class="text-lg font-semibold text-white mb-2">Portfolio</h3>
-          <div class="flex items-center">
-            <div v-for="(portfolio, index) in portfolios.slice(0, 2)" :key="index">
-              <img :src="portfolio.p_content" alt="Portfolio Image" class="w-12 h-12 bg-gray-600 rounded-md mr-2 object-cover">
+        <div class="p-6">
+          <div v-if="pilotDetails" class="space-y-6">
+            <div class="bg-gray-750 p-4 rounded-lg">
+              <h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Skills</h3>
+              <p class="text-gray-200 whitespace-pre-wrap">{{ pilotDetails.skills || 'No skills listed.' }}</p>
             </div>
-            <div v-if="portfolios.length > 2" class="w-12 h-12 bg-gray-700 rounded-md flex items-center justify-center text-white text-lg cursor-pointer" @click="goToPortfolio">
-              +{{ portfolios.length - 2 }}
-            </div>
-            <div v-if="portfolios.length === 0" class="text-gray-400 text-sm">
-              No portfolio items
+            <div class="bg-gray-750 p-4 rounded-lg">
+              <h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Bio</h3>
+              <p class="text-gray-200 whitespace-pre-wrap">{{ pilotDetails.bio || 'No bio available.' }}</p>
             </div>
           </div>
-        </div>
-        
-        <!-- Pilot Service Details (if applicable) -->
-        <div v-if="isPilot && pilotService" class="mt-6 p-3 bg-gray-700 rounded-md">
-          <h3 class="font-semibold text-blue-300 mb-2">Pilot Service Details</h3>
-          <div class="grid grid-cols-2 gap-2 text-sm">
-            <p class="text-gray-400">Experience:</p>
-            <p class="font-medium text-white">{{ pilotService.experience || 'N/A' }} years</p>
-            
-            <p class="text-gray-400">Status:</p>
-            <p :class="`font-medium ${pilotService.active ? 'text-green-400' : 'text-red-400'}`">
-              {{ pilotService.active ? 'Active' : 'Inactive' }}
-            </p>
-            
-            <p class="text-gray-400">Rating:</p>
-            <div class="flex items-center">
-              <span class="text-yellow-400 mr-1">★</span>
-              <span class="text-white">{{ pilotService.rating || '4.5' }}/5</span>
-            </div>
+
+          <div v-else-if="gamerDetails" class="bg-gray-750 p-4 rounded-lg">
+            <h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Gamer Preference</h3>
+            <p class="text-gray-200">{{ gamerDetails.gamer_preference || 'No preference specified.' }}</p>
+          </div>
+
+          <div v-else class="text-gray-500 text-center py-4">
+            No specific details available for this role.
           </div>
         </div>
+      </section>
+
+      <section v-if="isPilotProfile" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-semibold">Portfolio Gallery</h2>
+        </div>
+
+        <div v-if="portfolios.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <PortfolioCard
+            v-for="portfolio in portfolios"
+            :key="portfolio.id"
+            :username="profileUsername"
+            :portfolio="portfolio"
+          />
+        </div>
+        <div v-else class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
+          This pilot hasn't added any portfolio items yet.
+        </div>
+      </section>
+
+      <section v-if="isPilotProfile" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-semibold">Services Offered</h2>
+        </div>
+
+        <div v-if="serviceStore.services.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <ServiceDisplayCard
+            v-for="service in serviceStore.services"
+            :key="service.id"
+            :service="service"
+            :categories="categories"
+            :is-service-history="false"
+          />
+        </div>
+        <div v-else-if="serviceStore.loading" class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
+          <span class="loading loading-dots loading-lg text-accent"></span>
+        </div>
+        <div v-else class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
+          This pilot is not currently offering any services.
+        </div>
+      </section>
+
+      <div v-if="!isPilotProfile && !gamerDetails && !pilotDetails" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
+        Profile details loaded. No portfolio or services applicable for this role.
       </div>
+    </div>
 
-      <!-- Right Section: Services or Gamer Content -->
-      <div class="w-full md:w-2/3 pl-0 md:pl-4">
-        <div v-if="shouldShowServices">
-          <h3 class="text-lg text-center font-semibold text-white mb-4">Offered Services</h3>
-          <div v-if="serviceStore.loading" class="flex justify-center items-center h-32">
-            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-          <div v-else-if="serviceStore.services.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <ServiceCard 
-              v-for="service in serviceStore.services" 
-              :key="service.id" 
-              :service="service"
-              :categories="serviceStore.categories"
-              @click="handleServiceClick(service)"
-            />
-          </div>
-          <div v-else class="flex justify-center items-center h-32 text-gray-400 text-lg">
-            <template v-if="isPilot">No services currently offered</template>
-            <template v-else>This pilot does not offer any services</template>
-          </div>
-        </div>
-        <div v-else-if="isGamer" class="flex justify-center items-center h-32 text-gray-400 text-lg">
-          <p><!-- Gamer preferences and stats will be shown here --></p>
-        </div>
-      </div>
-
-      <!-- Edit Profile Modal -->
-      <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold text-white">Edit Profile</h3>
-            <button @click="closeEditModal" class="text-gray-400 hover:text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Pilot Edit Form -->
-          <form v-if="isPilot" @submit.prevent="saveProfile">
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-white mb-1">Bio</label>
-              <textarea
-                v-model="editForm.bio"
-                class="w-full bg-gray-700 text-white rounded-md p-2 border border-gray-600"
-                rows="3"
-                placeholder="Tell us about yourself..."
-              ></textarea>
-            </div>
-
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-white mb-1">Skills</label>
-              <textarea
-                v-model="editForm.skills"
-                class="w-full bg-gray-700 text-white rounded-md p-2 border border-gray-600"
-                rows="3"
-                placeholder="List your gaming skills (comma separated)..."
-              ></textarea>
-              <p class="text-xs text-gray-400 mt-1">Separate skills with commas</p>
-            </div>
-
-            <div class="flex justify-end gap-2">
-              <button
-                type="button"
-                @click="closeEditModal"
-                class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition flex items-center"
-                :disabled="isSaving"
-              >
-                <svg v-if="isSaving" class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {{ isSaving ? 'Saving...' : 'Save Changes' }}
-              </button>
-            </div>
-          </form>
-
-          <!-- Gamer Edit Form -->
-          <form v-else-if="isGamer" @submit.prevent="saveProfile">
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-white mb-1">Gamer Preferences</label>
-              <textarea
-                v-model="editForm.gamer_preference"
-                class="w-full bg-gray-700 text-white rounded-md p-2 border border-gray-600"
-                rows="3"
-                placeholder="Describe your gaming preferences..."
-              ></textarea>
-            </div>
-
-            <div class="flex justify-end gap-2">
-              <button
-                type="button"
-                @click="closeEditModal"
-                class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition flex items-center"
-                :disabled="isSaving"
-              >
-                <svg v-if="isSaving" class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {{ isSaving ? 'Saving...' : 'Save Changes' }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+    <div v-else-if="!isLoading && !error" class="text-center py-20">
+      <p class="text-gray-500">Profile data could not be loaded.</p>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useUserStore } from '@/stores/userStore'; 
-import { useServiceStore } from '@/stores/serviceStore'; 
-import loginService from '@/services/login-service';
-import userService from '@/services/user-service';
-import { fetchPortfoliosByUser } from '@/services/portfolio.service';
-import { useLoader } from '@/services/loader-service';
-import ServiceCard from '@/components/ServiceDisplay.vue'; 
-import toast from '@/utils/toast';
-import axios from 'axios';
+<style scoped>
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
+}
 
-const { loadShow, loadHide } = useLoader();
+/* Additional styles for better visual organization */
+.bg-gray-750 {
+  background-color: rgba(31, 41, 55, 0.5);
+}
 
-const router = useRouter();
-const route = useRoute();
-const userStore = useUserStore();
-const serviceStore = useServiceStore(); 
-
-const profileData = ref({});
-const portfolios = ref([]);
-const username = ref('');
-const role = ref('User');
-const profileLoaded = ref(false);
-const pilotService = ref(null);
-const isSaving = ref(false);
-const currentUser = ref(null);
-const showEditModal = ref(false);
-
-const editForm = ref({
-  bio: '',
-  skills: '',
-  gamer_preference: ''
-});
-
-// Computed properties
-const userInitial = computed(() => {
-  if (!profileData.value?.f_name) return '?';
-  return `${profileData.value.f_name.charAt(0)}${profileData.value.l_name?.charAt(0) || ''}`.toUpperCase();
-});
-
-const isPilot = computed(() => {
-  return role.value === 'Game Pilot';
-});
-
-const isGamer = computed(() => {
-  return role.value === 'Gamer';
-});
-
-const roleDisplay = computed(() => {
-  if (isPilot.value) return 'Game Pilot';
-  if (isGamer.value) return 'Gamer';
-  return 'User';
-});
-
-const roleBadgeClass = computed(() => {
-  if (isPilot.value) return 'bg-blue-500';
-  if (isGamer.value) return 'bg-purple-500';
-  return 'bg-gray-500';
-});
-
-const isCurrentUser = computed(() => {
-  return currentUser.value && profileData.value && currentUser.value.id === profileData.value.id;
-});
-
-const shouldShowServices = computed(() => {
-  return isPilot.value && (currentUser.value?.role === 'game pilot' || isCurrentUser.value);
-});
-
-// Methods
-const openEditModal = () => {
-  editForm.value = {
-    bio: profileData.value.bio || '',
-    skills: profileData.value.skills || '',
-    gamer_preference: profileData.value.gamer_preference || ''
-  };
-  showEditModal.value = true;
-};
-
-const closeEditModal = () => {
-  showEditModal.value = false;
-};
-
-const saveProfile = async () => {
-  isSaving.value = true;
-  try {
-    let endpoint, data;
-    
-    if (isPilot.value) {
-      endpoint = `/api/pilots/${profileData.value.id}`;
-      data = {
-        bio: editForm.value.bio,
-        skills: editForm.value.skills
-      };
-    } else if (isGamer.value) {
-      endpoint = `/api/gamers/${profileData.value.id}`;
-      data = {
-        gamer_preference: editForm.value.gamer_preference
-      };
-    }
-
-    const response = await axios.put(endpoint, data);
-    
-    // Update local profile data
-    if (isPilot.value) {
-      profileData.value.bio = editForm.value.bio;
-      profileData.value.skills = editForm.value.skills;
-    } else if (isGamer.value) {
-      profileData.value.gamer_preference = editForm.value.gamer_preference;
-    }
-    
-    closeEditModal();
-    toast.success('Profile updated successfully');
-  } catch (error) {
-    console.error('Error updating profile:', error);
-    toast.error('Failed to update profile');
-  } finally {
-    isSaving.value = false;
-  }
-};
-
-const fetchUserData = async () => {
-  const loader = loadShow();
-  try {
-    const userData = await loginService.fetchUserData();
-    username.value = userData.username;
-    currentUser.value = userData;
-    role.value = userData.role === 'gamer' ? 'Gamer' : 
-                userData.role === 'game pilot' ? 'Game Pilot' : 'User';
-  } catch (error) {
-    console.error('Error fetching user data:', error);
-    router.push({ name: 'login' }); 
-  } finally {
-    loadHide(loader);
-  }
-};
-
-const fetchProfileData = async () => {
-  try {
-    const userId = route.params.id;
-    const profile = await userService.getUserProfile(userId);
-    profileData.value = profile;
-
-    username.value = profile.username || "Loading...";
-    
-    if (profile.role === 'game pilot') {
-      role.value = 'Game Pilot';
-      pilotService.value = {
-        experience: profile.pilot_experience || 0,
-        active: profile.pilot_active !== undefined ? profile.pilot_active : true,
-        rating: profile.pilot_rating || '4.5',
-        bio: profile.bio || '',
-        skills: profile.skills || ''
-      };
-    } else if (profile.role === 'gamer') {
-      role.value = 'Gamer';
-    }
-    
-    profileLoaded.value = true;
-  } catch (error) {
-    console.error('Error fetching profile:', error);
-  }
-};
-
-const fetchUserServices = async () => {
-  try {
-    const userId = route.params.id;
-    if (shouldShowServices.value) {
-      await serviceStore.fetchServicesByPilot(userId);
-    } else {
-      serviceStore.clearServices();
-    }
-  } catch (error) {
-    console.error('Error fetching user services:', error);
-    serviceStore.clearServices();
-  }
-};
-
-const fetchCategories = async () => {
-  try {
-    await serviceStore.fetchCategories();
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-  }
-};
-
-const fetchPortfolios = async () => {
-  try {
-    const userId = route.params.id;
-    const response = await fetchPortfoliosByUser(userId);
-    const baseURL = "http://127.0.0.1:8000/storage/";
-
-    portfolios.value = response.portfolios?.map(portfolio => ({
-      ...portfolio,
-      p_content: baseURL + portfolio.p_content,
-    })) || [];
-  } catch (error) {
-    console.error("Error fetching portfolio:", error);
-    portfolios.value = [];
-  }
-};
-
-const handleServiceClick = (service) => {
-  if (!service.availability) {
-    toast.warning("This service is currently not accepting bookings.");
-    return;
-  }
-  router.push({
-    name: 'PaymentView', 
-    params: { serviceId: service.id }, 
-    state: { service: service } 
-  });
-};
-
-const goToPortfolio = () => {
-  const userId = route.params.id;
-  
-  if (profileLoaded.value && profileData.value && profileData.value.username) {
-    if (isCurrentUser.value) {
-      router.push({ name: 'MyPortfolio' });
-    } else {
-      router.push({ name: 'PortfolioView', params: { username: profileData.value.username } });
-    }
-    return;
-  }
-  
-  if (currentUser.value && currentUser.value.id && userId === currentUser.value.id.toString()) {
-    router.push({ name: 'MyPortfolio' });
-    return;
-  }
- 
-  if (userId) {
-    router.push({ name: 'PortfolioView', params: { username: `user-${userId}` } });
-    return;
-  }
-  
-  router.push({ name: 'MyPortfolio' });
-  
-  toast.info("Redirecting to portfolio with limited information. Some features may be unavailable.");
-};
-
-// Watchers and lifecycle hooks
-watch(() => route.params.id, async () => {
-  serviceStore.loading = true;
-  await fetchUserData();
-  await fetchProfileData();
-  await fetchCategories();
-  await fetchUserServices();
-  await fetchPortfolios();
-}, { immediate: true });
-
-onMounted(async () => {
-  serviceStore.loading = true;
-  await fetchUserData();
-  await fetchProfileData();
-  await fetchCategories(); 
-  await fetchUserServices();
-  await fetchPortfolios();
-});
-</script>
+.bg-gray-850 {
+  background-color: rgba(22, 30, 40, 1);
+}
+</style>

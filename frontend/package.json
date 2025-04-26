@@ -12,8 +12,12 @@
     "axios": "^1.7.7",
     "daisyui": "^5.0.4",
     "dayjs": "^1.11.13",
+<<<<<<< HEAD
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",
+=======
+    "path-browserify": "^1.0.1",
+>>>>>>> origin/develop
     "pinia": "^2.2.5",
     "pinia-plugin-persistedstate": "^4.1.2",
     "vue": "^3.4.29",

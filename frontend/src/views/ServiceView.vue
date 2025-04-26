@@ -39,12 +39,13 @@
               </h2>
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" class="ml-6 mr-20">
-              <rect x="25" y="35" width="70" height="50" rx="10" ry="10" fill="none" stroke="#4ade80" stroke-width="7"/>
-              <rect x="35" y="50" width="6" height="20" fill="#4ade80" rx="3" ry="3"/>
-              <rect x="30" y="55" width="20" height="6" fill="#4ade80" rx="3" ry="3"/>
-              <circle cx="70" cy="55" r="6" fill="#4ade80"/>
-              <circle cx="80" cy="65" r="6" fill="#4ade80"/>
+                <rect x="25" y="35" width="70" height="50" rx="10" ry="10" fill="none" stroke="#047857" stroke-width="7"/>
+                <rect x="35" y="50" width="6" height="20" fill="#047857" rx="3" ry="3"/>
+                <rect x="30" y="55" width="20" height="6" fill="#047857" rx="3" ry="3"/>
+                <circle cx="70" cy="55" r="6" fill="#047857"/>
+                <circle cx="80" cy="65" r="6" fill="#047857"/>
             </svg>
+
           </div>
           <div class="flex flex-wrap justify-start gap-4 -ml-10">
             <span class="bg-emerald-950 border border-emerald-600 text-emerald-500 text-xs font-semibold px-3 py-1 rounded-full hover:bg-gray-950 flex items-center gap-2">
@@ -61,10 +62,15 @@
               Trustworthy
             </span>
             <span class="bg-purple-950 border border-purple-700 text-purple-500 text-xs font-semibold px-3 py-1 rounded-full hover:bg-gray-950 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 2C6 4 8 4 12 2C16 4 18 4 20 2C20 6 20 8 20 12C20 15 16 18 12 20C8 18 4 15 4 12C4 8 4 6 4 2Z" />
-            </svg>
-              Verified Pilots
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="16" height="16">
+                <!-- Outer circle for the badge -->
+                <circle cx="50" cy="50" r="48" fill="none" stroke="CurrentColor" stroke-width="4" />
+                
+                <!-- Star icon for skill -->
+                <polygon points="50,10 55,35 80,35 58,50 65,80 50,60 35,80 42,50 20,35 45,35"
+                        fill="CurrentColor" />
+              </svg>
+              Skilled Pilots
             </span>
           </div>
         </div>
@@ -75,16 +81,16 @@
         </div>
 
         <div class="px-4 py-5">
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-    <ServiceDisplay
-      v-for="service in filteredServices"
-      :key="service.id"
-      :service="service"
-      :categories="serviceStore.categories"
-      class="w-full"
-    />
-  </div>
-</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+            <ServiceDisplay
+              v-for="service in filteredServices"
+              :key="service.id"
+              :service="service"
+              :categories="serviceStore.categories"
+              class="w-full"
+            />
+          </div>
+        </div>
 
       </div>
     </template>

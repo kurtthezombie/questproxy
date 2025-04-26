@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('reason');
             $table->string('status');
-            $table->timestamps();
             $table->unsignedBigInteger('reporting_user_id');
             $table->unsignedBigInteger('reported_user_id');
+            $table->timestamps();
 
             $table->foreign('reporting_user_id')->references('id')->on('users');
             $table->foreign('reported_user_id')->references('id')->on('users');

@@ -47,7 +47,7 @@ const getMemberSince = (createdAt) => {
   <div class="min-h-screen bg-gray-900 flex flex-col">
     <!-- Title -->
     <div class="mt-20 flex justify-center items-center">
-      <h2 class="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-blue-400">
+      <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-blue-400">
         LEADERBOARD
       </h2>
     </div>

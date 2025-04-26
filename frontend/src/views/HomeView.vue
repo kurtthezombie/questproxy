@@ -1,8 +1,10 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
-    <header class="bg-gray-900 sticky top-0 z-50 p-4 shadow-lg border-b border-green-900">
-      <div class="container mx-auto flex justify-between items-center px-20">
-        <div class="flex items-center">
+    <header class="bg-gray-900 sticky top-0 z-50 p-4 shadow-lg border-b border-green-900 relative">
+      <div class="mx-auto w-full px-4 md:px-8 xl:px-[160px] 2xl:px-[300px] flex justify-between items-center">
+
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
           <router-link to="/" class="flex flex-row items-center">
             <img src="@/assets/img/qplogo3.png" alt="Logo" class="w-12 h-12">
             <span class="text-2xl font-bold text-white">QuestProxy</span>
@@ -48,8 +50,7 @@
         <div class="flex items-center space-x-2 mt-8">
           <button class="btn btn-success btn-lg text-black rounded-full"
             @click="handleStartNow"
-            >Start Now
-          </button>
+          >Start Now</button>
         </div>
       </div>
     </section>
@@ -70,8 +71,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
             </div>
-            <h3 class="text-xl font-semibold mb-2">Verified Pilots</h3>
-            <p class="text-gray-400 text-justify">All our pilots undergo rigorous verification to ensure they have the skills they claim.</p>
+            <h3 class="text-xl font-semibold mb-2">Skilled Pilots</h3>
+            <p class="text-gray-400 text-justify">Entrusted with our accounts are top-tier gamers, recognized for their superior gaming expertise</p>
           </div>
 
           <!-- Card 2 -->
@@ -197,40 +198,18 @@ import '@/assets/css/style.css';
 import router from '@/router';
 
 const handleStartNow = async () => {
-  router.push({ name: 'login' });
+  router.push({ name: 'signup' });
 }
 </script>
 
-<!-- Star Now Button Jumping -->
 <script>
-export default {
-  data() {
-    return {
-      isJumping: false,
-    };
-  },
-  mounted() {
-    this.startContinuousJump();
-  },
-  methods: {
-    startContinuousJump() {
-      setInterval(() => {
-        this.isJumping = true;
-        setTimeout(() => {
-          this.isJumping = false;
-        }, 600);
-      }, 1500);
-    },
-  },
-};
-
 // Function to generate random styles for dust particles
 const generateParticleStyle = (index) => {
-  const left = Math.random() * 100; // Random left position (0-100%)
-  const top = Math.random() * 100; // Random top position (0-100%)
-  const size = Math.random() * 3 + 2; // Random size between 2px to 5px
-  const duration = Math.random() * 10 + 5; // Random duration between 5s to 15s (longer to make them float slowly)
-  const delay = Math.random() * 5; // Random delay between 0s to 5s
+  const left = Math.random() * 100;
+  const top = Math.random() * 100;
+  const size = Math.random() * 3 + 2;
+  const duration = Math.random() * 10 + 5;
+  const delay = Math.random() * 5;
   
   return {
     left: `${left}%`,

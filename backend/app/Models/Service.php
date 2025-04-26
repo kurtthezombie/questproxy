@@ -20,14 +20,14 @@ class Service extends Model
         'category_id',
     ];
 
-    public function pilot()
-    {
-        return $this->belongsTo(Pilot::class, 'pilot_id');
-    }
-
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function pilot()
+    {
+        return $this->belongsTo(Pilot::class, 'pilot_id');
     }
 
     public function toSearchableArray():array 
