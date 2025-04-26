@@ -1,43 +1,41 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/userStore'; //
-import { useServiceStore } from '@/stores/serviceStore'; // Import the service store
+import { useUserStore } from '@/stores/userStore'; 
+import { useServiceStore } from '@/stores/serviceStore'; 
 import axios from 'axios';
-import PortfolioCard from '@/components/portfolio/PortfolioCard.vue'; //
+import PortfolioCard from '@/components/portfolio/PortfolioCard.vue'; 
 import ServiceDisplayCard from '@/components/ServiceDisplay.vue';
-import toast from '@/utils/toast'; //
-import dayjs from 'dayjs'; //
+import toast from '@/utils/toast'; 
+import dayjs from 'dayjs'; 
 
 const route = useRoute();
 const router = useRouter();
-const userStore = useUserStore(); //
-const serviceStore = useServiceStore(); // Use the service store
+const userStore = useUserStore(); 
+const serviceStore = useServiceStore(); 
 
 // --- Refs ---
-const userId = ref(null); // <-- Use userId from route
-const profileUsername = ref(null); // <-- This will be set *after* fetching user by ID
+const userId = ref(null); 
+const profileUsername = ref(null); 
 const profileData = ref(null);
 const pilotDetails = ref(null);
 const gamerDetails = ref(null);
 const portfolios = ref([]);
 const points = ref(0);
-// const services = ref([]); // Removed local services ref
-const categories = ref([]); // Keep local categories ref if needed for ServiceDisplayCard prop
-const isLoading = ref(false); // Keep isLoading for overall page loading state
+const categories = ref([]); 
+const isLoading = ref(false); 
 const error = ref(null);
 
 // --- Computed Properties ---
 const isOwnProfile = computed(() => {
-  // Compare based on ID now, as that's the primary identifier from the route
-  // Ensure both values are treated as numbers for comparison
+  
   return userStore.isLoggedIn && userStore.userData?.id === Number(userId.value);
 });
 
 const loggedInUserRole = computed(() => userStore.userData?.role);
 
 const initials = computed(() => {
-  // Use profileUsername ref, which is populated after fetch
+ 
   return profileUsername.value
     ?.split(" ")
     .map(word => word[0])
@@ -47,7 +45,7 @@ const initials = computed(() => {
 
 const memberSince = computed(() => {
   if (!profileData.value?.created_at) return '';
-  return dayjs(profileData.value.created_at).format('MMMM YYYY'); // Corrected format
+  return dayjs(profileData.value.created_at).format('MMMM YYYY'); 
 });
 
 // Computed property to check if the profile is a pilot profile
@@ -58,40 +56,39 @@ const isPilotProfile = computed(() => {
 
 // --- Main Data Fetching Function ---
 const fetchUserProfile = async () => {
-  // Get token directly from localStorage
+  
   const authToken = localStorage.getItem('authToken');
 
   if (!userId.value) {
       console.error("fetchUserProfile called without a valid userId.");
       error.value = 'Cannot fetch profile: User ID is missing from route.';
-      isLoading.value = false; // Set loading to false on error
+      isLoading.value = false; 
       return;
   }
   // Check if token exists in localStorage
   if (!authToken) {
       console.error("fetchUserProfile called without an auth token in localStorage.");
       error.value = 'Authentication token is missing. Please log in.';
-      isLoading.value = false; // Set loading to false on error
+      isLoading.value = false; 
       return;
   }
 
   console.log(`Fetching profile for User ID: ${userId.value}`);
-  console.log('Auth Token from localStorage:', authToken); // Log the token from localStorage
+  console.log('Auth Token from localStorage:', authToken); 
 
   isLoading.value = true; // Set loading state at the start
 
   try {
-    // *** Use the /users/{id} endpoint ***
-    // NOTE: Ensure your backend's UserController@show eager-loads the 'pilot' and 'gamer' relationships based on role
+    
     const response = await axios.get(`http://127.0.0.1:8000/api/users/${userId.value}`, {
-        headers: { Authorization: `Bearer ${authToken}` } // Use token from localStorage
+        headers: { Authorization: `Bearer ${authToken}` } 
     });
 
     // The user object is directly under 'user' key in the response for this endpoint based on UserController@show
     if (response.data && response.data.user) {
       profileData.value = response.data.user;
-      console.log('Profile Data:', profileData.value); // Log profile data to inspect pilot/gamer relationships
-      profileUsername.value = profileData.value.username; // <-- Set username after fetching
+      console.log('Profile Data:', profileData.value); 
+      profileUsername.value = profileData.value.username; 
 
       // Reset related details before fetching new ones
       pilotDetails.value = null;
@@ -99,11 +96,11 @@ const fetchUserProfile = async () => {
       portfolios.value = [];
       points.value = 0;
       // services.value = []; // No longer need to reset local services
-      serviceStore.services = []; // Clear services in the store when profile changes
+      serviceStore.services = []; 
 
       // Fetch related data based on role and the newly obtained username/IDs
       const role = profileData.value.role;
-      // IMPORTANT: Access pilot/gamer IDs from the fetched profileData.value, assuming eager loading or structure
+      
       const pilotId = profileData.value.pilot?.id;
       const gamerId = profileData.value.gamer?.id;
       const fetchedUserId = profileData.value.id; // Use the ID from the fetched data
@@ -119,9 +116,7 @@ const fetchUserProfile = async () => {
               promises.push(serviceStore.fetchServicesByPilot(pilotId));
           } else {
               console.warn(`User is a pilot but pilot details (including ID) are missing for user ID: ${userId.value}. Cannot fetch services.`);
-              // This warning indicates a backend issue - the /api/users/{id} endpoint is not returning the pilot relationship.
-              // Optionally set a message to the user
-              // toast.warning("Pilot details missing. Cannot display services.");
+              
           }
           // Use fetchedUserId for consistency
           promises.push(fetchPortfolios(fetchedUserId)); // Fetch portfolios using fetchedUserId
@@ -132,9 +127,7 @@ const fetchUserProfile = async () => {
               promises.push(fetchGamerDetails(gamerId));
           } else {
                console.warn(`User is a gamer but gamer details (including ID) are missing for user ID: ${userId.value}. Cannot fetch gamer details.`);
-               // This warning indicates a backend issue - the /api/users/{id} endpoint is not returning the gamer relationship.
-               // Optionally set a message to the user
-               // toast.warning("Gamer details missing. Cannot display preferences.");
+               
           }
       }
 
@@ -149,11 +142,9 @@ const fetchUserProfile = async () => {
      if (err.response) {
          if (err.response.status === 401) {
             error.value = 'Unauthorized. Please log in again.';
-            // Optionally, clear the invalid token from localStorage and redirect to login
-            // localStorage.removeItem('authToken');
-            // router.push({ name: 'login' });
+            
          } else if (err.response.status === 404) {
-             error.value = `User with ID '${userId.value}' not found.`; // Update error message
+             error.value = `User with ID '${userId.value}' not found.`; 
          } else {
             error.value = `Failed to load user profile. Server responded with status ${err.response.status}.`;
          }
@@ -164,18 +155,18 @@ const fetchUserProfile = async () => {
      }
     toast.error(error.value);
   } finally {
-      isLoading.value = false; // Ensure loading is set to false after fetch attempt
+      isLoading.value = false; 
   }
 };
 
 // --- Helper Fetching Functions ---
 
 const fetchPilotDetails = async (pilotId) => {
-    const authToken = localStorage.getItem('authToken'); // Get token from localStorage
-    if (!pilotId || !authToken) return; // Check for both ID and token
+    const authToken = localStorage.getItem('authToken'); 
+    if (!pilotId || !authToken) return; 
     try {
         const response = await axios.get(`http://127.0.0.1:8000/api/pilots/${pilotId}`, {
-             headers: { Authorization: `Bearer ${authToken}` } // Use token from localStorage
+             headers: { Authorization: `Bearer ${authToken}` } 
         });
         pilotDetails.value = response.data.pilot;
     } catch (err) {
@@ -185,7 +176,7 @@ const fetchPilotDetails = async (pilotId) => {
 };
 
 const fetchGamerDetails = async (gamerId) => {
-    const authToken = localStorage.getItem('authToken'); // Get token from localStorage
+    const authToken = localStorage.getItem('authToken'); 
     if (!gamerId || !authToken) {
         console.warn("fetchGamerDetails: Missing gamerId or authToken.");
         return; // Check for both ID and token
@@ -193,14 +184,14 @@ const fetchGamerDetails = async (gamerId) => {
     console.log(`Fetching details for Gamer ID: ${gamerId}`); // Log gamer ID
     try {
         const response = await axios.get(`http://127.0.0.1:8000/api/gamers/edit/${gamerId}`, {
-             headers: { Authorization: `Bearer ${authToken}` } // Use token from localStorage
+             headers: { Authorization: `Bearer ${authToken}` } 
         });
         console.log('fetchGamerDetails Response Status:', response.status); // Log status
         console.log('fetchGamerDetails Response Data:', response.data); // Log data
 
         // Assuming the gamer details are directly in response.data.gamer
         gamerDetails.value = response.data.gamer;
-        console.log('Gamer Details ref updated:', gamerDetails.value); // Log gamerDetails ref value
+        console.log('Gamer Details ref updated:', gamerDetails.value); 
 
     } catch (err) {
         console.error('Error fetching gamer details:', err);
@@ -210,11 +201,11 @@ const fetchGamerDetails = async (gamerId) => {
 
 // Reverted fetchPortfolios function
 const fetchPortfolios = async (fetchedUserId) => {
-    const authToken = localStorage.getItem('authToken'); // Get token from localStorage
-    if (!fetchedUserId || !authToken) return; // Check for both ID and token
+    const authToken = localStorage.getItem('authToken'); 
+    if (!fetchedUserId || !authToken) return; 
     try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/portfolios/user/${fetchedUserId}`, { // Use ID here
-            headers: { Authorization: `Bearer ${authToken}` } // Use token from localStorage
+        const response = await axios.get(`http://127.0.0.1:8000/api/portfolios/user/${fetchedUserId}`, { 
+            headers: { Authorization: `Bearer ${authToken}` } 
         });
         const baseURL = "http://127.0.0.1:8000/storage/";
         portfolios.value = response.data.portfolios.map(p => ({
@@ -230,14 +221,14 @@ const fetchPortfolios = async (fetchedUserId) => {
 
 // Fetch Points now uses the profileUsername ref, which is set after the initial fetch
 const fetchPoints = async () => {
-  const authToken = localStorage.getItem('authToken'); // Get token from localStorage
-  if (!profileUsername.value || !authToken) { // Check if username and token are available
+  const authToken = localStorage.getItem('authToken'); 
+  if (!profileUsername.value || !authToken) { 
        console.warn("Cannot fetch points yet, username or token not available.");
        return;
   }
   try {
     const response = await axios.get(`http://127.0.0.1:8000/api/portfolios/user/points/${profileUsername.value}`, {
-        headers: { Authorization: `Bearer ${authToken}` } // Use token from localStorage
+        headers: { Authorization: `Bearer ${authToken}` } 
     });
     points.value = response.data.points ?? 0;
   } catch (err) {
@@ -248,7 +239,7 @@ const fetchPoints = async () => {
 
 // Removed local fetchPilotServices function
 
-const fetchCategories = async () => { /* ... keep implementation ... */
+const fetchCategories = async () => { 
     try {
         const response = await axios.get(`http://127.0.0.1:8000/api/categories`);
         categories.value = response.data.categories || [];
@@ -261,25 +252,25 @@ const fetchCategories = async () => { /* ... keep implementation ... */
 
 onMounted(() => {
   fetchCategories();
-  // No need to call fetchServicesByPilot or fetchGamerDetails here, they are called in fetchUserProfile
+  
 });
 
 // *** Watch for route param 'id' changes ***
 watch(() => route.params.id, async (newId) => {
-  if (newId && newId !== userId.value) { // Check if ID is present and different
+  if (newId && newId !== userId.value) { 
     console.log(`Route ID changed to: ${newId}`);
-    isLoading.value = true; // Keep isLoading for initial fetch
+    isLoading.value = true; 
     error.value = null;
-    userId.value = newId; // Update the userId ref *before* fetching
-    profileUsername.value = null; // Reset username when ID changes
+    userId.value = newId; 
+    profileUsername.value = null; 
 
     // Reset data
     profileData.value = null;
     pilotDetails.value = null;
-    gamerDetails.value = null; // Reset gamer details
+    gamerDetails.value = null; 
     portfolios.value = [];
     points.value = 0;
-    serviceStore.services = []; // Clear services in the store when profile changes
+    serviceStore.services = []; 
 
     // Call the main fetch function using the new ID
     await fetchUserProfile();
@@ -288,22 +279,22 @@ watch(() => route.params.id, async (newId) => {
   } else if (!newId) {
       console.log("Route ID is undefined or null.");
        error.value = "User ID parameter missing in URL.";
-       isLoading.value = false; // Stop loading if ID is missing
+       isLoading.value = false; 
   }
-}, { immediate: true }); // Run immediately
+}, { immediate: true }); 
 
 
 // --- Methods ---
-const goToAccountSettings = () => { /* ... keep implementation ... */
+const goToAccountSettings = () => { 
     router.push({ name: 'account-settings' });
 }
 
-const goToMyPortfolio = () => { /* ... keep implementation ... */
+const goToMyPortfolio = () => { 
     router.push({ name: 'MyPortfolio' });
 }
 
-const goToReportUser = () => { /* ... keep implementation ... */
-    // Ensure we have the username before navigating to report page
+const goToReportUser = () => { 
+    
     if(profileUsername.value) {
         router.push({ name: 'ReportView', params: { username: profileUsername.value } });
     } else {
