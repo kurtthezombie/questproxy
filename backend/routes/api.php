@@ -109,6 +109,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::patch('services/edit/{id}', 'update');
         Route::delete('services/destroy/{id}', 'destroy');
         Route::get('pilots/{pilot_id}/services','getServicesByPilot');
+        Route::get('services/{id}/details', 'getServiceDetails');
     });
 
     Route::controller(ReportController::class)->group(function () {
@@ -127,7 +128,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('bookings/{booking_id}/instruction', 'updateInstruction');
         Route::get('bookings/service/{service_id}', 'booksByService');
         Route::get('bookings/client/{client_id}', 'booksByClient');
-        Route::get('bookings/{booking_id}/service-details', 'getServiceDetails');
         Route::get('/pilot/bookings', 'getBookingByPilot');
     });
 

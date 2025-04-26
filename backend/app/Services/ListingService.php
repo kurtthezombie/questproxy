@@ -126,4 +126,30 @@ class ListingService
     {
         return $this->service->where('category_id', $category_id)->get();
     }
+
+    public function getServiceDetails($id)
+    {
+        $service = $this->service->with([
+            'category',
+            'pilot.user',
+        ])->findOrFail($id);
+
+        if ($service->pilot->user->id == auth()->user()->id) {
+            throw new Exception('You cannot view your own service details.', 403);
+        }
+
+        $clientUsername = auth()->user()->username;
+
+        $details = [
+            'description' => $service->description,
+            'category_title' => $service->category->title,
+            'pilot_username' => $service->pilot->user->username,
+            'client_username' => $clientUsername,
+            'price' => $service->price,
+            'duration' => $service->duration,
+        ];
+
+        return $details;
+    }
 }
+

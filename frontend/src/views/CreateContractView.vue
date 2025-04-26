@@ -1,40 +1,66 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import DisplayField from "@/components/agreement/DisplayField.vue";
-import NavBar from "@/components/NavBar.vue";
-import { fetchData } from "@/services/agreement.service"
+import { createBooking, fetchData } from "@/services/agreement.service"
 import toast from "@/utils/toast";
 import { jsPDF } from "jspdf"
 import dayjs from "dayjs";
+import { useRoute } from 'vue-router';
 
 const details = ref(null);
+const route = useRoute();
+const serviceId = route.params?.serviceId;
+const bookingId = ref(null);
+const isSubmitted = ref(false);
 
 const form = reactive({
   startDate: '',
   commLink: '',
-  instructions: '',
+  additional_notes: '',
+  serviceId: serviceId,
 });
 
 const today = new Date().toISOString().split('T')[0]; 
-const currentDate = dayjs().format('MMMM D, YYYY'); // Example: 'April 19, 2025'
+const currentDate = dayjs().format('MMMM D, YYYY');
 
 const fetchAgreementData = async () => {
   try {
-    const data = await fetchData();
+    const data = await fetchData(serviceId);
     details.value = data;
-    console.log("Fetched details: ", details.value);
   } catch (error) {
     toast.error("Failed to fetch agreement data.");
   }
 };
 
-const handleSubmit = () => {
-  console.log({...form});
-  downloadModal.showModal();
+const handleSubmit = async () => {
+  const formData = {
+    start_date: form.startDate,
+    communication_link: form.commLink,
+    additional_notes: form.additional_notes,
+    service_id: form.serviceId,
+  };
+
+  try {
+    const booking = await createBooking(formData);
+
+    if (booking) {
+      bookingId.value = booking.id;
+      isSubmitted.value = true;
+      toast.success("Agreement submitted successfully!");
+      downloadModal.showModal();
+    }
+
+  } catch (error) {
+    toast.error("Failed to submit agreement.");
+  }
 };
 
+const proceedToPayment = async () => {
+  
+}
+
 const generatePDF = () => {
-  if (!details.value) {
+  if (!details.value || !bookingId.value) {
     toast.error("Data not loaded yet!");
     return;
   }
@@ -47,7 +73,7 @@ Service Title: ${details.value.description}
 Game: ${details.value.category_title}
 Pilot: ${details.value.pilot_username}
 Client: ${details.value.client_username}
-Booking ID: #1023
+Booking ID: bk-${bookingId.value}
 Agreement Date: ${currentDate}
 
 1. Description of Service
@@ -61,7 +87,7 @@ Chat Link: ${form.commLink}
 The pilot agrees to use this communication link solely for the purpose of fulfilling this service and to maintain professionalism throughout the communication process.
 
 3. Additional Instructions
-${form.instructions}
+${form.additional_notes}
 
 4. Payment Terms
 The client has agreed to pay ${details.value.price} for the service, to be processed through the platform.
@@ -141,17 +167,25 @@ onMounted(() => {
           <div class="flex flex-col w-full">
             <h3 class="text-lg font-semibold mb-4 border-b border-green-300 pb-2">Additional Information</h3>
             <div class="mb-4">
-              <label htmlFor="instructions" class="block text-sm font-medium mb-1">
+              <label htmlFor="additional_notes" class="block text-sm font-medium mb-1">
                 Instructions & Notes (Optional)
               </label>
-              <textarea rows="4" v-model="form.instructions"
+              <textarea rows="4" v-model="form.additional_notes"
                 class="textarea w-full p-3 border bg-blue-600 bg-opacity-20 rounded-md focus:ring-green-500 focus:border-green-500"
                 placeholder="Add any specific instructions or notes for the service provider..."></textarea>
             </div>
           </div>
 
           <div class="flex justify-end w-full">
-            <button class="btn btn-success" type="submit">Submit Agreement</button>
+            <!-- Submit Agreement Button (Disabled after submission) -->
+            <button :disabled="isSubmitted" class="btn btn-success" type="submit">
+              {{ isSubmitted ? 'Agreement Submitted' : 'Submit Agreement' }}
+            </button>
+
+            <!-- Proceed to Payment Button -->
+            <button v-if="isSubmitted" class="btn btn-success ml-4" @click="">
+              Proceed to Payment
+            </button>
           </div>
         </form>
       </div>

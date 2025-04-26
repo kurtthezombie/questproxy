@@ -206,8 +206,8 @@ const router = createRouter({
       component: MyBookingsView,
     },
     {
-      path: '/create-contract',
-      name: 'CreateContract',
+      path: '/contract/:serviceId',
+      name: 'contract',
       component: CreateContractView,
     },
   ]

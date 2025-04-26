@@ -32,14 +32,17 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
+        $client_id = auth()->user()->id;
+
         //validate
         $data = $request->validate([
-            'client_id' => 'required',
             'service_id' => 'required',
-            'additional_notes' => 'required|string',
-            'credentials_username' => 'required|string',
-            'credentials_password' => 'required|string',
+            'start_date' => 'required|date',
+            'communication_link' => 'required|string',
+            'additional_notes' => 'nullable|string',
         ]);
+
+        $data['client_id'] = $client_id;
         
         try {
             //create booking

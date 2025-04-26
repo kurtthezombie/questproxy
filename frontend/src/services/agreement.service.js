@@ -1,17 +1,15 @@
 import api from "@/utils/api";
 
-const fetchData = async () => {
-  // const response = await api.get(`/bookings/${booking_id}/service-details`);
-  // console.log(response);
-  const details = {
-      description: 'Valorant Rank Boosting',
-      category_title: 'Rank Boost',
-      pilot_username: 'tester',
-      client_username: 'young_thug',
-      price: 250,
-      duration: 2
-  };
-  return details;
+const fetchData = async (id) => {
+  const response = await api.get(`/services/${id}/details`);
+
+  return response.service;
 };
 
-export { fetchData };
+const createBooking = async (data) => {
+  const response = await api.post(`/bookings/store`, data);
+  console.log('response: ', response);
+  return response.booking;
+}
+
+export { fetchData, createBooking };
