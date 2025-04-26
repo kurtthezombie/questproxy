@@ -41,18 +41,16 @@ class BookingService
         return $booking;
     }
 
-    public function updateStatus($status, $booking_id){
+    public function markAsCompleted($booking_id){
         $booking = $this->booking->findOrFail($booking_id);
-        $booking->status = $status;
+        $booking->status = 'completed';
         $booking->save();
 
-        if ($status == 'completed'){
-            $booking->load([
-                'service.pilot.user',
-                'client', 
-            ]);
-            $this->sendCompletionEmail($booking);
-        }
+        $booking->load([
+            'service.pilot.user',
+            'client', 
+        ]);
+        $this->sendCompletionEmail($booking);
 
         return $booking;
     }
@@ -69,7 +67,8 @@ class BookingService
 
         $bookings = $this->booking->whereHas('service', function ($query) use ($pilotId) {
             $query->where('pilot_id', $pilotId);
-        })->with(['service','service.pilot'])->get();
+        })->with(['service','service.pilot', 'client', 'instruction'])
+        ->get();
 
         return $bookings;
     }

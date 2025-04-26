@@ -6,10 +6,11 @@
     <div class="container mx-auto py-5 max-w-7xl">
       <!-- Header Section -->
       <div>
-        <div class="relative bg-blue-800 bg-opacity-5 p-16 rounded-xl shadow-md flex flex-row justify-between items-center mb-8 overflow-hidden">
+
+        <div class="relative bg-blue-800 bg-opacity-5 p-6 sm:p-10 lg:p-16 rounded-xl shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 overflow-hidden gap-4 sm:gap-0">
+          <!-- Background Dust Layer -->
           <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0">
             <div class="dust-container">
-              <!-- Generate 100 dust particles -->
               <div 
                 v-for="index in 100" 
                 :key="index" 
@@ -18,22 +19,36 @@
               ></div>
             </div>
           </div>
+
           <!-- Text Content -->
-          <div>
-            <h1 class="text-5xl mb-2 font-bold">
+          <div class="z-10">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl mb-2 font-bold">
               Welcome, <span class="text-green-400">{{ username }}</span>
             </h1>
-            <h3 class="mb-5 text-lg text-gray-300">
+            <h3 class="mb-5 text-base sm:text-lg text-gray-300">
               Ready to enhance your gaming experience today?
             </h3>
+            <!-- Button shown under text on small screens -->
+            <div class="block sm:hidden">
+              <router-link to="/pilot-matching">
+                <button class="btn bg-green-600 hover:bg-green-500 text-white border-none shadow-none w-fit">
+                  Find a Pilot
+                </button>
+              </router-link>
+            </div>
           </div>
 
-          <!-- SVG Icon -->
-          <div class="mr-40">
+          <!-- SVG and button (desktop) -->
+          <div class="z-10 hidden sm:flex items-center gap-8 mr-0 sm:mr-8 flex justify-between w-1/3">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="90" height="90" fill="none" stroke="#047857" stroke-width="2">
               <path d="M6 12L9 10L12 3L15 10L18 12L15 14L12 21L9 14L6 12Z" transform="scale(0.8) translate(1.5, 3)" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M6 12L9 10L12 3L15 10L18 12L15 14L12 21L9 14L6 12Z" transform="translate(16, 14) scale(0.4)" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
+            <router-link to="/pilot-matching">
+              <button class="btn bg-green-600 hover:bg-green-500 text-white border-none shadow-none sm:btn-sm md:btn-lg lg:btn-xl sm:text-sm">
+                Find a Pilot
+              </button>
+            </router-link>
           </div>
         </div>
 
@@ -63,7 +78,7 @@
               Loading categories...
           </div>
           <!-- Category Cards -->
-          <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 justify-items-center">
+          <div v-else class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 justify-items-center">
             <router-link 
               v-for="category in filteredCategories" 
               :key="category.id"

@@ -253,7 +253,7 @@ export const useServiceStore = defineStore('service', () => {
             }
           });
       
-          console.log('Bookings API Response:', response.data); // Debug log
+          //console.log('Bookings API Response:', response.data); // Debug log
       
           // Handle different response structures
           myBookings.value = response.data?.data || 
@@ -269,6 +269,27 @@ export const useServiceStore = defineStore('service', () => {
           bookingsLoading.value = false;
         }
       };
+
+      const markBookingAsCompleted = async (bookingId) => {
+        try {
+            const token = localStorage.getItem('authToken');
+            if (!token) throw new Error('No authentication token found');
+            
+            const response = await axios.put(
+                `http://127.0.0.1:8000/api/bookings/${bookingId}/status`,
+                { status: 'completed' },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`
+                  }
+                }
+            );
+            console.log("MARK BOOKING AS COMPLETED: ", bookingId);
+        } catch (error) {
+            console.error('Error marking booking as completed:', error);
+            throw error;
+        }
+      }
 
 
     return {
@@ -292,7 +313,8 @@ export const useServiceStore = defineStore('service', () => {
         updateService,
         deleteService,
         fetchServicesByPilot,
-        submitBooking
+        submitBooking,
+        markBookingAsCompleted
         
     };
 });
