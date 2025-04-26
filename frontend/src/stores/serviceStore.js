@@ -352,7 +352,6 @@ export const useServiceStore = defineStore('service', () => {
         }
       };
 
-    
     const fetchBookingsByClient = async (clientId) => {
         bookingsLoading.value = true; 
         bookingsError.value = null; 
@@ -383,6 +382,28 @@ export const useServiceStore = defineStore('service', () => {
         }
     };
 
+      const markBookingAsCompleted = async (bookingId) => {
+        try {
+            const token = localStorage.getItem('authToken');
+            if (!token) throw new Error('No authentication token found');
+            
+            const response = await axios.put(
+                `http://127.0.0.1:8000/api/bookings/${bookingId}/status`,
+                { status: 'completed' },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`
+                  }
+                }
+            );
+            console.log("MARK BOOKING AS COMPLETED: ", bookingId);
+        } catch (error) {
+            console.error('Error marking booking as completed:', error);
+            throw error;
+        }
+      }
+
+
 
     return {
         services,
@@ -403,10 +424,10 @@ export const useServiceStore = defineStore('service', () => {
         fetchUserServices, 
         fetchServiceById, 
         clearServices,
-        updateService, 
-        deleteService, 
-        fetchServicesByPilot, 
-        submitBooking 
-
+        updateService,
+        deleteService,
+        fetchServicesByPilot,
+        submitBooking,
+        markBookingAsCompleted
     };
 });

@@ -9,23 +9,7 @@
         <div class="overflow-x-auto border border-gray-700 shadow-md rounded-lg p-5 mt-7">
           <!--search bar-->
           <div class="flex flex-wrap items-center gap-3">
-            <label class="input flex items-center bg-[#1e293b] text-white border border-gray-700 shadow-none focus-within:ring-2 focus-within:ring-green-400 focus-within:border-green-600 rounded">
-              <svg class="h-[1.2em] opacity-70 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.3-4.3"></path>
-                </g>
-              </svg>
-              <input 
-                type="search" 
-                v-model="searchQuery"
-                @keyup.enter="handleSearch"
-                required 
-                placeholder="Search transactions..."
-                class="placeholder-gray-300 bg-transparent text-white focus:outline-none flex-1"/>
-            </label> 
-            
-            <div class="ml-auto">
+            <div class="">
               <button 
                 class="btn bg-[#1e293b] text-white border border-gray-700 shadow-none flex items-center gap-2" 
                 :disabled="isLoading" 
@@ -57,7 +41,7 @@
             <tbody>
               <tr v-for="payment in payments" :key="payment.id" class="border-t text-white">
                 <td class="py-2 px-4">{{ payment.transaction_id }}</td>
-                <td class="py-2 px-4">{{ (payment.amount / 100).toFixed(2) }} PHP</td>
+                <td class="py-2 px-4">PHP {{ payment.amount }}</td>
                 <td class="py-2 px-4">{{ payment.status }}</td>
                 <td class="py-2 px-4">{{ payment.method }}</td>
                 <td class="py-2 px-4">{{ new Date(payment.created_at).toLocaleString() }}</td>

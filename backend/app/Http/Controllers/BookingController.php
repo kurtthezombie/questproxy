@@ -64,14 +64,10 @@ class BookingController extends Controller
         return $this->successResponse('Booking deleted.', 204);
     }
 
-    public function updateStatus(Request $request, $booking_id)
+    public function markAsCompleted($booking_id)
     {
-        $request->validate([
-            'status' => 'required|string',
-        ]);
-
         try {
-            $updated = $this->bookingService->updateStatus($request->status,$booking_id);
+            $updated = $this->bookingService->markAsCompleted($booking_id);
             return $this->successResponse('Booking status updated successfully', 200);
         } catch (Exception $e) {
             return $this->failedResponse('Error: ' . $e->getMessage(), 500);
