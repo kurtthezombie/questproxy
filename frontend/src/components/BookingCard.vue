@@ -31,7 +31,7 @@
                     <label class="block text-sm font-medium mb-1 dark:text-gray-300">Additional Notes</label>
                     <textarea v-model="form.additional_notes"
                         class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        placeholder="Special instructions (optional)" rows="3"></textarea>
+                        placeholder="Special instructions" rows="3"></textarea>
                 </div>
             </div>
   

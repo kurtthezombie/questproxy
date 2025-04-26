@@ -31,21 +31,19 @@
         </div>
 
         <!-- Search Section -->
-        <div class="relative w-full max-w-7xl">
+        <div class="relative w-full max-w-7xl mb-10">
           <div class="flex items-center mt-8 space-x-4 px-4 w-full">
             <div class="relative w-full max-w-7xl">
-              <div
-                class="absolute left-2 top-1/2 -translate-y-1/2 bg-blue-900 bg-opacity-50 rounded-full p-2 focus-within:border-2 focus-within:border-green-400">
-                <svg class="h-[1.5em] opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
-                    stroke="currentColor">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.3-4.3"></path>
-                  </g>
-                </svg>
-              </div>
+              <div class="absolute left-2 top-1/2 -translate-y-1/2 p-2">
+              <svg class="h-[1.5em] opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </g>
+              </svg>
+            </div>
               <input v-model="searchQuery" type="text" placeholder="Search services.."
-                class="bg-blue-800 bg-opacity-5 text-gray-300 border border-gray-700 rounded-full pl-16 pr-4 py-4 h-15 shadow-md w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300" />
+                class="bg-[#1e293b] text-gray-300 border border-gray-700 rounded-full pl-16 pr-4 py-4 h-15 shadow-md w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300" />
             </div>
           </div>
         </div>
@@ -68,13 +66,17 @@
               </span>
             </button>
 
-            <button class="flex items-center w-full md:w-auto rounded transition-colors duration-200 px-4 py-3" :class="activeTab === 'bookings'
-              ? 'text-green-400 bg-[#1e293b]'
-              : 'text-gray-500 hover:text-white hover:bg-gray-600'" @click="showBookings">
-              <svg class="w-5 h-5 mr-2" :class="activeTab === 'history' ? 'text-green-400' : 'text-gray-500'"
-                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <button class="flex items-center w-full md:w-auto rounded transition-colors duration-200 px-4 py-3" 
+              :class="activeTab === 'bookings' ? 'text-green-400 bg-[#1e293b]' : 'text-gray-500 hover:text-white hover:bg-gray-600'" 
+              @click="showBookings">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18" class="mr-2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"></rect>
+                <line x1="16" y1="2" x2="16" y2="6" stroke-linecap="round" stroke-linejoin="round"></line>
+                <line x1="8" y1="2" x2="8" y2="6" stroke-linecap="round" stroke-linejoin="round"></line>
+                <line x1="3" y1="10" x2="21" y2="10" stroke-linecap="round" stroke-linejoin="round"></line>
               </svg>
+
               My Bookings
               <span class="bg-emerald-500 text-white rounded-full px-2 ml-2">
                 {{ serviceStore.myBookings.filter(booking => booking.status === 'pending').length || 0 }}
@@ -95,7 +97,6 @@
             </button>
           </div>
         </div>
-
 
         <!-- Tab Content -->
         <div class="px-4 py-6">
@@ -124,55 +125,47 @@
             </div>
 
             <div v-else>
-              <!-- Filter Buttons -->
-              <div class="flex gap-2 mb-4">
-                <button @click="bookingStatusFilter = 'pending'"
-                  :class="bookingStatusFilter === 'pending' ? 'bg-green-500 text-white' : 'bg-gray-700 text-gray-300'"
-                  class="px-3 py-1 rounded">
-                  Pending
-                </button>
-                <button @click="bookingStatusFilter = 'completed'"
-                  :class="bookingStatusFilter === 'completed' ? 'bg-green-500 text-white' : 'bg-gray-700 text-gray-300'"
-                  class="px-3 py-1 rounded">
-                  Completed
-                </button>
-              </div>
               <div class=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div v-for="booking in filteredBookings" :key="booking.id"
                   class="bg-blue-900 bg-opacity-20 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all hover:cursor-pointer hover:scale-105 duration-200 transition-transform"
                   @click="openBookingModal(booking)"
                   >
-                  <div class="text-sm bg-gray-700 p-1 rounded-xl text-white w-fit">
-                    <p>bk-{{ booking.id }}</p>
-                  </div>
                   <div class="flex justify-between items-start">
                     <h3 class="text-xl font-bold text-white mt-1">
                       {{ booking.service?.game || 'Unknown Service' }}
                     </h3>
                     <span :class="{
                     'bg-emerald-500 font-bold': booking.status === 'completed',
-                    'bg-orange-500 font-bold': booking.status === 'pending',
+                    'bg-yellow-500 font-bold': booking.status === 'pending',
                     'bg-red-500 font-bold': booking.status === 'cancelled'
                   }" class="text-xs px-2 py-1 rounded-full text-white capitalize mt-2 mr-1">
                       {{ booking.status }}
                     </span>
                   </div>
 
-                  <p class="text-gray-300 mt-1 mb-5">
+                  <p class="text-gray-300 mt-1 mb-8">
                     {{ booking.service?.description || 'No description available' }}
                   </p>
 
-                  <div class="mt-3 text-gray-300">
-                    <div class="flex items-center mb-5">
-                      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                      Client: {{ booking.client?.username || 'Unknown' }}
-                    </div>
+                  <div class="text-sm bg-gray-700 p-1 text-white w-fit mb-8">
+                    <p>Booking ID : {{ booking.id }}</p>
+                  </div>
 
-                    <div class="flex justify-between items-center mt-2">
-                      <span class="text-gray-400">
+                  <div class="mt-3 text-gray-300">
+                    <div class="flex items-center mt-2 w-full">
+                      <!-- Avatar -->
+                      <div class="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-500 font-semibold text-white mr-2 text-lg uppercase">
+                        {{ booking.client?.username?.charAt(0) || '?' }}
+                      </div>
+
+                      <!-- Client label + Username -->
+                      <div class="flex flex-col">
+                        <span class="text-xs text-gray-400">Client</span>
+                        <span>{{ booking.client?.username || 'Unknown' }}</span>
+                      </div>
+
+                      <!-- Created At (right side) -->
+                      <span class="text-gray-400 ml-auto">
                         {{ timeAgo(booking.created_at) }}
                       </span>
                     </div>
@@ -188,33 +181,54 @@
               No service history found.
             </div>
             <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div v-for="history in serviceHistory" :key="history.id"
-                class="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all">
-                <h2 class="text-xl font-semibold text-white mb-2">
-                  {{ history.service?.name || 'Unknown Service' }}
-                </h2>
-                <p class="text-sm text-gray-400 mb-1">
-                  <strong>Client:</strong> {{ history.client?.username || 'Unknown' }}
+              <div
+                v-for="history in serviceHistory"
+                :key="history.id"
+                class="bg-blue-900 bg-opacity-20 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all"
+              >
+                <div class="flex justify-between items-start">
+                  <!-- Service Info -->
+                  <h3 class="text-xl font-bold text-white mt-1">
+                    {{ history.service?.game || 'Unknown Service' }}
+                  </h3>
+                  <div class="mt-2">
+                    <span class="bg-blue-500 font-bold text-white px-2 py-1 rounded-full text-xs capitalize">
+                      Completed
+                    </span>
+                  </div>
+                </div>
+                <p class="text-gray-400 mb-8">
+                  {{ history.service?.description || 'No description available' }}
                 </p>
-                <p class="text-sm text-gray-400 mb-1">
-                  <strong>Status:</strong>
-                  <span :class="{
-                    'text-green-400': history.status === 'completed',
-                    'text-yellow-400': history.status === 'pending',
-                    'text-red-400': history.status === 'cancelled'
-                  }" class="capitalize">">
-                    {{ history.status }}
-                  </span>
-                </p>
-                <p class="text-sm text-gray-400">
-                  <strong>Completed At:</strong> {{ formatDate(history.updated_at) }}
-                </p>
+                <div class="text-sm bg-gray-700 p-1 text-white w-fit mb-8">
+                  <p>Booking ID : {{ history.id }}</p>
+                </div>
+                <!-- Avatar -->
+                <div class="mt-3 text-gray-300">
+                  <div class="flex items-center mt-2 w-full">
+                    <!-- Avatar -->
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 font-semibold text-white mr-2 text-lg uppercase">
+                      {{ history.client?.username?.charAt(0) || '?' }}
+                    </div>
+
+                    <!-- Client label + Username -->
+                    <div class="flex flex-col">
+                      <span class="text-xs text-gray-400">Client</span>
+                      <span>{{ history.client?.username || 'Unknown' }}</span>
+                    </div>
+
+                    <!-- Date Complete -->
+                    <!-- <span class="text-gray-400 ml-auto">
+                      {{ timeAgo(history.created_at) }}
+                    </span> -->
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </template>
-    </div>
+      </div>
+    </template>
+  </div>
    
     <!-- Pass the selected booking and modal state to the dialog -->
     <ViewBookingDialog 
@@ -345,6 +359,7 @@ onMounted(async () => {
 const timeAgo = (dateString) => {
   return dayjs(dateString).fromNow()
 }
+
 
 
 </script>

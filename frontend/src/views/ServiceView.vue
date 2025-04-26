@@ -62,10 +62,15 @@
               Trustworthy
             </span>
             <span class="bg-purple-950 border border-purple-700 text-purple-500 text-xs font-semibold px-3 py-1 rounded-full hover:bg-gray-950 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 2C6 4 8 4 12 2C16 4 18 4 20 2C20 6 20 8 20 12C20 15 16 18 12 20C8 18 4 15 4 12C4 8 4 6 4 2Z" />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="16" height="16">
+                <!-- Outer circle for the badge -->
+                <circle cx="50" cy="50" r="48" fill="none" stroke="CurrentColor" stroke-width="4" />
+                
+                <!-- Star icon for skill -->
+                <polygon points="50,10 55,35 80,35 58,50 65,80 50,60 35,80 42,50 20,35 45,35"
+                        fill="CurrentColor" />
               </svg>
-              Verified Pilots
+              Skilled Pilots
             </span>
           </div>
         </div>

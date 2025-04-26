@@ -90,13 +90,18 @@ watch(() => props.isModalOpen, (isOpen) => {
 watch(() => props.selectedBooking, (newVal) => {
   console.log('Selected booking changed:', newVal);
 });
+
+const capitalizeFirstLetter = (status) => {
+  if (!status) return status;
+  return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+};
 </script>
 
 <template>
   <!-- Modal for booking details -->
   <dialog id="bookingModal" class="modal" :open="isModalOpen">
-    <div class="modal-box bg-gray-800 rounded-xl shadow-xl p-6 text-white">
-      <h3 class="text-lg font-bold">Booking Details</h3>
+    <div class="modal-box bg-gray-900 border border-gray-700 rounded-xl shadow-xl p-6 text-white">
+      <h3 class="text-2xl font-bold">Booking Details</h3>
 
       <!-- Booking Info -->
       <div v-if="selectedBooking" class="mt-4 space-y-4">
@@ -111,12 +116,13 @@ watch(() => props.selectedBooking, (newVal) => {
         <div>
           <p class="text-sm text-gray-400">Status</p>
           <span :class="{
-            'bg-green-400': selectedBooking.status === 'completed',
-            'bg-orange-400': selectedBooking.status === 'pending',
-            'bg-red-400': selectedBooking.status === 'cancelled'
-          }" class="inline-block px-2 py-1 text-xs text-gray-700 font-semibold rounded-full">
-            {{ selectedBooking.status }}
+              'bg-blue-400 text-white': selectedBooking.status === 'completed',
+              'bg-yellow-500 text-white': selectedBooking.status === 'pending',
+              'bg-red-400 text-white': selectedBooking.status === 'cancelled'
+            }" class="inline-block px-2 py-1 text-xs text-gray-700 font-semibold rounded-full">
+            {{ capitalizeFirstLetter(selectedBooking.status) }}
           </span>
+
         </div>
         <div>
           <p class="text-sm text-gray-400">Created At</p>
@@ -124,20 +130,20 @@ watch(() => props.selectedBooking, (newVal) => {
         </div>
       </div>
 
-      <div v-if="selectedBooking?.status === 'pending'" class="bg-gray-700 rounded-lg p-4 flex flex-col space-y-2">
+      <div v-if="selectedBooking?.status === 'pending'" class="mt-5 border border-gray-700 rounded-lg p-4 flex flex-col space-y-2">
         <!-- Button to toggle details -->
         <label for="username">Username</label>
-        <input :type="showDetails ? 'text' : 'password'" class="bg-gray-600 p-2 rounded-lg" :value=credentials.username
+        <input :type="showDetails ? 'text' : 'password'" class="bg-[#1e293b] p-2 rounded-lg" :value=credentials.username
           readonly>
         <label for="password">Password</label>
-        <input :type="showDetails ? 'text' : 'password'" class="bg-gray-600 p-2 rounded-lg" :value=credentials.password
+        <input :type="showDetails ? 'text' : 'password'" class="bg-[#1e293b] p-2 rounded-lg" :value=credentials.password
           readonly>
         <button @mousedown="revealDetails" 
           @mouseup="hideDetails" 
           @mouseleave="hideDetails"
           @touchstart.prevent="revealDetails" 
           @touchend="hideDetails"
-          class="bg-gray-900 hover:bg-gray-500 text-white p-2 rounded-lg flex justify-center w-full">
+          class="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-lg flex justify-center w-full">
           <svg v-if="!showDetails" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="size-6">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -165,10 +171,10 @@ watch(() => props.selectedBooking, (newVal) => {
       <!-- Footer (Close Button) -->
       <div class="modal-action mt-6">
         <button v-if="selectedBooking?.status === 'pending'" @click="showConfirmationDialog"
-          class="bg-green-800 hover:bg-green-700 btn text-white border-none shadow-none">
+          class="bg-blue-500 hover:bg-green-700 btn text-white border-none shadow-none">
           Mark as Completed
         </button>
-        <button class="btn text-white btn-neutral hover:bg-blue-700" @click="closeModal">Close</button>
+        <button class="btn text-white btn-neutral hover:bg-red-700" @click="closeModal">Close</button>
       </div>
     </div>
   </dialog>
