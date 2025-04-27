@@ -26,6 +26,7 @@ import PaymentSuccess from '@/components/payment/PaymentSuccess.vue'
 import PaymentCancel from '@/components/payment/PaymentCancel.vue'
 import BookingCard from '@/components/BookingCard.vue'
 import ReviewView from '@/views/ReviewView.vue'
+import CreateContractView from '@/views/CreateContractView.vue'
 import BeforePayment from '@/views/BeforePayment.vue'
 import PilotMatchingView from '@/views/PilotMatchingView.vue'
 import VerifyPaymentView from '@/views/VerifyPaymentView.vue'
@@ -198,11 +199,19 @@ const router = createRouter({
       path: '/thank-you',
       name: 'thankyou',
       component: ThankYouView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/mybookings',
       name: 'mybookings',
       component: MyBookingsView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/contract/:serviceId',
+      name: 'contract',
+      component: CreateContractView,
+      meta: { requiresAuth: true }
     },
   ]
 });
@@ -219,7 +228,6 @@ router.beforeEach((to, from, next) => {
     } else {
       if (to.name === 'dashboard') {
         if (userRole === 'gamer' || userRole === 'pilot') {
-          next({ name: 'home' });
         } else {
           next();
         }
@@ -231,7 +239,15 @@ router.beforeEach((to, from, next) => {
     if (isAuthenticated && guestOnlyRoutes.includes(to.name)) {
       next({ name: 'homepage' }); // or wherever you want to redirect logged-in users
     } else {
-      next();
+      if (to.name === 'dashboard') {
+        if (userRole === 'gamer' || userRole === 'pilot') {
+          next({ name: 'home' });
+        } else {
+          next();
+        }
+      } else {
+        next();
+      }
     }
   }
 });

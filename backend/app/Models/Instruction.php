@@ -13,9 +13,13 @@ class Instruction extends Model
 
     protected $fillable = [
         'booking_id',
+        'start_date',
+        'communication_link',
         'additional_notes',
-        'credentials_username',
-        'credentials_password',
-        
     ];
+
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class);
+    }
 }

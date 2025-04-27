@@ -1,6 +1,7 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import loginservice from '@/services/login-service';
 import { useLoader } from '@/services/loader-service';
 import '@/assets/css/style.css';

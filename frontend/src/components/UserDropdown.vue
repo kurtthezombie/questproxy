@@ -38,6 +38,9 @@
       <!-- Menu Items -->
       <ul class="py-2 text-sm" aria-labelledby="avatarButton">
         <li>
+          <router-link to="/leaderboards" class="block px-4 py-2 text-white hover:bg-gray-600 dark:hover:bg-gray-700">Leaderboards</router-link>
+        </li>
+        <li>
           <router-link to="/account-settings" class="block px-4 py-2 text-white hover:bg-gray-600 dark:hover:bg-gray-700">
             Settings
           </router-link>

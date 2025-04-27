@@ -4,58 +4,82 @@
   <div class="min-h-screen bg-gray-900 text-white p-5">
     <!-- Main Dashboard -->
     <div class="container mx-auto py-5 max-w-7xl">
-      <!-- Header Section -->
-      <div>
-        <div class="relative bg-blue-800 bg-opacity-5 p-16 rounded-xl shadow-md flex flex-row justify-between items-center mb-8 overflow-hidden">
-          <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0">
-            <div class="dust-container">
-              <!-- Generate 100 dust particles -->
-              <div 
-                v-for="index in 100" 
-                :key="index" 
-                class="dust"
-                :style="generateParticleStyle(index)"
-              ></div>
-            </div>
+
+      <!-- Welcome Section -->
+      <div class="relative w-full py-6 rounded-xl shadow-md flex flex-col gap-8 overflow-hidden">
+        
+        <!-- Dust Background -->
+        <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0 pointer-events-none">
+          <div class="dust-container">
+            <div 
+              v-for="index in 100" 
+              :key="index" 
+              class="dust"
+              :style="generateParticleStyle(index)"
+            ></div>
           </div>
+        </div>
+
+        <!-- Content Layer (Welcome section) -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 z-10">
           <!-- Text Content -->
           <div>
-            <h1 class="text-5xl mb-2 font-bold">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl mb-2 font-bold">
               Welcome, <span class="text-green-400">{{ username }}</span>
             </h1>
-            <h3 class="mb-5 text-lg text-gray-300">
+            <h3 class="mb-2 text-base sm:text-lg text-gray-300">
               Ready to enhance your gaming experience today?
             </h3>
           </div>
 
-          <!-- SVG Icon -->
-          <div class="mr-40">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="90" height="90" fill="none" stroke="#047857" stroke-width="2">
-              <path d="M6 12L9 10L12 3L15 10L18 12L15 14L12 21L9 14L6 12Z" transform="scale(0.8) translate(1.5, 3)" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M6 12L9 10L12 3L15 10L18 12L15 14L12 21L9 14L6 12Z" transform="translate(16, 14) scale(0.4)" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
+          
         </div>
 
-        <!-- Search Bar -->
-        <div class="relative w-full max-w-7xl">
-          <div class="absolute left-2 top-1/2 -translate-y-1/2 bg-blue-900 bg-opacity-50 rounded-full p-2 focus-within:border-2 focus-within:border-green-400">
-            <svg class="h-[1.5em] opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <!-- Search Bar and SVG Section -->
+        <div class="relative w-full max-w-7xl z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          
+          <!-- Search Bar -->
+          <div class="relative w-full sm:w-[500px]">
+            <div class="absolute left-2 top-1/2 -translate-y-1/2 p-2">
+              <svg class="h-[1.5em] opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
                   <circle cx="11" cy="11" r="8"></circle>
                   <path d="m21 21-4.3-4.3"></path>
                 </g>
               </svg>
+            </div>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search game.."
+              class="bg-[#1e293b] text-gray-300 border border-gray-700 rounded-full pl-16 pr-4 py-4 h-13 shadow-md 
+                    w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300"
+            />
           </div>
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search game"
-            class="bg-blue-800 bg-opacity-5 text-gray-300 border border-gray-700 rounded-full pl-16 pr-4 py-4 h-15 shadow-md w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300"
-          />
+
+          <!-- SVG (desktop only) -->
+          <div class="hidden sm:flex items-center mr-40">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="90" height="90" fill="none" stroke="#047857" stroke-width="2">
+              <path d="M6 12L9 10L12 3L15 10L18 12L15 14L12 21L9 14L6 12Z" transform="scale(0.8) translate(1.5, 3)" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6 12L9 10L12 3L15 10L18 12L15 14L12 21L9 14L6 12Z" transform="translate(16, 14) scale(0.4)" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+        </div>
+
+
+        <!-- Button shown under text on small screens -->
+        <div class="block mb-10">
+          <router-link to="/pilot-matching">
+            <button class="btn bg-green-500 hover:bg-green-600 text-white border-none shadow-none rounded-full w-fit 
+                          text-sm sm:text-lg px-4 py-2 sm:px-8 sm:py-8 w-full ">
+              Find a Pilot
+            </button>
+          </router-link>
         </div>
       </div>
-      <!-- Categories Section -->
+
+      <!-- Trending Categories Section -->
       <div class="py-10">
         <section class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-bold mb-10">Trending Categories</h2>
@@ -63,7 +87,7 @@
               Loading categories...
           </div>
           <!-- Category Cards -->
-          <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 justify-items-center">
+          <div v-else class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 justify-items-center">
             <router-link 
               v-for="category in filteredCategories" 
               :key="category.id"

@@ -1,29 +1,25 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
     <NavBar/>
-    
-    <!-- Loading State -->
-    <div v-if="serviceStore.loading" 
+
+    <div v-if="serviceStore.loading"
          class="flex justify-center items-center mt-10">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
     </div>
 
-    <!-- Error State -->
-    <div v-else-if="serviceStore.error" 
+    <div v-else-if="serviceStore.error"
          class="text-red-500 text-center mt-10">
       {{ serviceStore.error }}
     </div>
 
-    <!-- Content -->
     <template v-else>
       <div class="container mx-auto py-5 max-w-7xl mt-5">
         <div class="relative bg-blue-800 bg-opacity-5 p-16 rounded-lg px-20 overflow-hidden">
           <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0">
             <div class="dust-container">
-              <!-- Generate 100 dust particles -->
-              <div 
-                v-for="index in 100" 
-                :key="index" 
+              <div
+                v-for="index in 100"
+                :key="index"
                 class="dust"
                 :style="generateParticleStyle(index)"
               ></div>
@@ -62,26 +58,51 @@
               Trustworthy
             </span>
             <span class="bg-purple-950 border border-purple-700 text-purple-500 text-xs font-semibold px-3 py-1 rounded-full hover:bg-gray-950 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 2C6 4 8 4 12 2C16 4 18 4 20 2C20 6 20 8 20 12C20 15 16 18 12 20C8 18 4 15 4 12C4 8 4 6 4 2Z" />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="16" height="16">
+                <circle cx="50" cy="50" r="48" fill="none" stroke="CurrentColor" stroke-width="4" />
+
+                <polygon points="50,10 55,35 80,35 58,50 65,80 50,60 35,80 42,50 20,35 45,35"
+                        fill="CurrentColor" />
               </svg>
-              Verified Pilots
+              Skilled Pilots
             </span>
           </div>
         </div>
 
-        <!-- No Services Message -->
-        <div v-if="!filteredServices.length" class="text-center mt-10 text-gray-400">
-          No services available for this category.
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6 my-8 border border-gray-700 flex items-center gap-4">
+            <h3 class="text-xl font-semibold text-white flex-shrink-0">Search Services</h3>
+            <input
+                type="text"
+                v-model="searchQuery"
+                @keydown.enter="applySearch"
+                placeholder="Search by game, description, pilot, days, or price..."
+                class="input input-bordered w-full bg-[#1e293b] text-white shadow-none border border-gray-700"
+            />
+             <button
+                @click="clearSearch"
+                class="btn btn-outline btn-success flex-shrink-0" 
+                v-if="searchQuery || appliedSearchQuery" 
+             >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                 Clear
+             </button>
         </div>
+
+
+        <div v-if="!filteredServices.length && !serviceStore.loading" class="text-center mt-10 text-gray-400">
+          No services found matching your criteria.
+       </div>
 
         <div class="px-4 py-5">
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-            <ServiceDisplay
+            <ServiceDisplayCard
               v-for="service in filteredServices"
               :key="service.id"
               :service="service"
               :categories="serviceStore.categories"
+              :isServiceHistory="false"
               class="w-full"
             />
           </div>
@@ -98,19 +119,27 @@ import { useRouter } from 'vue-router';
 import { useServiceStore } from '@/stores/serviceStore';
 import { useUserStore } from '@/stores/userStore';
 import NavBar from '@/components/NavBar.vue';
-import ServiceDisplay from '@/components/ServiceDisplay.vue';
-import '@/assets/css/style.css';
+import ServiceDisplayCard from '@/components/ServiceDisplay.vue';
+import '@/assets/css/style.css'; // Keep if needed
 
 const router = useRouter();
 const serviceStore = useServiceStore();
 const userStore = useUserStore();
 
+// --- User State (Keep if needed for NavBar or other logic) ---
 const username = computed(() => userStore.userData?.username || '');
 const email = computed(() => userStore.userData?.email || '');
 const role = computed(() => userStore.userData?.role || '');
 
+// --- Route Param for Category (Existing) ---
 const categoryGame = ref(router.currentRoute.value.params.title || 'all');
 
+// --- Search Query Refs ---
+const searchQuery = ref(''); // Binds to the input field value
+const appliedSearchQuery = ref(''); // Used for actual filtering
+
+
+// --- Computed Property for Display Title (Existing) ---
 const getDisplayTitle = computed(() => {
   if (!categoryGame.value || categoryGame.value.toLowerCase() === 'all') {
     return 'All';
@@ -122,32 +151,75 @@ const getDisplayTitle = computed(() => {
 });
 
 
+// --- Modified filteredServices computed property (uses appliedSearchQuery) ---
 const filteredServices = computed(() => {
-  if (!categoryGame.value || categoryGame.value.toLowerCase() === 'all') {
-    return serviceStore.services;
+  // Start with all services from the store
+  let services = serviceStore.services || [];
+
+  // 1. Filter by category (existing logic)
+  if (categoryGame.value && categoryGame.value.toLowerCase() !== 'all') {
+    services = services.filter(service =>
+      service && service.game && service.game.toLowerCase() === categoryGame.value.toLowerCase()
+    );
   }
-  return serviceStore.services.filter(service => 
-    service && service.game && service.game.toLowerCase() === categoryGame.value.toLowerCase()
-  );
+
+  // 2. Filter by applied search query (text and number)
+  const query = appliedSearchQuery.value.toLowerCase().trim(); // Use appliedSearchQuery
+  if (query) {
+    // Attempt to parse the query as a number
+    const queryNumber = Number(query);
+    const isNumberSearch = !isNaN(queryNumber);
+
+    services = services.filter(service => {
+      // Get the display title for the service's game
+      const gameTitle = service.game ? (serviceStore.categories.find(cat => cat.game === service.game)?.title || service.game) : '';
+
+      // Check for text match in relevant fields
+      const textMatch =
+        gameTitle.toLowerCase().includes(query) ||
+        (service.description && service.description.toLowerCase().includes(query)) ||
+        (service.pilot_username && service.pilot_username.toLowerCase().includes(query));
+
+      // Check for number match if the query is a number
+      let numberMatch = false;
+      if (isNumberSearch) {
+        // Check if service duration or price match the number exactly
+        numberMatch =
+          (service.duration === queryNumber) ||
+          (service.price === queryNumber);
+      }
+
+      // A service passes the filter if there's a text match OR a number match
+      return textMatch || numberMatch;
+    });
+  }
+
+  return services;
 });
 
 
+// --- Authentication Check (Existing) ---
 const checkAuth = () => {
   if (!localStorage.getItem('authToken')) {
     router.push({ name: 'login' });
   }
 };
 
+// --- Service Fetching (Existing) ---
+// Assuming fetchUserServices fetches services for the current user's context
 const fetchServices = async () => {
   try {
     await serviceStore.fetchUserServices();
-    console.log('Fetched services:', serviceStore.services); 
+    console.log('Fetched services:', serviceStore.services);
+    // No need to initialize appliedSearchQuery here unless you want
+    // the initial page load to show results filtered by a default query.
   } catch (error) {
     console.error('Error fetching services:', error);
+    serviceStore.error = 'Failed to load services.'; // Set error state in store
   }
 };
 
-
+// --- Logout Function (Existing) ---
 const callLogout = () => {
   userStore.clearUser();
   serviceStore.clearServices();
@@ -156,20 +228,32 @@ const callLogout = () => {
   router.push({ name: 'login' });
 };
 
+// --- Method to apply search on Enter key ---
+const applySearch = () => {
+    appliedSearchQuery.value = searchQuery.value;
+};
+
+// --- Method to clear the search ---
+const clearSearch = () => {
+    searchQuery.value = ''; // Clear the input field
+    appliedSearchQuery.value = ''; // Clear the applied filter, triggering re-evaluation
+};
+
+
+// --- Lifecycle Hooks (Existing) ---
 onMounted(async () => {
   checkAuth();
-  await serviceStore.fetchCategories();
-  await fetchServices();
+  await serviceStore.fetchCategories(); // Fetch categories first
+  await fetchServices(); // Then fetch services
 });
 
-// Function to generate random styles for dust particles
+// --- Dust Particle Function (Existing) ---
 const generateParticleStyle = (index) => {
-  const left = Math.random() * 100; 
-  const top = Math.random() * 100; 
-  const size = Math.random() * 3 + 2; 
-  const duration = Math.random() * 10 + 5; 
+  const left = Math.random() * 100;
+  const top = Math.random() * 100;
+  const size = Math.random() * 3 + 2;
+  const duration = Math.random() * 10 + 5;
   const delay = Math.random() * 5;
-  
   return {
     left: `${left}%`,
     top: `${top}%`,
@@ -180,3 +264,42 @@ const generateParticleStyle = (index) => {
   };
 };
 </script>
+
+<style scoped>
+/* Keep your existing scoped styles */
+.dust-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none; /* Allow clicks to pass through */
+}
+
+.dust {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: float ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(10px, 5px) rotate(5deg); }
+    50% { transform: translate(0, 10px) rotate(0deg); }
+    75% { transform: translate(5px, 5px) rotate(-5deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.whitespace-pre-wrap { white-space: pre-wrap; }
+.bg-gray-750 { background-color: rgba(55, 65, 81, 0.6); }
+.bg-gray-850 { background-color: rgb(31 41 55 / 0.7); }
+.loading { margin: auto; }
+.btn { transition: all 0.2s ease-in-out; }
+.btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+
+/* Add or keep any specific styles for ServiceDisplayCard if needed */
+/* .service-modal-list .service-display-card:last-child { ... } */
+</style>

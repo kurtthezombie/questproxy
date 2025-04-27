@@ -39,5 +39,4 @@ class Service extends Model
             //'pilot_name' => optional($this->pilot->user)->name ?? null,
         ];
     }
-    
 }
