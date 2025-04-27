@@ -43,11 +43,12 @@ import axios from 'axios'
 import { useUserStore } from '@/stores/userStore'
 
 const userStore = useUserStore()
+
 // Access user data from the store's state
 const userId = userStore.userData?.id
 const role = userStore.userData?.role
-const pilotId = userStore.userData?.pilot?.id // Access pilot ID from the eager-loaded relationship
-const gamerId = userStore.userData?.gamer?.id // Access gamer ID from the eager-loaded relationship
+const pilotId = userStore.userData?.pilot?.id 
+const gamerId = userStore.userData?.gamer?.id 
 
 
 const targetId = ref(null)
@@ -67,7 +68,7 @@ const headers = {
 }
 
 const fetchUserInfo = async () => {
-  // Ensure userId and role are available from the store
+
   if (!userId || !role) {
       console.error("User ID or role not available from store.");
       error.value = 'User data not loaded.';
@@ -75,10 +76,10 @@ const fetchUserInfo = async () => {
   }
 
   try {
-    // Use IDs from the store's eager-loaded relationships
+  
     if (role === 'gamer' && gamerId) {
       targetId.value = gamerId;
-    } else if ((role === 'game pilot' || role === 'pilot') && pilotId) { // Check for both pilot roles
+    } else if ((role === 'game pilot' || role === 'pilot') && pilotId) { 
       targetId.value = pilotId;
     } else {
       error.value = 'User role ID not found.';
@@ -88,21 +89,18 @@ const fetchUserInfo = async () => {
 
     const url = role === 'gamer'
       ? `http://127.0.0.1:8000/api/gamers/edit/${targetId.value}`
-      : `http://127.0.0.1:8000/api/pilots/${targetId.value}`; // Assuming /api/pilots/{id} is for fetching
+      : `http://127.0.0.1:8000/api/pilots/${targetId.value}`; 
 
 
     const response = await axios.get(url, { headers });
 
-    // Adjust how data is accessed based on the response structure
-    // Assuming /api/gamers/edit/{id} returns { gamer: {...} }
-    // Assuming /api/pilots/{id} returns { pilot: {...} }
     const data = role === 'gamer' ? response.data.gamer : response.data.pilot;
 
 
     form.value = {
-      skills: data?.skills || '', // Use optional chaining
-      bio: data?.bio || '',       // Use optional chaining
-      gamer_preference: data?.gamer_preference || '', // Use optional chaining
+      skills: data?.skills || '', 
+      bio: data?.bio || '',       
+      gamer_preference: data?.gamer_preference || '', 
     };
   } catch (err) {
     console.error('Error fetching user info:', err);
@@ -122,7 +120,7 @@ const updateInfo = async () => {
 
   const url = role === 'gamer'
     ? `http://127.0.0.1:8000/api/gamers/edit/${targetId.value}`
-    : `http://127.0.0.1:8000/api/pilots/edit/${targetId.value}`; // Assuming PATCH endpoint for pilot update
+    : `http://127.0.0.1:8000/api/pilots/edit/${targetId.value}`; 
 
 
   const payload = role === 'gamer'
@@ -133,10 +131,10 @@ const updateInfo = async () => {
       };
 
   try {
-    // Assuming your backend uses PATCH for updates
+
     await axios.patch(url, payload, { headers });
     message.value = 'Information updated successfully!';
-    // Optionally re-fetch data after successful update to ensure display is current
+    
     fetchUserInfo();
 
   } catch (err) {
@@ -148,15 +146,15 @@ const updateInfo = async () => {
 };
 
 onMounted(() => {
-  // Ensure user data is loaded in the store before fetching user info
+
   if (userStore.userData) {
       fetchUserInfo();
   } else {
-      // Optionally watch for user data to be loaded if it might not be available immediately
+      
       const stopWatch = watch(() => userStore.userData, (newUserData) => {
           if (newUserData) {
               fetchUserInfo();
-              stopWatch(); // Stop watching once data is loaded
+              stopWatch(); 
           }
       });
   }
@@ -170,7 +168,6 @@ onMounted(() => {
   white-space: pre-wrap;
 }
 
-/* Additional styles for better visual organization */
 .bg-gray-750 {
   background-color: rgba(31, 41, 55, 0.5);
 }

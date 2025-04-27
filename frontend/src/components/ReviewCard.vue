@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime'; // Optional: for 'time ago' format
+import relativeTime from 'dayjs/plugin/relativeTime'; 
 
 dayjs.extend(relativeTime);
 
@@ -15,16 +15,10 @@ const props = defineProps({
       rating: 0,
       comment: 'No comment provided.',
       created_at: new Date().toISOString(),
-      // *** Assumes the backend now includes the 'user' object for the reviewer ***
-      user: { // This object comes from the 'with('user')' in the backend query
+      user: { 
         id: null,
         username: 'Anonymous',
-        // avatar_url: null // Optional avatar if you add it later
       },
-      // service: { // You might also want service info later
-      //   id: null,
-      //   title: 'Service Title'
-      // }
     })
   }
 });
@@ -32,11 +26,10 @@ const props = defineProps({
 // Computed property for formatted date
 const formattedDate = computed(() => {
   if (!props.review.created_at) return 'Date unavailable';
-  // return dayjs(props.review.created_at).fromNow(); // 'time ago' format
-  return dayjs(props.review.created_at).format('MMMM D, YYYY'); // 'Month Day, Year' format
+  return dayjs(props.review.created_at).format('MMMM D, YYYY'); 
 });
 
-// Computed property for star icons
+
 const ratingStars = computed(() => {
   const rating = Math.round(props.review.rating || 0);
   const maxStars = 5;
@@ -45,12 +38,12 @@ const ratingStars = computed(() => {
   return filledStars + emptyStars;
 });
 
-// Get reviewer's username from the nested 'user' object
+
 const reviewerUsername = computed(() => {
     return props.review.user?.username || 'Unknown Reviewer';
 });
 
-// Get reviewer's initials from the nested 'user' object
+
 const reviewerInitials = computed(() => {
     return props.review.user?.username?.charAt(0).toUpperCase() || '?';
 });
@@ -91,7 +84,7 @@ const reviewerInitials = computed(() => {
 .bg-gray-750 {
   background-color: rgba(55, 65, 81, 0.6);
 }
-/* Ensure long usernames don't break layout */
+
 .truncate {
     overflow: hidden;
     text-overflow: ellipsis;

@@ -18,10 +18,10 @@ const userStore = useUserStore();
 const serviceStore = useServiceStore();
 
 // --- Refs ---
-const userId = ref(null); // ID of the user whose profile is being viewed
+const userId = ref(null); 
 const profileUsername = ref(null);
 const profileData = ref(null);
-const pilotDetails = ref(null); // Data from the 'pilots' table
+const pilotDetails = ref(null); 
 const gamerDetails = ref(null);
 const portfolios = ref([]);
 const points = ref(0);
@@ -48,7 +48,7 @@ const isPilotProfile = computed(() => {
   return profileRole.value === 'pilot' || profileRole.value === 'game pilot';
 });
 
-// Get the specific pilot ID (from the pilots table relationship) if available
+
 const pilotIdForReviews = computed(() => profileData.value?.pilot?.id);
 
 const initials = computed(() => {
@@ -61,21 +61,18 @@ const memberSince = computed(() => {
 });
 
 // --- Reviews Display Logic ---
-const reviewsLimit = ref(3); // How many reviews to show initially
-const showAllReviewsModal = ref(false); // State to control modal visibility
+const reviewsLimit = ref(3); 
+const showAllReviewsModal = ref(false); 
 
 const displayedReviews = computed(() => {
-  // Slice the pilotReviews array to get only the first 'reviewsLimit' reviews
   return pilotReviews.value.slice(0, reviewsLimit.value);
 });
 
 const hiddenReviews = computed(() => {
-  // Slice the pilotReviews array to get reviews from the limit onwards
   return pilotReviews.value.slice(reviewsLimit.value);
 });
 
 const hasMoreReviews = computed(() => {
-  // Check if there are any reviews beyond the initial limit
   return hiddenReviews.value.length > 0;
 });
 
@@ -89,23 +86,20 @@ const closeReviewsModal = () => {
 };
 
 // --- Services Display Logic ---
-const servicesLimit = ref(3); // How many services to show initially
-const showAllServicesModal = ref(false); // State to control service modal visibility
+const servicesLimit = ref(3); 
+const showAllServicesModal = ref(false);
 
 const displayedServices = computed(() => {
-  // Use the services from the serviceStore
   if (!serviceStore.services) return [];
   return serviceStore.services.slice(0, servicesLimit.value);
 });
 
 const hiddenServices = computed(() => {
    if (!serviceStore.services) return [];
-  // Get services from the limit onwards
   return serviceStore.services.slice(servicesLimit.value);
 });
 
 const hasMoreServices = computed(() => {
-  // Check if there are any services beyond the initial limit
   return hiddenServices.value.length > 0;
 });
 
@@ -123,7 +117,7 @@ const closeServicesModal = () => {
 // --- Helper Fetching Functions ---
 
 const fetchPilotDetails = async (pilotId) => {
-    // Fetches specific details from the 'pilots' table (like bio, skills)
+
     const authToken = localStorage.getItem('authToken');
     if (!pilotId || !authToken) return;
     try {
@@ -133,8 +127,7 @@ const fetchPilotDetails = async (pilotId) => {
         pilotDetails.value = response.data.pilot;
     } catch (err) {
         console.error(`Error fetching pilot details for pilot ID ${pilotId}:`, err);
-        // Don't necessarily block profile load, just warn
-        // toast.warning('Could not load pilot-specific details.');
+
     }
 };
 
@@ -148,7 +141,7 @@ const fetchGamerDetails = async (gamerId) => {
         gamerDetails.value = response.data.gamer;
     } catch (err) {
         console.error(`Error fetching gamer details for gamer ID ${gamerId}:`, err);
-        // toast.warning('Could not load gamer-specific details.');
+
     }
 };
 
@@ -168,7 +161,7 @@ const fetchPortfolios = async (fetchedUserId) => {
          : [];
     } catch (err) {
         console.error(`Error fetching portfolios for user ID ${fetchedUserId}:`, err);
-        // toast.warning('Could not load portfolios.');
+ 
     }
 };
 
@@ -186,7 +179,7 @@ const fetchPoints = async () => {
   } catch (err) {
     console.error(`Error fetching points for ${profileUsername.value}: `, err);
     points.value = 0;
-    // if (err.response?.status !== 404) toast.error("Failed to fetch points");
+   
   }
 };
 
@@ -199,8 +192,7 @@ const fetchCategories = async () => {
     }
 };
 
-// --- Fetch Reviews for Pilot Profile (Uses new assumed endpoint) ---
-
+// --- Fetch Reviews for Pilot Profile  ---
 
 const fetchPilotReviews = async (pilotId) => {
     if (!pilotId) {
@@ -220,12 +212,12 @@ const fetchPilotReviews = async (pilotId) => {
     }
 
     try {
-        // Call the new dedicated backend endpoint
+ 
         const response = await axios.get(`http://127.0.0.1:8000/api/pilots/${pilotId}/reviews`, {
              headers: { Authorization: `Bearer ${authToken}` }
         });
 
-        // Assuming the API returns { reviews: [...] }
+
         pilotReviews.value = response.data?.reviews || [];
 
         if (!Array.isArray(pilotReviews.value)) {
@@ -239,18 +231,18 @@ const fetchPilotReviews = async (pilotId) => {
              console.log(`No reviews found for pilot ${pilotId}.`);
         } else {
              console.log(`Reviews fetched successfully for pilot ${pilotId}:`, pilotReviews.value);
-             reviewsError.value = null; // Clear error if reviews are found
+             reviewsError.value = null; 
         }
 
     } catch (error) {
         console.error(`Error fetching reviews for pilot ${pilotId}: `, error);
         if (error.response?.status === 404) {
-             reviewsError.value = 'No reviews found for this pilot yet.'; // Specific message for 404
+             reviewsError.value = 'No reviews found for this pilot yet.'; 
              console.log(`No reviews found for pilot ${pilotId} (404).`);
              pilotReviews.value = [];
         } else {
             reviewsError.value = 'Failed to load reviews.';
-            toast.error(reviewsError.value); // Show toast for other errors
+            toast.error(reviewsError.value); 
             pilotReviews.value = [];
         }
     } finally {
@@ -269,13 +261,12 @@ const fetchUserProfile = async () => {
   console.log(`Fetching profile for User ID: ${userId.value}`);
   isLoading.value = true;
   error.value = null;
-  // Reset data
+
   profileData.value = null; pilotDetails.value = null; gamerDetails.value = null;
   portfolios.value = []; points.value = 0; serviceStore.services = [];
   pilotReviews.value = []; reviewsError.value = null;
 
   try {
-    // 1. Fetch core user profile data (includes pilot/gamer relations)
     const response = await axios.get(`http://127.0.0.1:8000/api/users/${userId.value}`, {
         headers: { Authorization: `Bearer ${authToken}` }
     });
@@ -285,41 +276,39 @@ const fetchUserProfile = async () => {
     profileUsername.value = profileData.value.username;
     console.log('Profile Data fetched:', profileData.value);
 
-    // 2. Determine role and fetch related data
+
     const role = profileData.value.role;
-    const specificPilotId = profileData.value.pilot?.id; // ID from pilots table
-    const specificGamerId = profileData.value.gamer?.id; // ID from gamers table
-    const fetchedUserId = profileData.value.id; // Main user ID
+    const specificPilotId = profileData.value.pilot?.id; 
+    const specificGamerId = profileData.value.gamer?.id; 
+    const fetchedUserId = profileData.value.id; 
 
     const promises = [];
 
     if (role === 'pilot' || role === 'game pilot') {
         console.log("Profile is Pilot. Fetching points, details, services, portfolio, reviews...");
-        promises.push(fetchPoints()); // Uses username
+        promises.push(fetchPoints()); 
         if (specificPilotId) {
-            promises.push(fetchPilotDetails(specificPilotId)); // Uses pilot ID
-            promises.push(serviceStore.fetchServicesByPilot(specificPilotId)); // Uses pilot ID
-             // *** Fetch reviews using the specific pilot ID ***
+            promises.push(fetchPilotDetails(specificPilotId)); 
+            promises.push(serviceStore.fetchServicesByPilot(specificPilotId)); 
             promises.push(fetchPilotReviews(specificPilotId));
         } else {
              console.warn("Pilot ID not found in profile data, cannot fetch pilot-specific details or reviews.");
-             reviewsError.value = "Could not fetch reviews: Pilot ID missing."; // Set error state
+             reviewsError.value = "Could not fetch reviews: Pilot ID missing.";
         }
-        promises.push(fetchPortfolios(fetchedUserId)); // Uses main user ID
+        promises.push(fetchPortfolios(fetchedUserId)); 
 
     } else if (role === 'gamer') {
          console.log("Profile is Gamer. Fetching details...");
         if (specificGamerId) {
-            promises.push(fetchGamerDetails(specificGamerId)); // Uses gamer ID
+            promises.push(fetchGamerDetails(specificGamerId)); 
         }
     }
 
-    // 3. Wait for all fetches
     if (promises.length > 0) {
         await Promise.all(promises);
         console.log("All profile data promises resolved.");
     }
-    error.value = null; // Clear error only on full success
+    error.value = null; 
 
   } catch (err) {
     console.error('Error during user profile fetch process:', err);
@@ -331,8 +320,7 @@ const fetchUserProfile = async () => {
      } else if (err.request) {
         error.value = 'No response from server.';
      }
-    // Avoid showing toast if error is already displayed prominently
-    // toast.error(error.value);
+    
   } finally {
       isLoading.value = false;
       console.log("Profile fetching complete.");
@@ -346,7 +334,7 @@ onMounted(() => { fetchCategories(); });
 watch(() => route.params.id, (newId, oldId) => {
   if (newId && newId !== oldId) {
     userId.value = newId;
-    fetchUserProfile(); // Refetch all profile data
+    fetchUserProfile(); 
   } else if (!newId) {
       error.value = "User ID parameter missing."; isLoading.value = false; profileData.value = null;
   }
@@ -423,55 +411,35 @@ const goToPublicPortfolio = () => {
         </div>
       </section>
 
-      <!-- Services Section -->
       <section v-if="isPilotProfile" class="space-y-4">
-    <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-semibold">Services Offered</h2>
-         <button
-            v-if="hasMoreServices"
-            @click="openServicesModal"
-            class="btn btn-sm btn-outline btn-secondary"
-        >
-            Show All {{ serviceStore.services.length }} Services
-        </button>
-    </div>
-
-    <div v-if="serviceStore.loading" class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
-        <span class="loading loading-dots loading-lg text-accent"></span>
-    </div>
-    <div v-else-if="serviceStore.services.length === 0" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
-        This pilot is not currently offering any services.
-    </div>
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        <ServiceDisplayCard
-            v-for="service in displayedServices"
-            :key="service.id"
-            :service="service"
-            :categories="categories"
-            :is-service-history="false"
-        />
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-semibold">Services Offered</h2>
+             <button
+                v-if="hasMoreServices"
+                @click="openServicesModal"
+                class="btn btn-sm btn-outline btn-secondary"
+            >
+                Show All {{ serviceStore.services.length }} Services
+            </button>
         </div>
-        </section>
 
-        <div v-if="showAllServicesModal" class="modal modal-open">
-            <div class="modal-box max-w-3xl bg-gray-800 text-white border border-gray-700">
-                <h3 class="font-bold text-lg mb-4">All Services by {{ profileUsername }}</h3>
-
-                <div class="service-modal-list flex flex-col items-center space-y-4 max-h-96 overflow-y-auto pr-2 -mr-2 pb-0">
-                    <ServiceDisplayCard
-                        v-for="service in serviceStore.services"
-                        :key="'modal-service-' + service.id"
-                        :service="service"
-                        :categories="categories"
-                        :is-service-history="false"
-                    />
-                </div>
-
-                <div class="modal-action">
-                    <button @click="closeServicesModal" class="btn btn-secondary">Close</button>
-                </div>
+        <div v-if="serviceStore.loading" class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
+            <span class="loading loading-dots loading-lg text-accent"></span>
+        </div>
+        <div v-else-if="serviceStore.services.length === 0" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
+            This pilot is not currently offering any services.
+        </div>
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <ServiceDisplayCard
+                v-for="service in displayedServices"
+                :key="service.id"
+                :service="service"
+                :categories="categories"
+                :is-service-history="false"
+            />
             </div>
-        </div>
+      </section>
+
 
       <section v-if="isPilotProfile" class="space-y-4">
         <div class="flex items-center justify-between mb-4">
@@ -531,6 +499,7 @@ const goToPublicPortfolio = () => {
           </div>
       </section>
 
+
       <div v-if="!isPilotProfile && !gamerDetails" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
          Profile details loaded. No specific sections applicable for this role.
        </div>
@@ -549,6 +518,26 @@ const goToPublicPortfolio = () => {
             </div>
         </div>
     </div>
+
+    <div v-if="showAllServicesModal" class="modal modal-open">
+        <div class="modal-box max-w-3xl bg-gray-800 text-white border border-gray-700">
+            <h3 class="font-bold text-lg mb-4">All Services by {{ profileUsername }}</h3>
+
+            <div class="service-modal-list flex flex-col items-center space-y-4 max-h-96 overflow-y-auto pr-2 -mr-2 pb-0">
+                <ServiceDisplayCard
+                    v-for="service in serviceStore.services"
+                    :key="'modal-service-' + service.id"
+                    :service="service"
+                    :categories="categories"
+                    :is-service-history="false"
+                />
+            </div>
+
+            <div class="modal-action">
+                <button @click="closeServicesModal" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -560,9 +549,5 @@ const goToPublicPortfolio = () => {
 .btn { transition: all 0.2s ease-in-out; }
 .btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
 
-.service-modal-list .service-display-card:last-child {
-    margin-bottom: 0 !important; 
-    padding-bottom: 0 !important; 
-}
 
 </style>
