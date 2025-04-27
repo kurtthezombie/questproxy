@@ -1,16 +1,12 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white flex flex-col">
-    <!-- Header -->
     <NavBar/>
-     
-    <!-- Main Content -->
+
     <div class="flex-1 py-10">
       <div class="container mx-auto max-w-7xl px-4 md:px-8">
         <div class="flex flex-col md:flex-row gap-6 w-full">
 
-          <!-- Left Sidebar with Profile Info and Navigation -->
           <div class="w-full md:w-[260px] space-y-6">
-            <!-- User Profile Card -->
             <div class="bg-blue-800 bg-opacity-5 rounded-lg p-6 text-center shadow border border-gray-700">
               <div class="flex justify-center">
                 <div class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold text-5xl leading-[1]">
@@ -29,7 +25,6 @@
                 <div class="mt-6 text-sm text-gray-400 space-y-2">
                   <div class="w-full text-left space-y-2">
 
-                    <!-- Email -->
                     <div class="flex items-center gap-2">
                       <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -39,7 +34,6 @@
                       <span>{{ email }}</span>
                     </div>
 
-                    <!-- Phone -->
                     <div class="flex items-center gap-2">
                       <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -49,17 +43,7 @@
                       <span>{{ contactNumber }}</span>
                     </div>
 
-                    <!-- Member Since
-                    <div class="flex items-center gap-2">
-                      <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
-                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M5.121 17.804A10.97 10.97 0 0112 15c2.21 0 4.25.672 5.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span>Member since January 2023</span>
-                    </div> -->
-                    
-                  </div>
+                    </div>
                 </div>
               </div>
             </div>
@@ -69,21 +53,15 @@
                 <UserInfo/>
             </h2>
 
-            <!-- Embedded User Info Component -->
-            
-            
-              <!-- Divider -->
-              <div class="border-t border-gray-700 dark:border-gray-700 my-1"></div>
-              
-              <!-- Sign Out -->
+            <div class="border-t border-gray-700 dark:border-gray-700 my-1"></div>
+
               <div class="mt-4">
                 <nav class="space-y-4 text-base">
-                  <a 
-                    href="#" 
-                    @click="callLogout" 
+                  <a
+                    href="#"
+                    @click="callLogout"
                     class="flex items-center gap-2 text-red-500 hover:text-red-600 text-left w-full"
                   >
-                    <!-- Sign Out SVG -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
@@ -91,14 +69,12 @@
                     Sign Out
                   </a>
                 </nav>
-              </div> 
+              </div>
             </div>
           </div>
 
-          <!-- Right Content Area -->
           <div class="flex-grow md:w-[calc(100%-260px)]">
             <div class="bg-blue-800 bg-opacity-5 w-full max-w-full p-8 rounded-lg shadow-lg border border-gray-700">
-              <!--Header -->
               <div class="flex items-center mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -107,7 +83,6 @@
                 <h2 class="text-2xl font-semibold text-white">Personal Information</h2>
               </div>
               <h2 class="text-sm text-gray-400 mb-6">Update your personal details and contact information</h2>
-              <!-- Success Message -->
               <div
                 v-if="message"
                 class="flex items-center p-4 mb-6 text-sm text-green-300 border border-green-600 rounded-lg bg-green-950"
@@ -120,7 +95,6 @@
                 </svg>
                 <span class="font-medium">Success:</span> {{ message }}
               </div>
-              <!-- Form -->
               <form @submit.prevent="UpdateForm">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -135,21 +109,25 @@
                     <input v-model="lastName"
                       type="text"
                       class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
-                    />  
+                    />
                   </div>
                   <div>
                     <label class="block text-sm mb-2 text-gray-300">Email</label>
                     <input v-model="email"
                       type="email"
                       class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
-                    />  
+                    />
                   </div>
                   <div>
                     <label class="block text-sm mb-2 text-gray-300">Contact Number</label>
                     <input v-model="contactNumber"
-                      type="tel"
+                      type="text"
+                      pattern="[0-9]*"
+                      inputmode="numeric"
+                      maxlength="12"
+                      @input="contactNumber = $event.target.value.replace(/[^0-9]/g, '').slice(0, 12)"
                       class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
-                    />  
+                    />
                   </div>
                 </div>
                 <button
@@ -160,7 +138,6 @@
                 </button>
               </form>
 
-              <!-- Delete Account -->
               <div class="mt-10 border-t border-gray-700 pt-6">
                 <h3 class="text-lg font-semibold text-red-400 mb-3">Delete Account</h3>
                 <p class="text-sm text-gray-400 mb-4">
@@ -187,7 +164,6 @@
         </div>
       </div>
 
-      <!-- Confirmation Modal -->
       <div v-if="isConfirmationModalOpen" class="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
         <div class="bg-[#1E293B] rounded-lg p-6 w-full max-w-md text-white">
           <h3 class="text-lg font-semibold mb-4">Confirm Account Deletion</h3>
@@ -206,7 +182,7 @@
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import Sidebar from '@/components/Sidebar.vue';
-import loginService from '@/services/login-service'; 
+import loginService from '@/services/login-service';
 import { useRouter } from 'vue-router';
 import { useLoader } from '@/services/loader-service';
 import NavBar from '@/components/NavBar.vue';
@@ -226,14 +202,14 @@ const firstName = ref('');
 const lastName = ref('');
 const contactNumber = ref('');
 const userId = ref('');
-const message = ref(''); 
-const isConfirmationModalOpen = ref(false); 
+const message = ref('');
+const isConfirmationModalOpen = ref(false);
 
 
 const getMemberSince = (createdAt) => {
   if (!createdAt) return '';
   const date = dayjs(createdAt);
-  return date.format('MMMM YYYY');
+  return date.format('MMMMYYYY');
 };
 
 // Fetch user data and populate form fields
@@ -245,10 +221,10 @@ const fetchUserData = async () => {
       role.value = user.role;
       username.value = user.username;
       email.value = user.email;
-      firstName.value = user.f_name; 
-      lastName.value = user.l_name;    
-      contactNumber.value = user.contact_number;  
-      userId.value = user.id; 
+      firstName.value = user.f_name;
+      lastName.value = user.l_name;
+      contactNumber.value = user.contact_number;
+      userId.value = user.id;
     } else {
       console.error('No user data received');
     }
@@ -265,17 +241,17 @@ onMounted(fetchUserData);
 const UpdateForm = async () => {
   const loader = loadShow();
   try {
-    await loginService.updateUser({ 
-      id: userId.value,            
-      firstName: firstName.value, 
-      lastName: lastName.value, 
+    await loginService.updateUser({
+      id: userId.value,
+      firstName: firstName.value,
+      lastName: lastName.value,
       contactNumber: contactNumber.value,
-      email: email.value 
+      email: email.value
     });
-    
+
     // Success message
     message.value = "Your profile has been successfully updated!";
-    
+
     setTimeout(() => {
       message.value = '';
     }, 3000);
@@ -297,13 +273,13 @@ const hideConfirmationModal = () => {
 
 // Handle account deletion
 const handleDeleteAccount = async () => {
-  hideConfirmationModal(); 
+  hideConfirmationModal();
   const loader = loadShow();
   try {
     // Call the requestAccountDeletion endpoint
     const response = await axios.post(
       'http://localhost:8000/api/users/delete-email',
-      {}, 
+      {},
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('authToken')}`,
@@ -313,14 +289,14 @@ const handleDeleteAccount = async () => {
 
     // Show success message
     if (response.data && response.data.message) {
-      alert(response.data.message); 
+      alert(response.data.message);
     } else {
       alert('A confirmation email has been sent to your email address. Please check your inbox.');
     }
   } catch (error) {
     console.error('Error sending confirmation email:', error);
     if (error.response && error.response.data && error.response.data.message) {
-      alert(`Error: ${error.response.data.message}`); 
+      alert(`Error: ${error.response.data.message}`);
     } else {
       alert('Failed to send confirmation email. Please try again.');
     }
