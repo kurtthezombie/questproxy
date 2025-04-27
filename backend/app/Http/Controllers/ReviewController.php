@@ -76,7 +76,7 @@ class ReviewController extends Controller
     public function indexByPilot($pilotId)
     {
     try {
-        $reviews = $this->reviewService->getReviewsByPilotId($pilotId);
+        $reviews = $this->reviewService-> getReviewsByPilotId($pilotId);
         $message = $reviews->isEmpty() ? "No reviews found for this pilot yet." : "Reviews for pilot {$pilotId} retrieved.";
 
         return $this->successResponse($message, 200, ['reviews' => $reviews]);
