@@ -143,7 +143,7 @@ onMounted(() => {
 
       <div class="card-body flex-col justify-center items-center">
         <div class="w-full flex items-center justify-between mb-6">
-          <button class="btn btn-ghost btn-lg p-0" @click="$router.push(`/payment/${serviceId}`)">
+          <button class="btn border-none shadow-none bg-transparent text-white btn-lg p-0" @click="$router.push(`/payment/${serviceId}`)">
             <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
             </svg>

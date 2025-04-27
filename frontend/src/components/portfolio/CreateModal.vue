@@ -10,6 +10,7 @@ const emit = defineEmits(["update:modelValue", "submit"]);
 const file = ref(null);
 const previewUrl = ref(null);
 const caption = ref("");
+const isLoading = ref(false);
 
 const closeModal = () => {
     file.value = null;
@@ -30,6 +31,7 @@ const handleFileUpload = (event) => {
 };
 
 const submitForm = async () => {
+    isLoading.value = true;
     if (!file.value) return;
 
     const originalFile = file.value;
@@ -51,6 +53,8 @@ const submitForm = async () => {
     } catch (error) {
         console.log("Error: ", error);
         toast.error(`Failed to add portfolio item: ${error.response?.data?.message}`);
+    } finally {
+        isLoading.value = false;
     }
 };
 
@@ -109,7 +113,14 @@ onUnmounted(() => window.removeEventListener("keydown", closeOnEscape));
                             class="input w-full bg-[#1e293b] text-white shadow-none border border-gray-700" />
 
                         <!-- Submit Button-->
-                        <button @click="submitForm" class="w-full btn bg-green-600 border border-green-600 shadow-none text-white hover:bg-green-700">Submit</button>
+                        <button @click="submitForm"
+                            class="w-full btn bg-green-600 border border-green-600 shadow-none text-white hover:bg-green-700"
+                            :disabled="isLoading">
+                            <!-- Show loading spinner when isLoading is true -->
+                            <span v-if="isLoading" class="loading loading-spinner"></span>
+                            <!-- Show text when not loading -->
+                            <span v-else>Submit</span>
+                        </button>
                     </div>
                 </div>
             </div>
