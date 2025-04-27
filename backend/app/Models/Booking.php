@@ -15,6 +15,7 @@ class Booking extends Model
        'client_id',
        'service_id',
        'status', 
+       'progress'
     ]; 
     //a booking has a client
     public function client(){

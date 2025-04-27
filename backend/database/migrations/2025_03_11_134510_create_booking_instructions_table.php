@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('booking_instructions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('booking_id'); //where this instruction belongs to
+            $table->unsignedBigInteger('booking_id');
+            $table->string('communication_link');
+            $table->date('start_date')->nullable();
             $table->text('additional_notes')->nullable();
-            $table->string('credentials_username');
-            $table->string('credentials_password');
             $table->timestamps();
 
             $table->foreign('booking_id')->references('id')
