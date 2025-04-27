@@ -218,6 +218,7 @@ const { loadShow, loadHide } = useLoader();
 const router = useRouter();
 
 import dayjs from 'dayjs';
+import toast from '@/utils/toast';
 
 const role = ref(null);
 const username = ref('');
@@ -313,16 +314,16 @@ const handleDeleteAccount = async () => {
 
     // Show success message
     if (response.data && response.data.message) {
-      alert(response.data.message); 
+      toast.success(response.data.message); 
     } else {
-      alert('A confirmation email has been sent to your email address. Please check your inbox.');
+      toast.success('A confirmation email has been sent to your email address. Please check your inbox.');
     }
   } catch (error) {
     console.error('Error sending confirmation email:', error);
     if (error.response && error.response.data && error.response.data.message) {
-      alert(`Error: ${error.response.data.message}`); 
+      toast.error(`Error: ${error.response.data.message}`);
     } else {
-      alert('Failed to send confirmation email. Please try again.');
+      toast.error('Failed to send confirmation email. Please try again.');
     }
   } finally {
     loadHide(loader);

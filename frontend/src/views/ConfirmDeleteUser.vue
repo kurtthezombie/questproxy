@@ -31,6 +31,7 @@
     import router from '@/router';
     import loginService from '@/services/login-service';
     import { useUserStore } from '@/stores/userStore';
+import toast from '@/utils/toast';
 
     const userStore = useUserStore();
     const route = useRoute();
@@ -48,7 +49,7 @@
             });
             userStore.clearUser();
             localStorage.clear();
-            alert('Account has been deleted.');
+            toast.success('Account has been deleted.');
             router.push({ name: 'login' });
         } catch (error) {
             console.log('Error deleting account: ', error);
