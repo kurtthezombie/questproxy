@@ -67,7 +67,7 @@ onUnmounted(() => window.removeEventListener("keydown", closeOnEscape));
         <transition name="fade">
             <div v-if="modelValue" class="fixed inset-0 flex items-center justify-center bg-black/50"
                 @click.self="closeModal">
-                <div class="card bg-gray-900 p-6 shadow-lg w-96">
+                <div class="card bg-gray-900 p-6 shadow-lg w-96 ">
                     <!--Header-->
                     <div class="flex justify-between items-center">
                         <h2 class="card-title text-white">Add Portfolio Item</h2>

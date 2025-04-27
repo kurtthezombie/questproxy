@@ -440,34 +440,6 @@ const goToPublicPortfolio = () => {
             </div>
       </section>
 
-
-      <section v-if="isPilotProfile" class="space-y-4">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-semibold">Reviews Received</h2>
-            <button
-                v-if="hasMoreReviews"
-                @click="openReviewsModal"
-                class="btn btn-sm btn-outline btn-secondary"
-            >
-                Show All {{ pilotReviews.length }} Reviews
-            </button>
-        </div>
-
-        <div v-if="isLoadingReviews" class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
-            <span class="loading loading-dots loading-lg text-accent"></span>
-        </div>
-        <div v-else-if="reviewsError" class="text-center text-red-400 py-10 bg-gray-800 rounded-lg border border-red-700">
-            <p>{{ reviewsError }}</p>
-            <button v-if="pilotIdForReviews" @click="fetchPilotReviews(pilotIdForReviews)" class="btn btn-sm btn-outline btn-warning mt-2">Retry Reviews</button>
-        </div>
-        <div v-else-if="pilotReviews.length === 0" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
-            This pilot hasn't received any reviews yet.
-        </div>
-        <div v-else class="space-y-4">
-            <ReviewCard v-for="review in displayedReviews" :key="review.id" :review="review" />
-        </div>
-      </section>
-
       <section v-if="isPilotProfile" class="space-y-4">
           <div class="flex items-center justify-between mb-4">
               <h2 class="text-2xl font-semibold">Portfolio Gallery</h2>
@@ -497,6 +469,33 @@ const goToPublicPortfolio = () => {
           <div v-else class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
               This pilot hasn't added any portfolio items yet.
           </div>
+      </section>
+
+      <section v-if="isPilotProfile" class="space-y-4">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-semibold">Reviews Received</h2>
+            <button
+                v-if="hasMoreReviews"
+                @click="openReviewsModal"
+                class="btn btn-sm btn-outline btn-secondary"
+            >
+                Show All {{ pilotReviews.length }} Reviews
+            </button>
+        </div>
+
+        <div v-if="isLoadingReviews" class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
+            <span class="loading loading-dots loading-lg text-accent"></span>
+        </div>
+        <div v-else-if="reviewsError" class="text-center text-red-400 py-10 bg-gray-800 rounded-lg border border-red-700">
+            <p>{{ reviewsError }}</p>
+            <button v-if="pilotIdForReviews" @click="fetchPilotReviews(pilotIdForReviews)" class="btn btn-sm btn-outline btn-warning mt-2">Retry Reviews</button>
+        </div>
+        <div v-else-if="pilotReviews.length === 0" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
+            This pilot hasn't received any reviews yet.
+        </div>
+        <div v-else class="space-y-4 max-h-96 overflow-y-auto pr-2">
+            <ReviewCard v-for="review in displayedReviews" :key="review.id" :review="review" />
+        </div>
       </section>
 
 

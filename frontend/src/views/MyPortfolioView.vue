@@ -37,8 +37,6 @@ const loadPortfolios = async (isSubmit = false) => {
             }));
 
             const message = isSubmit ? "Portfolios refreshed" : "Portfolios fetched successfully";
-
-            toast.info(message);
         } else {
             portfolios.value = [];
             toast.info("No portfolios found.");
