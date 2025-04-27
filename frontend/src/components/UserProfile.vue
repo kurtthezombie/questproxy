@@ -395,7 +395,7 @@ const goToPublicPortfolio = () => {
         <div class="bg-gray-850 border-t border-gray-700 p-4 flex flex-wrap justify-center md:justify-end gap-3">
           <button v-if="isOwnProfile" @click="goToAccountSettings" class="btn btn-sm btn-outline btn-info">Account Settings</button>
           <button v-if="isOwnProfile && isPilotProfile" @click="goToMyPortfolio" class="btn btn-sm btn-outline btn-success">Manage Portfolio</button>
-          <button v-if="!isOwnProfile && isPilotProfile" @click="goToPublicPortfolio" class="btn btn-sm btn-outline btn-primary">View Portfolio</button>
+          <button v-if="!isOwnProfile && isPilotProfile" @click="goToPublicPortfolio" class="btn btn-sm btn-outline btn-success">View Portfolio</button>
           <button v-if="!isOwnProfile" @click="goToReportUser" class="btn btn-sm btn-outline btn-warning">Report User</button>
         </div>
       </section>
@@ -417,7 +417,7 @@ const goToPublicPortfolio = () => {
              <button
                 v-if="hasMoreServices"
                 @click="openServicesModal"
-                class="btn btn-sm btn-outline btn-secondary"
+                class="btn btn-sm btn-outline btn-success" 
             >
                 Show All {{ serviceStore.services.length }} Services
             </button>
@@ -538,6 +538,7 @@ const goToPublicPortfolio = () => {
             </div>
         </div>
     </div>
+
   </div>
 </template>
 
@@ -548,6 +549,5 @@ const goToPublicPortfolio = () => {
 .loading { margin: auto; }
 .btn { transition: all 0.2s ease-in-out; }
 .btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
-
 
 </style>
