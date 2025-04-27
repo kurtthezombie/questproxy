@@ -14,7 +14,7 @@
           </p>
         </div>
         <div class="flex justify-center w-full">
-        <RouterLink to="/home">
+        <RouterLink to="/mybookings">
           <button class="btn btn-success w-full">
             Go Home
           </button>

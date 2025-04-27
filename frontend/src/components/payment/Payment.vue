@@ -91,43 +91,44 @@ try {
   paymentLoading.value = false;
 }
 };
-
-const checkPaymentStatus = async () => {
-  statusLoading.value = true;
-  error.value = null;
-
-  try {
-    const authToken = localStorage.getItem('authToken');
-    if (!authToken) throw new Error('You must be logged in to check payment status.');
-
-    const response = await axios.get(
-      `http://127.0.0.1:8000/api/bookings/${props.confirmedBooking.id}`,
-      {
-        headers: { Authorization: `Bearer ${authToken}` },
+  
+  const checkPaymentStatus = async () => {
+    statusLoading.value = true;
+    error.value = null;
+  
+    try {
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) throw new Error('You must be logged in to check payment status.');
+  
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/bookings/${props.confirmedBooking.id}`,
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+  
+      const booking = response.data.data || response.data;
+  
+      if (booking.status === 'completed' || booking.status === 'paid') {
+        alert('Payment is already completed!');
+      } else if (booking.payment_url) {
+        window.location.href = booking.payment_url;
+      } else {
+        alert(`Current payment status: ${booking.status || 'pending'}`);
       }
-    );
-
-    const booking = response.data.data || response.data;
-
-    if (booking.status === 'completed' || booking.status === 'paid') {
-      alert('Payment is already completed!');
-    } else if (booking.payment_url) {
-      window.location.href = booking.payment_url;
-    } else {
-      alert(`Current payment status: ${booking.status || 'pending'}`);
+    } catch (err) {
+      console.error('Error checking payment status:', err);
+      error.value = err.response?.data?.message || err.message || 'Failed to check payment status.';
+    } finally {
+      statusLoading.value = false;
     }
-  } catch (err) {
-    console.error('Error checking payment status:', err);
-    error.value = err.response?.data?.message || err.message || 'Failed to check payment status.';
-  } finally {
-    statusLoading.value = false;
-  }
-};
-
-const cancelBooking = () => {
-  emit('cancel-booking');
-};
-
-const formatPrice = (price) =>
-  price ? `₱${Number(price).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '₱0.00';
-</script>
+  };
+  
+  const cancelBooking = () => {
+    emit('cancel-booking');
+  };
+  
+  const formatPrice = (price) =>
+    price ? `₱${Number(price).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '₱0.00';
+  </script>
+  
