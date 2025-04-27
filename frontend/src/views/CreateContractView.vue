@@ -23,6 +23,9 @@ const form = reactive({
 });
 
 const today = new Date().toISOString().split('T')[0]; 
+const nextYear = new Date();
+nextYear.setFullYear(nextYear.getFullYear() + 1);
+const maxDate = nextYear.toISOString().split('T')[0];
 const currentDate = dayjs().format('MMMM D, YYYY');
 
 const fetchAgreementData = async () => {
@@ -170,8 +173,8 @@ onMounted(() => {
                 Start Date <span className="text-red-500">*</span>
               </label>
               <input type="date" v-model="form.startDate"
-                class="mb-5 input p-3 h-12 bg-[#1E293B] w-full rounded-md focus:ring-green-500 focus:border-green-500 shadow-none"
-                :min="today" required />
+                class="input p-3 bg-blue-600 bg-opacity-20 w-full rounded-md focus:ring-green-500 focus:border-green-500"
+                :min="today" :max="maxDate" required />
             </div>
           </div>
 

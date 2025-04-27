@@ -85,14 +85,9 @@ onMounted(() => {
   <NavBar />
   <div class="flex justify-center items-center min-h-screen max-w-full bg-gray-800 flex-col space-y-10 py-10">
     <div class="dust-container">
-        <!-- Generate 100 dust particles -->
-          <div 
-            v-for="index in 100" 
-              :key="index" 
-              class="dust"
-              :style="generateParticleStyle(index)"
-              ></div>
-        </div>
+      <!-- Generate 100 dust particles -->
+      <div v-for="index in 100" :key="index" class="dust" :style="generateParticleStyle(index)"></div>
+    </div>
     <div class="flex justify-center flex-col items-center">
       <div
         class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-5xl font-semibold text-white">
@@ -103,7 +98,7 @@ onMounted(() => {
       </div>
       <div class="mt-5 flex items-center gap-2">
         <div class="bg-gray-300 text-green-900 px-3 py-1 rounded-full font-medium flex items-center">
-          <span class="mr-1">Quest Points:</span> 
+          <span class="mr-1">Quest Points:</span>
           <span class="font-bold">{{ points }}</span>
         </div>
       </div>
@@ -121,8 +116,15 @@ onMounted(() => {
 
         <!-- Show actual portfolios when loaded -->
         <template v-else>
-          <PortfolioCard v-for="portfolio in portfolios" :key="portfolio.id" :username="username" :portfolio="portfolio"
-            class="w-full" />
+          <template v-if="portfolios.length">
+            <PortfolioCard v-for="portfolio in portfolios" :key="portfolio.id" :username="username"
+              :portfolio="portfolio" class="w-full" />
+          </template>
+          <template v-else>
+            <div class="col-span-2 text-white text-center font-semibold text-lg">
+              No portfolios yet.
+            </div>
+          </template>
         </template>
       </div>
     </div>
