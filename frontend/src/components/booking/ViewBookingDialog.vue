@@ -1,10 +1,10 @@
 <script setup>
 import dayjs from 'dayjs';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useLoader } from '@/services/loader-service';
 import { useServiceStore } from '@/stores/serviceStore';
-import api from '@/utils/api';
 import axios from 'axios';
+import { generatePDF } from '@/services/agreement.service';
 
 const props = defineProps({
   selectedBooking: {
@@ -16,6 +16,7 @@ const props = defineProps({
     default: false
   }
 })
+
 const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000/';
 
 const serviceStore = useServiceStore();
@@ -37,7 +38,7 @@ const closeProgressModal = () => {
 };
 
 const closeModal = () => {
- emit('close');
+  emit('close');
 };
 const progressValue = ref(0);
 const originalProgress = ref(0);
@@ -56,9 +57,9 @@ const markAsCompleted = async (bookingId) => {
 };
 
 const saveProgress = async () => {
-  if (props.selectedBooking?.id) {  
+  if (props.selectedBooking?.id) {
     await updateBookingProgress(props.selectedBooking.id, progressValue.value);
-
+    console.log('Saving progress:', progressValue.value);
     props.selectedBooking.progress = progressValue.value;
 
     closeProgressModal();
@@ -95,6 +96,21 @@ const updateBookingProgress = async (bookingId, progress) => {
   }
 };
 
+const generateContractPdf = () => {
+  if (props.selectedBooking && props.selectedBooking.id) {
+    const details = props.selectedBooking.service;  // Assuming details is in the service object
+    const bookingId = props.selectedBooking.id;  // Use the bookingId
+    const form = {
+      commLink: props.selectedBooking.instruction.communication_link,  // Assuming communication link is in instruction
+      additional_notes: props.selectedBooking.instruction.additional_notes,  // Additional notes
+      start_date: props.selectedBooking.instruction.start_date,  // Start date from instruction
+    };
+
+    generatePDF(bookingId, form);
+  } else {
+    console.error("Selected booking data is not available!");
+  }
+}
 
 const showConfirmationDialog = () => {
   confirmationVisible.value = true;
@@ -111,6 +127,11 @@ const cancelMarkAsCompleted = () => {
   confirmationVisible.value = false;  // Just close the confirmation dialog
 };
 
+const canMarkAsCompleted = computed(() => {
+  console.log('Progress Value:', progressValue.value);
+  return progressValue.value === 100;
+});
+
 watch(() => props.selectedBooking, (newVal) => {
   if (newVal && newVal.hasOwnProperty('progress')) {
     progressValue.value = newVal.progress;
@@ -119,15 +140,6 @@ watch(() => props.selectedBooking, (newVal) => {
     console.log('Progress not available for selected booking');
   }
 });
-
-watch(progressValue, (newValue) => {
-  // Update the disabled state of the "Mark as Completed" button based on progressValue
-  if (newValue === 100) {
-    // You can either store this in a computed property or directly disable/enable buttons
-    console.log('Progress is 100, enabling the button');
-  }
-});
-
 </script>
 
 <template>
@@ -157,16 +169,17 @@ watch(progressValue, (newValue) => {
         </div>
         <div class="space-y-2">
           <p class="text-sm text-gray-400">Start Date</p>
-          <p class="text-sm font-medium bg-gray-700 p-2 rounded-lg">{{ selectedBooking.instruction.communication_link ||
-            'None' }}</p>
+          <p class="text-sm font-medium bg-gray-700 p-2 rounded-lg"> {{
+            dayjs(selectedBooking.instruction.start_date).format('MMMM D, YYYY') || 'null'}}
+          </p>
         </div>
         <div>
           <p class="text-sm text-gray-400">Status</p>
           <span :class="{
-              'bg-blue-400 text-white': selectedBooking.status === 'completed',
-              'bg-yellow-500 text-white': selectedBooking.status === 'in_progress',
-              'bg-red-400 text-white': selectedBooking.status === 'cancelled'
-            }" class="inline-block px-2 py-1 text-xs text-gray-700 font-semibold rounded-full">
+            'bg-blue-400 text-white': selectedBooking.status === 'completed',
+            'bg-yellow-500 text-white': selectedBooking.status === 'in_progress',
+            'bg-red-400 text-white': selectedBooking.status === 'cancelled'
+          }" class="inline-block px-2 py-1 text-xs text-gray-700 font-semibold rounded-full">
             {{ selectedBooking.status === 'in_progress' ? 'in progress' : selectedBooking.status }}
           </span>
 
@@ -184,8 +197,7 @@ watch(progressValue, (newValue) => {
         <div class="relative flex items-center justify-center">
           <div class="radial-progress text-green-400 hover:cursor-pointer"
             :style="{ '--value': selectedBooking?.progress || 0 }" aria-valuenow="70" role="progressbar"
-            @click="openProgressModal"
-            >
+            @click="openProgressModal">
             {{ selectedBooking?.progress }}%
           </div>
         </div>
@@ -203,9 +215,11 @@ watch(progressValue, (newValue) => {
 
       <!-- Footer (Close Button) -->
       <div class="modal-action mt-6">
+        <button class="btn" @click="generateContractPdf">
+          Download Agreement
+        </button>
         <button v-if="selectedBooking?.status === 'in_progress'" @click="showConfirmationDialog"
-          class="bg-blue-500 hover:bg-green-700 btn text-white border-none shadow-none"
-          :disabled="progressValue !== 100">
+          class="bg-blue-500 hover:bg-green-700 btn text-white border-none shadow-none" :disabled="!canMarkAsCompleted">
           Mark as Completed
         </button>
         <button class="btn text-white bg-gray-600 border-none shadow-none hover:bg-red-600"
@@ -237,12 +251,8 @@ watch(progressValue, (newValue) => {
 
       <div class="mt-4 space-y-2">
         <p class="text-sm text-gray-400">Current Progress</p>
-        <input 
-          type="range" 
-          min="0" 
-          max="100" 
-          v-model="progressValue"
-          class="range range-success range-sm w-full"
+        <input type="range" min="0" max="100" :value="progressValue"
+          @input="e => progressValue = parseInt(e.target.value)" class="range range-success range-sm w-full"
           id="progressSlider" />
         <div class="flex justify-between mt-2">
           <span class="text-sm" id="progressValue">{{ progressValue }}%</span>
@@ -250,12 +260,8 @@ watch(progressValue, (newValue) => {
       </div>
 
       <div class="modal-action mt-6">
-        <button 
-          id="saveButton" 
-          class="btn text-white bg-green-800 hover:bg-green-600 border-none shadow-none"
-          @click="saveProgress"
-          :disabled="progressValue === originalProgress"
-        >
+        <button id="saveButton" class="btn text-white bg-green-800 hover:bg-green-600 border-none shadow-none"
+          @click="saveProgress" :disabled="progressValue === originalProgress">
           Save Progress
         </button>
         <button class="btn text-white bg-gray-600 hover:bg-gray-700 border-none shadow-none"

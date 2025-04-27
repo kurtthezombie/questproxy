@@ -134,10 +134,6 @@ class ListingService
             'pilot.user',
         ])->findOrFail($id);
 
-        if ($service->pilot->user->id == auth()->user()->id) {
-            throw new Exception('You cannot view your own service details.', 403);
-        }
-
         $clientUsername = auth()->user()->username;
 
         $details = [

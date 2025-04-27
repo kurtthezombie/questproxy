@@ -123,7 +123,7 @@ Date Agreed: ${currentDate}
   doc.setFont("Times", "Normal")
   doc.setFontSize(12)
   doc.text(lines, 10, 10)
-  doc.save("game_service_agreement.pdf")
+  doc.save(`client_bk-${bookingId}_service_agreement.pdf`);
 
   downloadModal.close();
 }

@@ -80,7 +80,7 @@
                 <line x1="3" y1="10" x2="21" y2="10" stroke-linecap="round" stroke-linejoin="round"></line>
               </svg>
 
-              My Bookings
+              Service Bookings
               <span class="bg-emerald-500 text-white rounded-full px-2 ml-2">
                 {{ serviceStore.myBookings.filter(booking => booking.status === 'in_progress').length || 0 }}
               </span>
@@ -174,9 +174,8 @@
                   <!-- Progress Bar (Bar Style) -->
                   <div class="relative pt-1 mt-4">
                     <label for="progress" class="block text-xs text-gray-400">Progress</label>
-                    <div class="flex mb-2 items-center justify-between">
-                      <span class="text-xs text-gray-400">0%</span>
-                      <span class="text-xs text-gray-400">100%</span>
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs text-gray-400">{{booking.progress}}%</span>
                     </div>
                     <progress class="progress progress-success w-full" :value="booking.progress" max="100"></progress>
 
