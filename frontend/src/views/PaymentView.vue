@@ -8,7 +8,7 @@
       <div class="flex-1 overflow-y-auto">
         <div class="flex justify-between items-center mb-2">
           <div>
-            <a href="/services-history">
+            <a :href="pilotId ? '/services-history' : '/home'">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -25,7 +25,7 @@
               </svg>
             </a>
           </div>
-          <div class="text-sm px-2 rounded-2xl bg-emerald-500 ml-auto border border-gray-700">
+          <div class="text-sm px-2 rounded-2xl ml-auto border border-gray-700" :class="service?.availability ? 'bg-emerald-500' : 'bg-red-500'">
             <span
               :class="service?.availability ? 'text-white font-semibold' : 'bg-red-500 text-white'"
             >
@@ -85,11 +85,12 @@
         <button
           v-if="!confirmedBooking"
           class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-md text-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full mb-2"
-          @click="openBookingModal"
-          :disabled="loading || !service?.availability"
+          @click="redirectToAgreementPage"
+          :disabled="loading || !service?.availability || pilotId === service?.pilot_id"
         >
           <span v-if="loading">Loading...</span>
           <span v-else-if="!service?.availability">Not Available</span>
+          <span v-else-if="pilotId === service?.pilot_id">Can't book your own service...</span>
           <span v-else>Book Service</span>
         </button>
 
@@ -123,6 +124,7 @@ import NavBar from '@/components/NavBar.vue';
 import BookingCard from '@/components/BookingCard.vue';
 import { useUserStore } from '@/stores/userStore';
 import Payment from '@/components/payment/Payment.vue'; // Import the Payment component
+import toast from '@/utils/toast';
 
 const route = useRoute();
 const router = useRouter();
@@ -137,6 +139,7 @@ const serviceId = computed(() => {
   return parseInt(route.params.serviceId);
 });
 
+const pilotId = computed(() => userStore.userData?.pilot_id);
 
 const handleBookingConfirmed = (bookingData) => {
   console.log('Received bookingData:', bookingData);
@@ -186,6 +189,7 @@ const fetchServiceDetails = async () => {
 
     if (response.data?.service) {
       service.value = response.data.service;
+      console.log('Service details:', service.value);
     } else {
       throw new Error('Service details not found');
     }
@@ -215,6 +219,18 @@ const closeModal = () => {
 const handleCancelBooking = () => {
   confirmedBooking.value = null;
 };
+
+const redirectToAgreementPage = async () => {
+  console.log('Service ID in redirectToAgreementPage:', serviceId.value);
+  if(serviceId.value) {
+    router.push({
+      name: 'contract',
+      params: { serviceId: serviceId.value }
+    })
+  } else {
+    toast.error("Service ID not found.");
+  }
+}
 
 onMounted(() => {
   fetchServiceDetails();

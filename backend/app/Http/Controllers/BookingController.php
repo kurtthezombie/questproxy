@@ -8,6 +8,7 @@ use App\Services\BookingService;
 use App\Services\InstructionService;
 use App\Traits\ApiResponseTrait;
 use Crypt;
+use DB;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -32,24 +33,33 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
+        $client_id = auth()->user()->id;
+
         //validate
         $data = $request->validate([
-            'client_id' => 'required',
             'service_id' => 'required',
-            'additional_notes' => 'required|string',
-            'credentials_username' => 'required|string',
-            'credentials_password' => 'required|string',
+            'start_date' => 'required|date',
+            'communication_link' => 'required|string',
+            'additional_notes' => 'nullable|string',
         ]);
+
+        $data['client_id'] = $client_id;
         
+        DB::beginTransaction();
+
         try {
             //create booking
             $booking = $this->bookingService->create($data);
             
             $this->instructionService->create($booking->id,$data);
             
+            DB::commit();
+
             //return success response
             return $this->successResponse('Booking and instruction created successfully.', 200, ['booking' => $booking]);
         } catch (Exception $e) {
+            DB::rollBack();
+            
             return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
     }
@@ -136,6 +146,17 @@ class BookingController extends Controller
         }
     }
 
+    public function getServiceDetails($booking_id)
+    {
+        try {
+            $details = $this->bookingService->getBookingServiceDetails($booking_id);
+
+            $this->successResponse('Service Booking Details retrieved',200,['data' => $details]);
+        } catch (Exception $e) {
+            $this->failedResponse($e->getMessage(), 500);
+        }
+    }
+    
     public function getBookingByPilot()
     {
         try {
@@ -159,6 +180,21 @@ class BookingController extends Controller
             return $this->successResponse('Bookings retrieved.', 200, ['bookings' => $bookings]);
         } catch (Exception $e) {
             return $this->failedResponse($e->getMessage(), 500);
+        }
+    }
+
+    public function updateProgress(Request $request, $booking_id)
+    {
+        $data = $request->validate([
+            'progress' => 'required|integer|min:0|max:100',
+        ]);
+
+        try {
+            $updatedBooking = $this->bookingService->updateProgress($booking_id, $data['progress']);
+
+            return $this->successResponse('Booking progress updated successfully.', 200, ['data' => $updatedBooking]);
+        } catch (Exception $e) {
+            return $this->failedResponse('Error: ' . $e->getMessage(), 500);
         }
     }
 }

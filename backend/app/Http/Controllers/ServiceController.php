@@ -165,6 +165,18 @@ class ServiceController extends Controller
         }
     }
 
+    public function getServiceDetails($id)
+    {
+        try {
+            $service = $this->listingService->getServiceDetails($id);
+            return $this->successResponse('Service details retrieved successfully.', 200, ['service' => $service]);
+        } catch (ModelNotFoundException $e) {
+            return $this->failedResponse("Service listing {$id} not found.", 404);
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
+        }
+    }
+
     //
     private function getPilot()
     {
