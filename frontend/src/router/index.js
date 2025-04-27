@@ -239,7 +239,15 @@ router.beforeEach((to, from, next) => {
     if (isAuthenticated && guestOnlyRoutes.includes(to.name)) {
       next({ name: 'homepage' }); // or wherever you want to redirect logged-in users
     } else {
-      next();
+      if (to.name === 'dashboard') {
+        if (userRole === 'gamer' || userRole === 'pilot') {
+          next({ name: 'home' });
+        } else {
+          next();
+        }
+      } else {
+        next();
+      }
     }
   }
 });
