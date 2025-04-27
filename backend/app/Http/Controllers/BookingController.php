@@ -8,6 +8,7 @@ use App\Services\BookingService;
 use App\Services\InstructionService;
 use App\Traits\ApiResponseTrait;
 use Crypt;
+use DB;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -44,15 +45,21 @@ class BookingController extends Controller
 
         $data['client_id'] = $client_id;
         
+        DB::beginTransaction();
+
         try {
             //create booking
             $booking = $this->bookingService->create($data);
             
             $this->instructionService->create($booking->id,$data);
             
+            DB::commit();
+
             //return success response
             return $this->successResponse('Booking and instruction created successfully.', 200, ['booking' => $booking]);
         } catch (Exception $e) {
+            DB::rollBack();
+            
             return $this->failedResponse("Error: " . $e->getMessage(), 500);
         }
     }

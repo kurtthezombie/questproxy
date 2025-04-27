@@ -12,4 +12,13 @@ const createBooking = async (data) => {
   return response.booking;
 }
 
-export { fetchData, createBooking };
+const fetchPaymentUrl = async (cancelUrl, bookingId) => {
+  const formData = {
+    cancel_url: cancelUrl,
+  }
+  const response = await api.post(`/payments/${bookingId}`, formData);
+  console.log('response: ', response);
+  return response.checkout_url;
+}
+
+export { fetchData, createBooking, fetchPaymentUrl };

@@ -1,17 +1,19 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import DisplayField from "@/components/agreement/DisplayField.vue";
-import { createBooking, fetchData } from "@/services/agreement.service"
+import { createBooking, fetchData, fetchPaymentUrl } from "@/services/agreement.service"
 import toast from "@/utils/toast";
 import { jsPDF } from "jspdf"
 import dayjs from "dayjs";
 import { useRoute } from 'vue-router';
+import { useLoader } from '@/services/loader-service';
 
 const details = ref(null);
 const route = useRoute();
 const serviceId = route.params?.serviceId;
 const bookingId = ref(null);
 const isSubmitted = ref(false);
+const { loadShow, loadHide } = useLoader();
 
 const form = reactive({
   startDate: '',
@@ -56,7 +58,23 @@ const handleSubmit = async () => {
 };
 
 const proceedToPayment = async () => {
-  
+  const loader = loadShow();
+
+  const cancelUrl = `${import.meta.env.VITE_FRONTEND_URL}contract/${serviceId}`;
+  console.log('I got into payment');
+  try {
+    const url = await fetchPaymentUrl(cancelUrl, bookingId.value);
+
+    if (!url) {
+      throw new Error("No payment URL received from server");
+    }
+
+    window.location.href = url;
+  } catch (error) {
+    toast.error("Failed to proceed to payment.");
+  } finally {
+    loadHide(loader);
+  }
 }
 
 const generatePDF = () => {
@@ -177,15 +195,16 @@ onMounted(() => {
           </div>
 
           <div class="flex justify-end w-full">
+            <!-- Proceed to Payment Button -->
+            <button v-if="isSubmitted" class="btn btn-soft btn-primary ml-4" @click="proceedToPayment" type="button">
+              Proceed to Payment
+            </button>
+
             <!-- Submit Agreement Button (Disabled after submission) -->
             <button :disabled="isSubmitted" class="btn btn-success" type="submit">
               {{ isSubmitted ? 'Agreement Submitted' : 'Submit Agreement' }}
             </button>
 
-            <!-- Proceed to Payment Button -->
-            <button v-if="isSubmitted" class="btn btn-success ml-4" @click="">
-              Proceed to Payment
-            </button>
           </div>
         </form>
       </div>
