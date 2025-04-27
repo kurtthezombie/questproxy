@@ -202,6 +202,9 @@ watch(() => props.selectedBooking, (newVal) => {
             {{ selectedBooking?.progress }}%
           </div>
         </div>
+        <div class="flex justify-center">
+          <p class="text-green-400 text-sm">Complete</p>
+        </div>
       </div>
 
       <!-- Booking Instruction/Note Section -->
