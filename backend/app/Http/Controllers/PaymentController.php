@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PaymentsPaidExport;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Traits\ApiResponseTrait;
 use Auth;
+use Carbon\Carbon;
 use DB;
 use Http;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PaymentController extends Controller
 {
@@ -160,5 +163,11 @@ class PaymentController extends Controller
         }
 
         return $this->successResponse('Payments retrieved.',200,['payments' => $payments]);       
+    }
+
+    public function exportPaidPayments()
+    {
+        $user_id = Auth::user()->id;
+        return Excel::download(new PaymentsPaidExport($user_id), 'payments_paid.xlsx');
     }
 }

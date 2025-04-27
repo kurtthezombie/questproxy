@@ -86,7 +86,11 @@ class BookingService
 
         $bookings = $this->booking->whereHas('service', function ($query) use ($pilotId) {
             $query->where('pilot_id', $pilotId);
-        })->with(['service','service.pilot', 'service.category', 'client', 'instruction'])
+        })
+        ->whereHas('payment', function ($query) {  // Filter by 'paid' status in payment
+            $query->where('status', 'paid');
+        })
+        ->with(['service', 'service.pilot', 'service.category', 'client', 'instruction', 'payment'])  // Eager load payment
         ->get();
 
         return $bookings;
@@ -101,6 +105,9 @@ class BookingService
         }
 
         $bookings = $this->booking->where('client_id', $user->id)
+            ->whereHas('payment', function ($query) {
+                $query->where('status','paid');
+            })
             ->with(['service','service.pilot'])
             ->get();
 
