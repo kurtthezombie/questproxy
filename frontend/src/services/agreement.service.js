@@ -23,12 +23,12 @@ const fetchPaymentUrl = async (cancelUrl, bookingId) => {
 }
 
 //generate the pdf
-const generatePDF = async (bookingId, form) => {
-  const details = await fetchData(bookingId);
+const generatePDF = async (serviceId, bookingId, form) => {
+  const details = await fetchData(serviceId);
 
 
   console.log("details: ", details);
-  if (!details || !bookingId) {
+  if (!details || !serviceId || !bookingId) {
     console.error("Data not loaded yet!");
     return;
   }

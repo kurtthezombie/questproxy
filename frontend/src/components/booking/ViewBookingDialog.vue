@@ -98,15 +98,16 @@ const updateBookingProgress = async (bookingId, progress) => {
 
 const generateContractPdf = () => {
   if (props.selectedBooking && props.selectedBooking.id) {
-    const details = props.selectedBooking.service;  // Assuming details is in the service object
-    const bookingId = props.selectedBooking.id;  // Use the bookingId
+    console.log("HELLO BOOKING ID: ",props.selectedBooking.service_id);
+    const serviceId = props.selectedBooking.service_id;
+    const bookingId = props.selectedBooking.id;
     const form = {
       commLink: props.selectedBooking.instruction.communication_link,  // Assuming communication link is in instruction
       additional_notes: props.selectedBooking.instruction.additional_notes,  // Additional notes
       start_date: props.selectedBooking.instruction.start_date,  // Start date from instruction
     };
 
-    generatePDF(bookingId, form);
+    generatePDF(serviceId, bookingId, form);
   } else {
     console.error("Selected booking data is not available!");
   }

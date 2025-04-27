@@ -71,8 +71,8 @@
         <!-- Button shown under text on small screens -->
         <div class="block mb-10">
           <router-link to="/pilot-matching">
-            <button class="btn bg-green-500 hover:bg-green-600 text-white border-none shadow-none rounded-full w-fit 
-                          text-sm sm:text-lg px-4 py-2 sm:px-8 sm:py-8 w-full ">
+            <button class="btn bg-green-500 hover:bg-green-600 text-white border-none shadow-none rounded-lg w-full sm:w-fit 
+                          text-sm sm:text-lg px-4 py-2 sm:px-8 sm:py-8 btn-lg">
               Find a Pilot
             </button>
           </router-link>
