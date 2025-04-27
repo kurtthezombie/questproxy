@@ -16,7 +16,7 @@
       <div class="container mx-auto py-5 max-w-7xl mt-5">
         <div class="relative bg-blue-800 bg-opacity-5 p-16 rounded-lg px-20 overflow-hidden">
           <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0">
-            <div class="dust-container">
+            <div class="dust-container" v-once>
               <div
                 v-for="index in 100"
                 :key="index"
@@ -41,7 +41,6 @@
                 <circle cx="70" cy="55" r="6" fill="#047857"/>
                 <circle cx="80" cy="65" r="6" fill="#047857"/>
             </svg>
-
           </div>
           <div class="flex flex-wrap justify-start gap-4 -ml-10">
             <span class="bg-emerald-950 border border-emerald-600 text-emerald-500 text-xs font-semibold px-3 py-1 rounded-full hover:bg-gray-950 flex items-center gap-2">
@@ -60,7 +59,6 @@
             <span class="bg-purple-950 border border-purple-700 text-purple-500 text-xs font-semibold px-3 py-1 rounded-full hover:bg-gray-950 flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="16" height="16">
                 <circle cx="50" cy="50" r="48" fill="none" stroke="CurrentColor" stroke-width="4" />
-
                 <polygon points="50,10 55,35 80,35 58,50 65,80 50,60 35,80 42,50 20,35 45,35"
                         fill="CurrentColor" />
               </svg>
@@ -68,33 +66,24 @@
             </span>
           </div>
         </div>
-
-        <div class="bg-gray-800 rounded-lg shadow-lg p-6 my-8 border border-gray-700 flex items-center gap-4">
-            <h3 class="text-xl font-semibold text-white flex-shrink-0">Search Services</h3>
-            <input
-                type="text"
-                v-model="searchQuery"
-                @keydown.enter="applySearch"
-                placeholder="Search by game, description, pilot, days, or price..."
-                class="input input-bordered w-full bg-[#1e293b] text-white shadow-none border border-gray-700"
-            />
-             <button
-                @click="clearSearch"
-                class="btn btn-outline btn-success flex-shrink-0" 
-                v-if="searchQuery || appliedSearchQuery" 
-             >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                 Clear
-             </button>
-        </div>
-
-
+        <div class="relative w-full sm:w-full rounded-lg p-6 my-8 flex items-center">
+          <input
+              v-model="searchQuery"
+              type="text"
+              @keydown.enter="applySearch"
+              placeholder="Search by game, description, pilot, days, or price..."
+              class="bg-[#1e293b] text-gray-300 border border-gray-700 rounded-full pl-16 pr-4 py-4 h-13 shadow-md w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300 placeholder-gray-500"
+          />
+          <svg class="absolute left-4 top-1/2 -translate-y-1/2 opacity-70 ml-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width: 1.5em;">
+              <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+              </g>
+          </svg>
+          </div>
         <div v-if="!filteredServices.length && !serviceStore.loading" class="text-center mt-10 text-gray-400">
           No services found matching your criteria.
-       </div>
-
+        </div>
         <div class="px-4 py-5">
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             <ServiceDisplayCard
@@ -239,7 +228,6 @@ const clearSearch = () => {
     appliedSearchQuery.value = ''; // Clear the applied filter, triggering re-evaluation
 };
 
-
 // --- Lifecycle Hooks (Existing) ---
 onMounted(async () => {
   checkAuth();
@@ -264,42 +252,3 @@ const generateParticleStyle = (index) => {
   };
 };
 </script>
-
-<style scoped>
-/* Keep your existing scoped styles */
-.dust-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 0;
-    pointer-events: none; /* Allow clicks to pass through */
-}
-
-.dust {
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    animation: float ease-in-out infinite;
-}
-
-@keyframes float {
-    0% { transform: translate(0, 0) rotate(0deg); }
-    25% { transform: translate(10px, 5px) rotate(5deg); }
-    50% { transform: translate(0, 10px) rotate(0deg); }
-    75% { transform: translate(5px, 5px) rotate(-5deg); }
-    100% { transform: translate(0, 0) rotate(0deg); }
-}
-
-.whitespace-pre-wrap { white-space: pre-wrap; }
-.bg-gray-750 { background-color: rgba(55, 65, 81, 0.6); }
-.bg-gray-850 { background-color: rgb(31 41 55 / 0.7); }
-.loading { margin: auto; }
-.btn { transition: all 0.2s ease-in-out; }
-.btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
-
-/* Add or keep any specific styles for ServiceDisplayCard if needed */
-/* .service-modal-list .service-display-card:last-child { ... } */
-</style>
