@@ -9,7 +9,7 @@ import ServiceDisplayCard from '@/components/ServiceDisplay.vue';
 import ReviewCard from '@/components/ReviewCard.vue';
 import toast from '@/utils/toast';
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime'; 
+import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
 const route = useRoute();
@@ -18,10 +18,10 @@ const userStore = useUserStore();
 const serviceStore = useServiceStore();
 
 // --- Refs ---
-const userId = ref(null); 
+const userId = ref(null);
 const profileUsername = ref(null);
 const profileData = ref(null);
-const pilotDetails = ref(null); 
+const pilotDetails = ref(null);
 const gamerDetails = ref(null);
 const portfolios = ref([]);
 const points = ref(0);
@@ -57,12 +57,12 @@ const initials = computed(() => {
 
 const memberSince = computed(() => {
   if (!profileData.value?.created_at) return '';
-  return dayjs(profileData.value.created_at).format('MMMM D, YYYY');
+  return dayjs(profileData.value.created_at).format('MMMM D,YYYY');
 });
 
 // --- Reviews Display Logic ---
-const reviewsLimit = ref(3); 
-const showAllReviewsModal = ref(false); 
+const reviewsLimit = ref(3);
+const showAllReviewsModal = ref(false);
 
 const displayedReviews = computed(() => {
   return pilotReviews.value.slice(0, reviewsLimit.value);
@@ -86,7 +86,7 @@ const closeReviewsModal = () => {
 };
 
 // --- Services Display Logic ---
-const servicesLimit = ref(3); 
+const servicesLimit = ref(3);
 const showAllServicesModal = ref(false);
 
 const displayedServices = computed(() => {
@@ -161,7 +161,7 @@ const fetchPortfolios = async (fetchedUserId) => {
          : [];
     } catch (err) {
         console.error(`Error fetching portfolios for user ID ${fetchedUserId}:`, err);
- 
+
     }
 };
 
@@ -179,7 +179,7 @@ const fetchPoints = async () => {
   } catch (err) {
     console.error(`Error fetching points for ${profileUsername.value}: `, err);
     points.value = 0;
-   
+
   }
 };
 
@@ -212,7 +212,7 @@ const fetchPilotReviews = async (pilotId) => {
     }
 
     try {
- 
+
         const response = await axios.get(`http://127.0.0.1:8000/api/pilots/${pilotId}/reviews`, {
              headers: { Authorization: `Bearer ${authToken}` }
         });
@@ -231,18 +231,18 @@ const fetchPilotReviews = async (pilotId) => {
              console.log(`No reviews found for pilot ${pilotId}.`);
         } else {
              console.log(`Reviews fetched successfully for pilot ${pilotId}:`, pilotReviews.value);
-             reviewsError.value = null; 
+             reviewsError.value = null;
         }
 
     } catch (error) {
         console.error(`Error fetching reviews for pilot ${pilotId}: `, error);
         if (error.response?.status === 404) {
-             reviewsError.value = 'No reviews found for this pilot yet.'; 
+             reviewsError.value = 'No reviews found for this pilot yet.';
              console.log(`No reviews found for pilot ${pilotId} (404).`);
              pilotReviews.value = [];
         } else {
             reviewsError.value = 'Failed to load reviews.';
-            toast.error(reviewsError.value); 
+            toast.error(reviewsError.value);
             pilotReviews.value = [];
         }
     } finally {
@@ -258,7 +258,7 @@ const fetchUserProfile = async () => {
   if (!userId.value) { error.value = 'User ID is missing.'; isLoading.value = false; return; }
   if (!authToken) { error.value = 'Authentication token is missing.'; isLoading.value = false; return; }
 
-  console.log(`Fetching profile for User ID: ${userId.value}`);
+  console.log(`Workspaceing profile for User ID: ${userId.value}`);
   isLoading.value = true;
   error.value = null;
 
@@ -278,29 +278,29 @@ const fetchUserProfile = async () => {
 
 
     const role = profileData.value.role;
-    const specificPilotId = profileData.value.pilot?.id; 
-    const specificGamerId = profileData.value.gamer?.id; 
-    const fetchedUserId = profileData.value.id; 
+    const specificPilotId = profileData.value.pilot?.id;
+    const specificGamerId = profileData.value.gamer?.id;
+    const fetchedUserId = profileData.value.id;
 
     const promises = [];
 
     if (role === 'pilot' || role === 'game pilot') {
         console.log("Profile is Pilot. Fetching points, details, services, portfolio, reviews...");
-        promises.push(fetchPoints()); 
+        promises.push(fetchPoints());
         if (specificPilotId) {
-            promises.push(fetchPilotDetails(specificPilotId)); 
-            promises.push(serviceStore.fetchServicesByPilot(specificPilotId)); 
+            promises.push(fetchPilotDetails(specificPilotId));
+            promises.push(serviceStore.fetchServicesByPilot(specificPilotId));
             promises.push(fetchPilotReviews(specificPilotId));
         } else {
              console.warn("Pilot ID not found in profile data, cannot fetch pilot-specific details or reviews.");
              reviewsError.value = "Could not fetch reviews: Pilot ID missing.";
         }
-        promises.push(fetchPortfolios(fetchedUserId)); 
+        promises.push(fetchPortfolios(fetchedUserId));
 
     } else if (role === 'gamer') {
          console.log("Profile is Gamer. Fetching details...");
         if (specificGamerId) {
-            promises.push(fetchGamerDetails(specificGamerId)); 
+            promises.push(fetchGamerDetails(specificGamerId));
         }
     }
 
@@ -308,7 +308,7 @@ const fetchUserProfile = async () => {
         await Promise.all(promises);
         console.log("All profile data promises resolved.");
     }
-    error.value = null; 
+    error.value = null;
 
   } catch (err) {
     console.error('Error during user profile fetch process:', err);
@@ -320,7 +320,7 @@ const fetchUserProfile = async () => {
      } else if (err.request) {
         error.value = 'No response from server.';
      }
-    
+
   } finally {
       isLoading.value = false;
       console.log("Profile fetching complete.");
@@ -334,7 +334,7 @@ onMounted(() => { fetchCategories(); });
 watch(() => route.params.id, (newId, oldId) => {
   if (newId && newId !== oldId) {
     userId.value = newId;
-    fetchUserProfile(); 
+    fetchUserProfile();
   } else if (!newId) {
       error.value = "User ID parameter missing."; isLoading.value = false; profileData.value = null;
   }
@@ -365,7 +365,7 @@ const goToPublicPortfolio = () => {
       <h2 class="text-2xl text-red-500 font-semibold">Error Loading Profile</h2>
       <p>{{ error }}</p>
       <div class="mt-4 flex justify-center gap-3">
-        <button @click="router.push({ name: 'homepage' })" class="btn btn-primary">Go Home</button>
+        <button @click="router.push({ name: 'homepage' })" class="btn btn-danger">Go Home</button>
         <button v-if="userId" @click="fetchUserProfile" class="btn btn-secondary">Retry</button>
       </div>
     </div>
@@ -396,7 +396,7 @@ const goToPublicPortfolio = () => {
           <button v-if="isOwnProfile" @click="goToAccountSettings" class="btn btn-sm btn-outline btn-info">Account Settings</button>
           <button v-if="isOwnProfile && isPilotProfile" @click="goToMyPortfolio" class="btn btn-sm btn-outline btn-success">Manage Portfolio</button>
           <button v-if="!isOwnProfile && isPilotProfile" @click="goToPublicPortfolio" class="btn btn-sm btn-outline btn-success">View Portfolio</button>
-          <button v-if="!isOwnProfile" @click="goToReportUser" class="btn btn-sm btn-outline btn-warning">Report User</button>
+          <button v-if="!isOwnProfile" @click="goToReportUser" class="btn btn-sm bg-red-600 hover:bg-red-700 text-white border-red-700">Report User</button>
         </div>
       </section>
 
@@ -417,7 +417,7 @@ const goToPublicPortfolio = () => {
              <button
                 v-if="hasMoreServices"
                 @click="openServicesModal"
-                class="btn btn-sm btn-outline btn-success" 
+                class="btn btn-sm btn-outline btn-success"
             >
                 Show All {{ serviceStore.services.length }} Services
             </button>
@@ -438,34 +438,6 @@ const goToPublicPortfolio = () => {
                 :is-service-history="false"
             />
             </div>
-      </section>
-
-
-      <section v-if="isPilotProfile" class="space-y-4">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-semibold">Reviews Received</h2>
-            <button
-                v-if="hasMoreReviews"
-                @click="openReviewsModal"
-                class="btn btn-sm btn-outline btn-secondary"
-            >
-                Show All {{ pilotReviews.length }} Reviews
-            </button>
-        </div>
-
-        <div v-if="isLoadingReviews" class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
-            <span class="loading loading-dots loading-lg text-accent"></span>
-        </div>
-        <div v-else-if="reviewsError" class="text-center text-red-400 py-10 bg-gray-800 rounded-lg border border-red-700">
-            <p>{{ reviewsError }}</p>
-            <button v-if="pilotIdForReviews" @click="fetchPilotReviews(pilotIdForReviews)" class="btn btn-sm btn-outline btn-warning mt-2">Retry Reviews</button>
-        </div>
-        <div v-else-if="pilotReviews.length === 0" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
-            This pilot hasn't received any reviews yet.
-        </div>
-        <div v-else class="space-y-4">
-            <ReviewCard v-for="review in displayedReviews" :key="review.id" :review="review" />
-        </div>
       </section>
 
       <section v-if="isPilotProfile" class="space-y-4">
@@ -497,6 +469,33 @@ const goToPublicPortfolio = () => {
           <div v-else class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
               This pilot hasn't added any portfolio items yet.
           </div>
+      </section>
+
+      <section v-if="isPilotProfile" class="space-y-4">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-semibold">Reviews Received</h2>
+            <button
+                v-if="hasMoreReviews"
+                @click="openReviewsModal"
+                class="btn btn-sm btn-outline btn-secondary"
+            >
+                Show All {{ pilotReviews.length }} Reviews
+            </button>
+        </div>
+
+        <div v-if="isLoadingReviews" class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
+            <span class="loading loading-dots loading-lg text-accent"></span>
+        </div>
+        <div v-else-if="reviewsError" class="text-center text-red-400 py-10 bg-gray-800 rounded-lg border border-red-700">
+            <p>{{ reviewsError }}</p>
+            <button v-if="pilotIdForReviews" @click="fetchPilotReviews(pilotIdForReviews)" class="btn btn-sm btn-outline btn-warning mt-2">Retry Reviews</button>
+        </div>
+        <div v-else-if="pilotReviews.length === 0" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
+            This pilot hasn't received any reviews yet.
+        </div>
+        <div v-else class="space-y-4 max-h-96 overflow-y-auto pr-2">
+            <ReviewCard v-for="review in displayedReviews" :key="review.id" :review="review" />
+        </div>
       </section>
 
 
