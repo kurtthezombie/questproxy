@@ -78,7 +78,7 @@ onUnmounted(() => {
         <div
             class="mt-3 w-full bg-gray-900 bg-opacity-5  rounded-sm border border-gray-700 hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer rounded-xl flex flex-col justify-between">
             <div class="flex justify-center rounded-md relative">
-                <div v-if="isOwner && !hideActions" class="absolute top-2 right-2 flex space-x-2 z-10">
+                <div v-if="isOwner && !hideActions" class="absolute top-2 right-2 flex space-x-2">
                     <button
                         class="p-2 bg-gray-400 text-white rounded-md shadow-md hover:bg-blue-700 transition"
                         @click.stop="openEditModal(portfolio)"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -110,9 +110,9 @@ onUnmounted(() => {
         </div>
 
         <Teleport to="body">
-            <div v-if="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90 z-50"> <div class="relative p-4 rounded-lg shadow-lg max-w-3xl">
+            <div v-if="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90"> <div class="relative p-4 rounded-lg shadow-lg max-w-3xl">
                     <button @click="closeModal"
-                        class="absolute top-5 right-5 text-gray-200 bg-gray-500 bg-opacity-50 p-3 text-2xl font-bold hover:bg-gray-400 hover:bg-opacity-30 rounded-full z-10"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        class="absolute top-5 right-5 text-gray-200 bg-gray-500 bg-opacity-50 p-3 text-2xl font-bold hover:bg-gray-400 hover:bg-opacity-30 rounded-full"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>

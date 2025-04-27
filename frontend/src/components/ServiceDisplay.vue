@@ -13,7 +13,6 @@
     <p class="text-gray-300 -mt-2">{{ service.description || 'No description available' }}</p>
     <div class="mt-2 flex justify-between items-center">
       <div class="flex flex-col text-gray-300">
-        <!-- Day  -->
         <div class="flex items-center mb-1 mt-4">
           <svg class="w-5 h-5 text-gray-300 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -62,10 +61,29 @@ const router = useRouter();
 const toast = useToast();
 const emit = defineEmits(['serviceDeleted']);
 
+// Helper function to normalize game names for comparison
+const normalizeGameName = (name) => {
+  if (!name) return '';
+  return name.toLowerCase().replace(/_/g, ' ');
+};
+
 const getGameTitle = computed(() => {
-  const category = props.categories.find(cat => cat.game === props.service.game);
+  // Check if essential data is available
+  if (!props.service || !props.service.game || !props.categories) {
+    return props.service?.game || 'Unknown Game';
+  }
+
+  const normalizedServiceGame = normalizeGameName(props.service.game);
+
+  // Find the category with a matching normalized game name
+  const category = props.categories.find(cat =>
+    normalizeGameName(cat.game) === normalizedServiceGame
+  );
+
+  // Return the category title if found, otherwise fallback to the service game or 'Unknown Game'
   return category ? category.title : props.service.game || 'Unknown Game';
 });
+
 
 const formatPrice = (price) => {
   const num = Number(price || 0);
@@ -79,9 +97,9 @@ const handleServiceClick = () => {
   }
 
   router.push({
-    name: 'PaymentView', 
-    params: { serviceId: props.service.id }, 
-    state: { service: props.service } 
+    name: 'PaymentView',
+    params: { serviceId: props.service.id },
+    state: { service: props.service }
   });
 };
 
@@ -115,4 +133,9 @@ const initial = computed(() => {
   return props.service.pilot_username.charAt(0).toUpperCase();
 });
 
+
 </script>
+
+<style scoped>
+/* Your existing styles here */
+</style>
