@@ -21,14 +21,15 @@ class MatchingController extends Controller
         ]);
 
         //query matching pilots
-        $matchingPilot = Pilot::whereHas('services', function($query) use ($request) {
-            $query->where('category_id', $request->game)
-                ->where('description', 'like', '%' . $request->service . '%')
-                ->where('availability', true);
-        })->whereHas('rank', function($query) use ($request) {
-            $query->where('points', '>=', $request->points);
-        })->where('user_id', '!=', $request->user()->id)
-        ->get();
+        $matchingPilot = Pilot::with('rank') // Eager load the 'rank' relationship
+            ->whereHas('services', function($query) use ($request) {
+                $query->where('category_id', $request->game)
+                    ->where('description', 'like', '%' . $request->service . '%')
+                    ->where('availability', true);
+            })->whereHas('rank', function($query) use ($request) {
+                $query->where('points', '>=', $request->points);
+            })->where('user_id', '!=', $request->user()->id)
+            ->get();
 
         //return if no pilots are found
         if ($matchingPilot->isEmpty()){

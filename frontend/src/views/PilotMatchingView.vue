@@ -1,6 +1,6 @@
 <script setup>
 import toast from '@/utils/toast';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import NavBar from '@/components/NavBar.vue';
 import { fetchCategories, findMatchingPilot } from '@/services/match.service';
 
@@ -13,7 +13,7 @@ const formData = ref({
   points: null,
 });
 
-const show = ref(false); 
+const show = ref(false);
 const foundPilot = ref(null);
 
 const openModal = () => {
@@ -40,13 +40,12 @@ const getCategories = async () => {
 
 const handleSearchPilot = async () => {
   loadingSearch.value = true;
-  
+
   try {
     setTimeout(async () => {
       const data = await findMatchingPilot(formData.value);
       let message = '';
 
-      //do something if data is here:
       if (data.pilot && data.pilot_details) {
         foundPilot.value = data.pilot_details;
 
@@ -65,7 +64,7 @@ const handleSearchPilot = async () => {
     console.error('Search failed: ', error);
     toast.error('Search failed');
     loadingSearch.value = false;
-  } 
+  }
 };
 
 const clearFields = () => {
@@ -75,6 +74,12 @@ const clearFields = () => {
       points: null,
     };
 }
+
+const pilotInitial = computed(() => {
+  return foundPilot.value && foundPilot.value.user && foundPilot.value.user.f_name
+    ? foundPilot.value.user.f_name.trim().charAt(0).toUpperCase()
+    : '';
+});
 
 
 onMounted(() => {
@@ -92,9 +97,7 @@ onMounted(() => {
           <h2 class="font-semibold text-center text-green-400 text-2xl">Find A Pilot</h2>
         </div>
         <form @submit.prevent="handleSearchPilot">
-          <!-- body -->
           <div class="flex flex-col space-y-4 mt-4">
-            <!-- GAME DROPDOWN -->
             <div class="space-y-1">
               <label for="game" class="text-green-400">Game</label>
               <select name="game" id="game" class="select w-full bg-gray-900" v-model="formData.game" required>
@@ -105,7 +108,6 @@ onMounted(() => {
               </select>
             </div>
 
-            <!-- Service DROPDOWN -->
             <div class="space-y-1">
               <label for="service" class="text-green-400">Type of Service</label>
               <select name="service" id="service" class="select w-full bg-gray-900" v-model="formData.service" required>
@@ -117,14 +119,12 @@ onMounted(() => {
               </select>
             </div>
 
-            <!-- POINTS PREFERENCE -->
             <div class="space-y-1">
               <label for="points" class="text-green-400">Preferred Pilot Points</label>
               <input type="number" id="points" class="input bg-gray-900 w-full" placeholder="e.g. 50"
                 v-model="formData.points" required>
             </div>
 
-            <!-- Search Button -->
             <div>
               <button type="submit"
                 class="w-full bg-green-600 hover:bg-green-500 transition rounded-lg py-2 font-semibold"
@@ -138,7 +138,6 @@ onMounted(() => {
       </div>
     </div>
   </div>
-  <!-- MODAL FOR SEARCHING -->
   <div v-if="loadingSearch" class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
     <div class="modal modal-open sm-modal-middle">
       <div class="modal-box bg-gray-800">
@@ -159,34 +158,44 @@ onMounted(() => {
       </div>
     </div>
   </div>
-  <!-- MODAL FOR PILOT FOUND -->
-  <!-- The Modal will be shown if `show` is true -->
-  <div v-if="show" class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-    <!-- Modal Content (DaisyUI modal structure) -->
+  <div v-if="show" class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-60 z-50">
     <div class="modal modal-open sm-modal-middle">
-      <div class="modal-box bg-gray-800">
-        <div class="px-6 py-4">
+      <div class="modal-box bg-[#1E293B] text-white border border-gray-700">
+        <div class="px-6 py-4 border-b border-gray-700">
           <h2 class="text-2xl font-semibold text-green-400">Pilot Found!</h2>
         </div>
         <div class="px-6 py-4">
-          <div class="mb-4">
-            <p class="text-lg font-medium text-gray-300">Username:</p>
-            <p class="text-xl text-white">{{ foundPilot.user.username }}</p>
+          <div class="flex justify-center mb-4">
+            <div class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold text-5xl leading-[1]">
+              {{ pilotInitial }}
+            </div>
           </div>
 
-          <div class="mb-4">
-            <p class="text-lg font-medium text-gray-300">Skills:</p>
-            <p class="text-base text-gray-400">{{ foundPilot.skills }}</p>
-          </div>
+          <div class="space-y-4">
+            <div class="bg-emerald-950 text-emerald-400 px-3 py-1 rounded-full flex items-center border border-emerald-800 w-fit mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="yellow" class="mr-1"><path d="M12 2L15 8L22 8.5L17 12.5L18 19.5L12 16.5L6 19.5L7 12.5L2 8.5L9 8L12 2Z"/></svg>
+                <span class="font-semibold">Points:</span><span class="font-bold ml-1">{{ foundPilot?.rank?.points }}</span>
+            </div>
 
-          <div class="mb-4">
-            <p class="text-lg font-medium text-gray-300">Bio:</p>
-            <p class="text-sm text-gray-400">{{ foundPilot.bio }}</p>
+            <div class="mb-4">
+              <p class="text-lg font-medium text-gray-400">Username:</p>
+              <p class="text-xl text-white">{{ foundPilot?.user?.username }}</p>
+            </div>
+
+            <div class="mb-4">
+              <p class="text-lg font-medium text-gray-400">Skills:</p>
+              <p class="text-base text-gray-300">{{ foundPilot?.skills }}</p>
+            </div>
+
+            <div class="mb-4">
+              <p class="text-lg font-medium text-gray-400">Bio:</p>
+              <p class="text-sm text-gray-300">{{ foundPilot?.bio }}</p>
+            </div>
           </div>
         </div>
-        <div class="modal-action">
-          <a :href="`/users/${foundPilot.user_id}`" class="btn btn-success hover:bg-green-300">View Profile</a>
-          <button class="btn" @click="closeModal">Close</button>
+        <div class="modal-action px-6 py-4 border-t border-gray-700">
+          <a :href="`/users/${foundPilot.user_id}`" class="btn bg-green-600 hover:bg-green-700 text-white border-none">View Profile</a>
+          <button class="btn bg-gray-600 hover:bg-gray-700 text-white border-none" @click="closeModal">Close</button>
         </div>
       </div>
     </div>
