@@ -136,9 +136,17 @@ onMounted(() => {
 
 <template>
   <div class="bg-gray-900 min-h-screen flex flex-col items-center justify-center text-white py-5">
-    <div class="card bg-gray-700 bg-opacity-20 p-6 w-2/5">
+    <div class="card bg-gray-700 bg-opacity-20 p-6 sm:w-2/3 md:w-2/5">
 
       <div class="card-body flex-col justify-center items-center">
+        <div class="card-title w-full">
+          <button class="btn btn-ghost btn-lg" @click="$router.push(`/payment/${serviceId}`)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+            </svg>
+          </button>
+        </div>
+        
 
         <div class="card-title">
           <h1 class="text-2xl font-bold">Game Service Agreement</h1>
@@ -194,14 +202,14 @@ onMounted(() => {
             </div>
           </div>
 
-          <div class="flex justify-end w-full">
+          <div class="flex flex-col lg:flex-row justify-end w-full">
             <!-- Proceed to Payment Button -->
-            <button v-if="isSubmitted" class="btn btn-soft btn-primary ml-4" @click="proceedToPayment" type="button">
+            <button v-if="isSubmitted" class="btn btn-soft btn-primary sm:w-auto" @click="proceedToPayment" type="button">
               Proceed to Payment
             </button>
 
             <!-- Submit Agreement Button (Disabled after submission) -->
-            <button :disabled="isSubmitted" class="btn btn-success" type="submit">
+            <button :disabled="isSubmitted" class="btn btn-success sm:w-auto" type="submit">
               {{ isSubmitted ? 'Agreement Submitted' : 'Submit Agreement' }}
             </button>
 

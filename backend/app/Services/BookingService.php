@@ -86,7 +86,7 @@ class BookingService
 
         $bookings = $this->booking->whereHas('service', function ($query) use ($pilotId) {
             $query->where('pilot_id', $pilotId);
-        })->with(['service','service.pilot', 'client', 'instruction'])
+        })->with(['service','service.pilot', 'service.category', 'client', 'instruction'])
         ->get();
 
         return $bookings;
@@ -113,6 +113,15 @@ class BookingService
                 'pilotName' => $booking->service->pilot->user->username,
             ];
         });
+    }
+
+    public function updateProgress($booking_id, $progress)
+    {
+        $booking = Booking::findOrFail($booking_id);
+        $booking->progress = $progress;
+        $booking->save();
+
+        return $booking;
     }
 
     private function sendCompletionEmail($booking)

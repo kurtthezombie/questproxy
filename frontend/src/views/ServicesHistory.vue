@@ -35,13 +35,14 @@
           <div class="flex items-center mt-8 space-x-4 px-4 w-full">
             <div class="relative w-full max-w-7xl">
               <div class="absolute left-2 top-1/2 -translate-y-1/2 p-2">
-              <svg class="h-[1.5em] opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.3-4.3"></path>
-                </g>
-              </svg>
-            </div>
+                <svg class="h-[1.5em] opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
+                    stroke="currentColor">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                  </g>
+                </svg>
+              </div>
               <input v-model="searchQuery" type="text" placeholder="Search services.."
                 class="bg-[#1e293b] text-gray-300 border border-gray-700 rounded-full pl-16 pr-4 py-4 h-15 shadow-md w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300" />
             </div>
@@ -66,12 +67,14 @@
               </span>
             </button>
 
-            <button class="flex items-center w-full md:w-auto rounded transition-colors duration-200 px-4 py-3" 
-              :class="activeTab === 'bookings' ? 'text-green-400 bg-[#1e293b]' : 'text-gray-500 hover:text-white hover:bg-gray-600'" 
+            <button class="flex items-center w-full md:w-auto rounded transition-colors duration-200 px-4 py-3"
+              :class="activeTab === 'bookings' ? 'text-green-400 bg-[#1e293b]' : 'text-gray-500 hover:text-white hover:bg-gray-600'"
               @click="showBookings">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18" class="mr-2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"></rect>
+
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24" width="18" height="18" class="mr-2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round">
+                </rect>
                 <line x1="16" y1="2" x2="16" y2="6" stroke-linecap="round" stroke-linejoin="round"></line>
                 <line x1="8" y1="2" x2="8" y2="6" stroke-linecap="round" stroke-linejoin="round"></line>
                 <line x1="3" y1="10" x2="21" y2="10" stroke-linecap="round" stroke-linejoin="round"></line>
@@ -79,7 +82,7 @@
 
               My Bookings
               <span class="bg-emerald-500 text-white rounded-full px-2 ml-2">
-                {{ serviceStore.myBookings.filter(booking => booking.status === 'pending').length || 0 }}
+                {{ serviceStore.myBookings.filter(booking => booking.status === 'in_progress').length || 0 }}
               </span>
             </button>
 
@@ -128,33 +131,31 @@
               <div class=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div v-for="booking in filteredBookings" :key="booking.id"
                   class="bg-blue-900 bg-opacity-20 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all hover:cursor-pointer hover:scale-105 duration-200 transition-transform"
-                  @click="openBookingModal(booking)"
-                  >
+                  @click="openBookingModal(booking)">
                   <div class="flex justify-between items-start">
-                    <h3 class="text-xl font-bold text-white mt-1">
-                      {{ booking.service?.game || 'Unknown Service' }}
-                    </h3>
+                    <div class="text-sm bg-gray-700 p-1 px-3 text-white w-fit">
+                      <p>bk-{{ booking.id }}</p>
+                    </div>
                     <span :class="{
                     'bg-emerald-500 font-bold': booking.status === 'completed',
-                    'bg-yellow-500 font-bold': booking.status === 'pending',
+                    'bg-yellow-500 font-bold': booking.status === 'in_progress',
                     'bg-red-500 font-bold': booking.status === 'cancelled'
-                  }" class="text-xs px-2 py-1 rounded-full text-white capitalize mt-2 mr-1">
-                      {{ booking.status }}
+                  }" class="text-xs px-2 py-1 rounded-full text-white mt-2 mr-1">
+                      {{ booking.status === 'in_progress' ? 'in progress' : booking.status }}
                     </span>
                   </div>
-
+                  <h3 class="text-xl font-bold text-white mt-1">
+                    {{ booking.service?.category?.title  || 'Unknown Service' }}
+                  </h3>
                   <p class="text-gray-300 mt-1 mb-8">
                     {{ booking.service?.description || 'No description available' }}
                   </p>
 
-                  <div class="text-sm bg-gray-700 p-1 text-white w-fit mb-8">
-                    <p>Booking ID : {{ booking.id }}</p>
-                  </div>
-
                   <div class="mt-3 text-gray-300">
                     <div class="flex items-center mt-2 w-full">
                       <!-- Avatar -->
-                      <div class="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-500 font-semibold text-white mr-2 text-lg uppercase">
+                      <div
+                        class="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-500 font-semibold text-white mr-2 text-lg uppercase">
                         {{ booking.client?.username?.charAt(0) || '?' }}
                       </div>
 
@@ -170,6 +171,16 @@
                       </span>
                     </div>
                   </div>
+                  <!-- Progress Bar (Bar Style) -->
+                  <div class="relative pt-1 mt-4">
+                    <label for="progress" class="block text-xs text-gray-400">Progress</label>
+                    <div class="flex mb-2 items-center justify-between">
+                      <span class="text-xs text-gray-400">0%</span>
+                      <span class="text-xs text-gray-400">100%</span>
+                    </div>
+                    <progress class="progress progress-success w-full" :value="booking.progress" max="100"></progress>
+
+                  </div>
                 </div>
               </div>
             </div>
@@ -181,11 +192,8 @@
               No service history found.
             </div>
             <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div
-                v-for="history in serviceHistory"
-                :key="history.id"
-                class="bg-blue-900 bg-opacity-20 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all"
-              >
+              <div v-for="history in serviceHistory" :key="history.id"
+                class="bg-blue-900 bg-opacity-20 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all">
                 <div class="flex justify-between items-start">
                   <!-- Service Info -->
                   <h3 class="text-xl font-bold text-white mt-1">
@@ -207,7 +215,8 @@
                 <div class="mt-3 text-gray-300">
                   <div class="flex items-center mt-2 w-full">
                     <!-- Avatar -->
-                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 font-semibold text-white mr-2 text-lg uppercase">
+                    <div
+                      class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 font-semibold text-white mr-2 text-lg uppercase">
                       {{ history.client?.username?.charAt(0) || '?' }}
                     </div>
 
@@ -226,16 +235,12 @@
               </div>
             </div>
           </div>
-      </div>
-    </template>
-  </div>
-   
+        </div>
+      </template>
+    </div>
+
     <!-- Pass the selected booking and modal state to the dialog -->
-    <ViewBookingDialog 
-      :selectedBooking="selectedBooking" 
-      :isModalOpen="isModalOpen"
-      @close="closeModal"
-    />
+    <ViewBookingDialog :selectedBooking="selectedBooking" :isModalOpen="isModalOpen" @close="closeModal" />
 
   </div>
 </template>
@@ -269,7 +274,7 @@ const username = computed(() => userStore.userData?.username || '');
 const email = computed(() => userStore.userData?.email || '');
 const role = computed(() => userStore.userData?.role || '');
 
-const bookingStatusFilter = ref('pending');
+const bookingStatusFilter = ref('in_progress');
 
 const filteredBookings = computed(() => {
   if (bookingStatusFilter.value === 'all') return serviceStore.myBookings;
@@ -359,7 +364,5 @@ onMounted(async () => {
 const timeAgo = (dateString) => {
   return dayjs(dateString).fromNow()
 }
-
-
 
 </script>

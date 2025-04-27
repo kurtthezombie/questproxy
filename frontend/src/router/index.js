@@ -199,16 +199,19 @@ const router = createRouter({
       path: '/thank-you',
       name: 'thankyou',
       component: ThankYouView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/mybookings',
       name: 'mybookings',
       component: MyBookingsView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/contract/:serviceId',
       name: 'contract',
       component: CreateContractView,
+      meta: { requiresAuth: true }
     },
   ]
 });

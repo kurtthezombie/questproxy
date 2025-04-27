@@ -182,4 +182,19 @@ class BookingController extends Controller
             return $this->failedResponse($e->getMessage(), 500);
         }
     }
+
+    public function updateProgress(Request $request, $booking_id)
+    {
+        $data = $request->validate([
+            'progress' => 'required|integer|min:0|max:100',
+        ]);
+
+        try {
+            $updatedBooking = $this->bookingService->updateProgress($booking_id, $data['progress']);
+
+            return $this->successResponse('Booking progress updated successfully.', 200, ['data' => $updatedBooking]);
+        } catch (Exception $e) {
+            return $this->failedResponse('Error: ' . $e->getMessage(), 500);
+        }
+    }
 }

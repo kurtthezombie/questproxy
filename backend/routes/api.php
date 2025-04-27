@@ -129,6 +129,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('bookings/service/{service_id}', 'booksByService');
         Route::get('bookings/client/{client_id}', 'booksByClient');
         Route::get('/pilot/bookings', 'getBookingByPilot');
+        Route::put('bookings/{booking_id}/progress', 'updateProgress');
     });
 
     Route::controller(PaymentController::class)->group(function() {

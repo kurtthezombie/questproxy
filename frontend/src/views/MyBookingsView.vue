@@ -30,6 +30,7 @@ const redirectToHome = () => {
 
 onMounted(() => {
   handleFetchMyBookings();
+  console.log('Bookings in My Bookings: ', bookings.value);
 })
 </script>
 
@@ -39,7 +40,7 @@ onMounted(() => {
     <h2 class="mb-6 text-3xl font-bold text-white">My Bookings</h2>
     <div class="flex gap-4 mb-4">
       <button @click="filter = 'all'" :class="{ 'font-bold': filter === 'all', 'btn': true }">All</button>
-      <button @click="filter = 'pending'" :class="{ 'font-bold': filter === 'pending', 'btn btn-warning': true }">Pending</button>
+      <button @click="filter = 'in_progress'" :class="{ 'font-bold': filter === 'in_progress', 'btn btn-warning': true }">In Progress</button>
       <button @click="filter = 'completed'" :class="{ 'font-bold': filter === 'completed', 'btn btn-success': true }">Completed</button>
     </div>
     <p v-if="filteredBookings.length === 0" class="text-center text-xl cursor-pointer hover:scale-105 duration-300" @click="redirectToHome">
@@ -48,7 +49,9 @@ onMounted(() => {
     <div v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 overflow-y-auto max-h-[calc(100vh-200px)]">
       <MyBookingCard v-for="booking in filteredBookings" :key="booking.booking.id" :serviceTitle="booking.serviceTitle"
         :gameName="booking.gameTitle" :pilotName="booking.pilotName" :status="booking.booking.status"
-        :bookedOn="dayjs(booking.created_at).format('MMMM D, YYYY')" />
+        :bookedOn="dayjs(booking.created_at).format('MMMM D, YYYY')" 
+        :progress="booking.booking.progress"
+        />
     </div>
   </div>
 </template>
