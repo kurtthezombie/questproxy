@@ -75,6 +75,11 @@ class ReviewService
         ];
     }
 
+    public function getReviewsByPilotId($pilotId) {
+      
+        return $this->review->where('pilot_id', $pilotId)->with('user')->get();
+    }
+
     private function getPointsFromRating(int $rating) {
         return match ($rating) {
             1 => 0,

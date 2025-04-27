@@ -57,6 +57,23 @@ const getUserDataAndPortfolios = async () => {
   }
 };
 
+const generateParticleStyle = (index) => {
+  const left = Math.random() * 100;
+  const top = Math.random() * 100;
+  const size = Math.random() * 3 + 2;
+  const duration = Math.random() * 10 + 5;
+  const delay = Math.random() * 5;
+  
+  return {
+    left: `${left}%`,
+    top: `${top}%`,
+    width: `${size}px`,
+    height: `${size}px`,
+    animationDuration: `${duration}s`,
+    animationDelay: `${delay}s`,
+  };
+};
+
 onMounted(() => {
   getUserDataAndPortfolios(),
     fetchPoints(username)
@@ -67,6 +84,15 @@ onMounted(() => {
 <template>
   <NavBar />
   <div class="flex justify-center items-center min-h-screen max-w-full bg-gray-800 flex-col space-y-10 py-10">
+    <div class="dust-container">
+        <!-- Generate 100 dust particles -->
+          <div 
+            v-for="index in 100" 
+              :key="index" 
+              class="dust"
+              :style="generateParticleStyle(index)"
+              ></div>
+        </div>
     <div class="flex justify-center flex-col items-center">
       <div
         class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-5xl font-semibold text-white">
