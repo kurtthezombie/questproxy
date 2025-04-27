@@ -378,7 +378,7 @@ const goToPublicPortfolio = () => {
           </div>
           <div class="flex-grow text-center md:text-left">
             <h1 class="text-3xl md:text-4xl font-bold">{{ profileData.username }}</h1>
-            <p class="text-gray-400 capitalize">{{ profileRole?.replace('game ', '') }}</p>
+            <p class="text-green-400 capitalize">{{ profileRole?.replace('game ', '') }}</p>
             <div class="mt-3 flex flex-wrap justify-center md:justify-start items-center gap-2 md:gap-4 text-sm">
               <div v-if="isPilotProfile" class="bg-emerald-950 text-emerald-400 px-3 py-1 rounded-full flex items-center border border-emerald-800">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="yellow" class="mr-1"><path d="M12 2L15 8L22 8.5L17 12.5L18 19.5L12 16.5L6 19.5L7 12.5L2 8.5L9 8L12 2Z"/></svg>
