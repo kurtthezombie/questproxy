@@ -120,26 +120,26 @@ import { useServiceStore } from '@/stores/serviceStore';
 import { useUserStore } from '@/stores/userStore';
 import NavBar from '@/components/NavBar.vue';
 import ServiceDisplayCard from '@/components/ServiceDisplay.vue';
-import '@/assets/css/style.css'; // Keep if needed
+import '@/assets/css/style.css'; 
 
 const router = useRouter();
 const serviceStore = useServiceStore();
 const userStore = useUserStore();
 
-// --- User State (Keep if needed for NavBar or other logic) ---
+// --- User State  ---
 const username = computed(() => userStore.userData?.username || '');
 const email = computed(() => userStore.userData?.email || '');
 const role = computed(() => userStore.userData?.role || '');
 
-// --- Route Param for Category (Existing) ---
+// --- Route Param for Category  ---
 const categoryGame = ref(router.currentRoute.value.params.title || 'all');
 
 // --- Search Query Refs ---
-const searchQuery = ref(''); // Binds to the input field value
-const appliedSearchQuery = ref(''); // Used for actual filtering
+const searchQuery = ref(''); 
+const appliedSearchQuery = ref(''); 
 
 
-// --- Computed Property for Display Title (Existing) ---
+// --- Computed Property for Display Title  ---
 const getDisplayTitle = computed(() => {
   if (!categoryGame.value || categoryGame.value.toLowerCase() === 'all') {
     return 'All';
@@ -151,27 +151,23 @@ const getDisplayTitle = computed(() => {
 });
 
 
-// --- Modified filteredServices computed property (uses appliedSearchQuery) ---
+// --- Modified filteredServices computed property ---
 const filteredServices = computed(() => {
-  // Start with all services from the store
   let services = serviceStore.services || [];
 
-  // 1. Filter by category (existing logic)
+
   if (categoryGame.value && categoryGame.value.toLowerCase() !== 'all') {
     services = services.filter(service =>
       service && service.game && service.game.toLowerCase() === categoryGame.value.toLowerCase()
     );
   }
 
-  // 2. Filter by applied search query (text and number)
-  const query = appliedSearchQuery.value.toLowerCase().trim(); // Use appliedSearchQuery
+  const query = appliedSearchQuery.value.toLowerCase().trim();
   if (query) {
-    // Attempt to parse the query as a number
     const queryNumber = Number(query);
     const isNumberSearch = !isNaN(queryNumber);
 
     services = services.filter(service => {
-      // Get the display title for the service's game
       const gameTitle = service.game ? (serviceStore.categories.find(cat => cat.game === service.game)?.title || service.game) : '';
 
       // Check for text match in relevant fields
@@ -180,16 +176,13 @@ const filteredServices = computed(() => {
         (service.description && service.description.toLowerCase().includes(query)) ||
         (service.pilot_username && service.pilot_username.toLowerCase().includes(query));
 
-      // Check for number match if the query is a number
       let numberMatch = false;
       if (isNumberSearch) {
-        // Check if service duration or price match the number exactly
         numberMatch =
           (service.duration === queryNumber) ||
           (service.price === queryNumber);
       }
 
-      // A service passes the filter if there's a text match OR a number match
       return textMatch || numberMatch;
     });
   }
@@ -198,28 +191,25 @@ const filteredServices = computed(() => {
 });
 
 
-// --- Authentication Check (Existing) ---
+// --- Authentication Check  ---
 const checkAuth = () => {
   if (!localStorage.getItem('authToken')) {
     router.push({ name: 'login' });
   }
 };
 
-// --- Service Fetching (Existing) ---
-// Assuming fetchUserServices fetches services for the current user's context
+// --- Service Fetching  ---
 const fetchServices = async () => {
   try {
     await serviceStore.fetchUserServices();
     console.log('Fetched services:', serviceStore.services);
-    // No need to initialize appliedSearchQuery here unless you want
-    // the initial page load to show results filtered by a default query.
   } catch (error) {
     console.error('Error fetching services:', error);
-    serviceStore.error = 'Failed to load services.'; // Set error state in store
+    serviceStore.error = 'Failed to load services.'; 
   }
 };
 
-// --- Logout Function (Existing) ---
+// --- Logout Function  ---
 const callLogout = () => {
   userStore.clearUser();
   serviceStore.clearServices();
@@ -235,19 +225,19 @@ const applySearch = () => {
 
 // --- Method to clear the search ---
 const clearSearch = () => {
-    searchQuery.value = ''; // Clear the input field
-    appliedSearchQuery.value = ''; // Clear the applied filter, triggering re-evaluation
+    searchQuery.value = ''; 
+    appliedSearchQuery.value = ''; 
 };
 
 
-// --- Lifecycle Hooks (Existing) ---
+// --- Lifecycle Hooks  ---
 onMounted(async () => {
   checkAuth();
-  await serviceStore.fetchCategories(); // Fetch categories first
-  await fetchServices(); // Then fetch services
+  await serviceStore.fetchCategories(); 
+  await fetchServices(); 
 });
 
-// --- Dust Particle Function (Existing) ---
+// --- Dust Particle Function ---
 const generateParticleStyle = (index) => {
   const left = Math.random() * 100;
   const top = Math.random() * 100;
@@ -266,7 +256,6 @@ const generateParticleStyle = (index) => {
 </script>
 
 <style scoped>
-/* Keep your existing scoped styles */
 .dust-container {
     position: absolute;
     top: 0;
@@ -275,7 +264,7 @@ const generateParticleStyle = (index) => {
     height: 100%;
     overflow: hidden;
     z-index: 0;
-    pointer-events: none; /* Allow clicks to pass through */
+    pointer-events: none; 
 }
 
 .dust {
@@ -300,6 +289,4 @@ const generateParticleStyle = (index) => {
 .btn { transition: all 0.2s ease-in-out; }
 .btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
 
-/* Add or keep any specific styles for ServiceDisplayCard if needed */
-/* .service-modal-list .service-display-card:last-child { ... } */
 </style>

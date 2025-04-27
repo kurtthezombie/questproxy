@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        <!-- Search Section -->
+      <!-- Search Section 
         <div class="relative w-full max-w-7xl mb-10">
           <div class="flex items-center mt-8 space-x-4 px-4 w-full">
             <div class="relative w-full max-w-7xl">
@@ -47,7 +47,7 @@
                 class="bg-[#1e293b] text-gray-300 border border-gray-700 rounded-full pl-16 pr-4 py-4 h-15 shadow-md w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300" />
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- Navigation Buttons -->
         <div class="relative mt-3">
