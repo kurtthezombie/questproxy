@@ -136,27 +136,24 @@ onMounted(() => {
 
 <template>
   <div class="bg-gray-900 min-h-screen flex flex-col items-center justify-center text-white py-5">
-    <div class="card bg-gray-700 bg-opacity-20 p-6 sm:w-2/3 md:w-2/5">
+    <div class="card bg-gray-700 bg-opacity-20 border border-gray-700 p-6 sm:w-2/3 md:w-2/5">
 
       <div class="card-body flex-col justify-center items-center">
-        <div class="card-title w-full">
-          <button class="btn btn-ghost btn-lg" @click="$router.push(`/payment/${serviceId}`)" :disabled="isSubmitted">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <div class="w-full flex items-center justify-between mb-6">
+          <button class="btn btn-ghost btn-lg p-0" @click="$router.push(`/payment/${serviceId}`)">
+            <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
             </svg>
           </button>
-        </div>
-        
-
-        <div class="card-title">
-          <h1 class="text-2xl font-bold">Game Service Agreement</h1>
+          <h1 class="text-2xl md:text-4xl font-bold text-center flex-1">Game Service Agreement</h1>
         </div>
 
+        <p class="text-base text-gray-400 mb-10 -mt-8">Fill in the details to create a new gaming service contract</p>
         <div class="flex flex-col w-full">
           <h3 class="text-lg font-semibold mb-4 border-b border-green-300 pb-2">Service Details</h3>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 w-full" >
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 w-full mb-5" >
           <DisplayField label="Service Title" :value="details?.description" />
           <DisplayField label="Game" :value="details?.category_title" />
           <DisplayField label="Pilot Username" :value="details?.pilot_username" />
@@ -170,10 +167,10 @@ onMounted(() => {
             <h3 class="text-lg font-semibold mb-4 border-b border-green-300 pb-2">Schedule</h3>
             <div class="mb-4">
               <label htmlFor="startDate" class="block text-sm font-medium mb-1">
-                Start Date*
+                Start Date <span className="text-red-500">*</span>
               </label>
               <input type="date" v-model="form.startDate"
-                class="input p-3 bg-blue-600 bg-opacity-20 w-full rounded-md focus:ring-green-500 focus:border-green-500"
+                class="mb-5 input p-3 h-12 bg-[#1E293B] w-full rounded-md focus:ring-green-500 focus:border-green-500 shadow-none"
                 :min="today" required />
             </div>
           </div>
@@ -182,10 +179,10 @@ onMounted(() => {
             <h3 class="text-lg font-semibold mb-4 border-b border-green-300 pb-2">Communication Link</h3>
             <div class="mb-4 w-full">
               <label htmlFor="comm-link" class="block text-sm font-medium mb-1">
-                Link *
+                Link <span className="text-red-500">*</span>
               </label>
               <input type="text" v-model="form.commLink"
-                class="input w-full p-3 border bg-blue-600 bg-opacity-20 rounded-md focus:ring-green-500 focus:border-green-500"
+                class=" mb-5 input w-full p-3 h-12 border bg-[#1E293B] rounded-md focus:ring-green-500 focus:border-green-500 shadow-none"
                 placeholder="Provide a link for coordination (e.g. Discord, tlk.io)" required />
             </div>
           </div>
@@ -197,19 +194,19 @@ onMounted(() => {
                 Instructions & Notes (Optional)
               </label>
               <textarea rows="4" v-model="form.additional_notes"
-                class="textarea w-full p-3 border bg-blue-600 bg-opacity-20 rounded-md focus:ring-green-500 focus:border-green-500"
+                class="textarea w-full p-3 border bg-[#1E293B] rounded-md focus:ring-green-500 focus:border-green-500 shadow-none"
                 placeholder="Add any specific instructions or notes for the service provider..."></textarea>
             </div>
           </div>
 
-          <div class="flex flex-col lg:flex-row justify-end w-full">
+          <div class="flex justify-center w-full mt-8">
             <!-- Proceed to Payment Button -->
             <button v-if="isSubmitted" class="btn btn-soft btn-primary sm:w-auto" @click="proceedToPayment" type="button">
               Proceed to Payment
             </button>
 
             <!-- Submit Agreement Button (Disabled after submission) -->
-            <button :disabled="isSubmitted" class="btn btn-success sm:w-auto" type="submit">
+            <button :disabled="isSubmitted" class="btn bg-green-500 h-12 border-none sm:w-auto shadow-none text-white" type="submit">
               {{ isSubmitted ? 'Agreement Submitted' : 'Submit Agreement' }}
             </button>
 
