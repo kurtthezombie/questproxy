@@ -3,17 +3,14 @@
     <NavBar />
     <div class="container mx-auto py-5 max-w-7xl">
 
-      <!-- Loading State -->
       <div v-if="serviceStore.loading" class="flex justify-center items-center mt-10">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
       </div>
 
-      <!-- Error State -->
       <div v-else-if="serviceStore.error" class="text-red-500 text-center mt-10">
         {{ serviceStore.error }}
       </div>
 
-      <!-- Content -->
       <template v-else>
         <div class="flex justify-between items-center px-4 mt-10 mb-4">
           <div>
@@ -30,27 +27,7 @@
           </div>
         </div>
 
-      <!-- Search Section 
-        <div class="relative w-full max-w-7xl mb-10">
-          <div class="flex items-center mt-8 space-x-4 px-4 w-full">
-            <div class="relative w-full max-w-7xl">
-              <div class="absolute left-2 top-1/2 -translate-y-1/2 p-2">
-                <svg class="h-[1.5em] opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
-                    stroke="currentColor">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.3-4.3"></path>
-                  </g>
-                </svg>
-              </div>
-              <input v-model="searchQuery" type="text" placeholder="Search services.."
-                class="bg-[#1e293b] text-gray-300 border border-gray-700 rounded-full pl-16 pr-4 py-4 h-15 shadow-md w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300" />
-            </div>
-          </div>
-        </div> -->
-
-        <!-- Navigation Buttons -->
-        <div class="relative mt-3">
+      <div class="relative mt-3">
           <div
             class="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-4 px-3 overflow-x-auto">
             <button class="flex items-center w-full md:w-auto rounded transition-colors duration-200 px-4 py-3" :class="activeTab === 'services'
@@ -101,9 +78,7 @@
           </div>
         </div>
 
-        <!-- Tab Content -->
         <div class="px-4 py-6">
-          <!-- Services Tab -->
           <div v-if="activeTab === 'services'">
             <div v-if="!filteredUserServices.length" class="text-center mt-10 text-gray-400">
               No services available.
@@ -115,7 +90,6 @@
             </div>
           </div>
 
-          <!-- Bookings Tab -->
           <div v-if="activeTab === 'bookings'">
             <div v-if="serviceStore.bookingsLoading" class="flex justify-center items-center py-10">
               <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
@@ -153,25 +127,21 @@
 
                   <div class="mt-3 text-gray-300">
                     <div class="flex items-center mt-2 w-full">
-                      <!-- Avatar -->
                       <div
                         class="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-500 font-semibold text-white mr-2 text-lg uppercase">
                         {{ booking.client?.username?.charAt(0) || '?' }}
                       </div>
 
-                      <!-- Client label + Username -->
                       <div class="flex flex-col">
                         <span class="text-xs text-gray-400">Client</span>
                         <span>{{ booking.client?.username || 'Unknown' }}</span>
                       </div>
 
-                      <!-- Created At (right side) -->
                       <span class="text-gray-400 ml-auto">
                         {{ timeAgo(booking.created_at) }}
                       </span>
                     </div>
                   </div>
-                  <!-- Progress Bar (Bar Style) -->
                   <div class="relative pt-1 mt-4">
                     <label for="progress" class="block text-xs text-gray-400">Progress</label>
                     <div class="flex items-center justify-between">
@@ -185,7 +155,6 @@
             </div>
           </div>
 
-          <!-- History Tab -->
           <div v-if="activeTab === 'history'">
             <div v-if="!serviceHistory.length" class="text-center text-gray-400 py-10">
               No service history found.
@@ -194,7 +163,6 @@
               <div v-for="history in serviceHistory" :key="history.id"
                 class="bg-blue-900 bg-opacity-20 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all">
                 <div class="flex justify-between items-start">
-                  <!-- Service Info -->
                   <h3 class="text-xl font-bold text-white mt-1">
                     {{ history.service?.game || 'Unknown Service' }}
                   </h3>
@@ -210,26 +178,19 @@
                 <div class="text-sm bg-gray-700 p-1 text-white w-fit mb-8">
                   <p>Booking ID : {{ history.id }}</p>
                 </div>
-                <!-- Avatar -->
                 <div class="mt-3 text-gray-300">
                   <div class="flex items-center mt-2 w-full">
-                    <!-- Avatar -->
                     <div
                       class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 font-semibold text-white mr-2 text-lg uppercase">
                       {{ history.client?.username?.charAt(0) || '?' }}
                     </div>
 
-                    <!-- Client label + Username -->
                     <div class="flex flex-col">
                       <span class="text-xs text-gray-400">Client</span>
                       <span>{{ history.client?.username || 'Unknown' }}</span>
                     </div>
 
-                    <!-- Date Complete -->
-                    <!-- <span class="text-gray-400 ml-auto">
-                      {{ timeAgo(history.created_at) }}
-                    </span> -->
-                  </div>
+                    </div>
                 </div>
               </div>
             </div>
@@ -238,7 +199,6 @@
       </template>
     </div>
 
-    <!-- Pass the selected booking and modal state to the dialog -->
     <ViewBookingDialog :selectedBooking="selectedBooking" :isModalOpen="isModalOpen" @close="closeModal" />
 
   </div>
@@ -265,7 +225,7 @@ const activeTab = ref('services');
 
 
 //modal vars
-const isModalOpen = ref(false); 
+const isModalOpen = ref(false);
 const selectedBooking = ref(null);
 
 // Computed properties
@@ -281,12 +241,17 @@ const filteredBookings = computed(() => {
 });
 
 const filteredUserServices = computed(() => {
-  const userId = userStore.userData?.pilot_id;
-  return userId ? serviceStore.services.filter(service => service.pilot_id === userId) : [];
+  // Add a check for userStore.userData before accessing pilot_id
+  if (!userStore.userData) {
+    return [];
+  }
+  const userId = userStore.userData.pilot_id;
+  // Add a check for service.pilot_id before comparing
+  return userId ? serviceStore.services.filter(service => service && service.pilot_id === userId) : [];
 });
 
 const serviceHistory = computed(() => {
-  return serviceStore.myBookings?.filter(booking => 
+  return serviceStore.myBookings?.filter(booking =>
     ['completed', 'expired'].includes(booking.status)
   ) || [];
 });
@@ -333,9 +298,9 @@ const fetchData = async () => {
     console.error("Pilot ID not found.");
     return;
   }
-  
+
   try {
-    await serviceStore.fetchServicesByPilot(pilot_id); 
+    await serviceStore.fetchServicesByPilot(pilot_id);
     await serviceStore.fetchCategories();
     await serviceStore.fetchBookingsByPilot();
   } catch (error) {

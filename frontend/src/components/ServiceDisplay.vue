@@ -37,10 +37,21 @@
               class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded text-sm">
         Edit
       </button>
-      <button @click.stop="confirmDelete"
+      <button @click.stop="openDeleteModal"
               class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 rounded text-white text-sm">
         Delete
       </button>
+    </div>
+  </div>
+
+  <div v-if="isDeleteModalOpen" class="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+    <div class="bg-[#1E293B] rounded-lg p-6 w-full max-w-md text-white border border-gray-700">
+      <h3 class="text-lg font-semibold mb-4">Confirm Service Deletion</h3>
+      <p class="text-sm mb-6">Are you sure you want to delete this service? This action cannot be undone.</p>
+      <div class="flex justify-end gap-4">
+        <button @click="handleConfirmDelete" class="px-4 py-2 bg-red-600 rounded hover:bg-red-700">Yes</button>
+        <button @click="closeDeleteModal" class="px-3 py-2 bg-gray-600 rounded hover:bg-gray-700">Cancel</button>
+      </div>
     </div>
   </div>
 </template>
@@ -61,26 +72,25 @@ const router = useRouter();
 const toast = useToast();
 const emit = defineEmits(['serviceDeleted']);
 
-// Helper function to normalize game names for comparison
+const isDeleteModalOpen = ref(false);
+const serviceToDelete = ref(null);
+
 const normalizeGameName = (name) => {
   if (!name) return '';
   return name.toLowerCase().replace(/_/g, ' ');
 };
 
 const getGameTitle = computed(() => {
-  // Check if essential data is available
   if (!props.service || !props.service.game || !props.categories) {
     return props.service?.game || 'Unknown Game';
   }
 
   const normalizedServiceGame = normalizeGameName(props.service.game);
 
-  // Find the category with a matching normalized game name
   const category = props.categories.find(cat =>
     normalizeGameName(cat.game) === normalizedServiceGame
   );
 
-  // Return the category title if found, otherwise fallback to the service game or 'Unknown Game'
   return category ? category.title : props.service.game || 'Unknown Game';
 });
 
@@ -103,9 +113,18 @@ const handleServiceClick = () => {
   });
 };
 
-const confirmDelete = async () => {
-  const confirmed = confirm("Are you sure you want to delete this service?");
-  if (!confirmed) return;
+const openDeleteModal = () => {
+  serviceToDelete.value = props.service;
+  isDeleteModalOpen.value = true;
+};
+
+const closeDeleteModal = () => {
+  isDeleteModalOpen.value = false;
+  serviceToDelete.value = null;
+};
+
+const handleConfirmDelete = async () => {
+  if (!serviceToDelete.value) return; 
 
   try {
     const authToken = localStorage.getItem('authToken');
@@ -114,19 +133,23 @@ const confirmDelete = async () => {
       return;
     }
 
-    await axios.delete(`http://127.0.0.1:8000/api/services/destroy/${props.service.id}`, {
+    await axios.delete(`http://127.0.0.1:8000/api/services/destroy/${serviceToDelete.value.id}`, {
       headers: {
         Authorization: `Bearer ${authToken}`
       }
     });
 
     toast.success("Service deleted successfully.");
-    emit('serviceDeleted', props.service.id);
+    emit('serviceDeleted', serviceToDelete.value.id);
+
   } catch (error) {
     console.error(error);
     toast.error("Failed to delete service.");
+  } finally {
+    closeDeleteModal();
   }
 };
+
 
 const initial = computed(() => {
   if (!props.service.pilot_username) return '?';
@@ -135,7 +158,3 @@ const initial = computed(() => {
 
 
 </script>
-
-<style scoped>
-/* Your existing styles here */
-</style>
