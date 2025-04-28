@@ -55,7 +55,12 @@ class ServiceController extends Controller
         {
             $service = Service::find($service_id);
 
-            return $this->successResponse('Service listing retrieved.',200,['service' => $service]);
+            return $this->successResponse('Service listing retrieved.',200,
+            [
+                'service' => $service, 
+                'category_title' => $service->category->title,
+                'pilot' => $service->pilot->user,
+            ]);
         }
         catch (ModelNotFoundException $e) {
             return $this->failedResponse("Service listing {$service_id} not found.", 404);
