@@ -80,7 +80,7 @@ class BookingController extends Controller
             $updated = $this->bookingService->markAsCompleted($booking_id);
             return $this->successResponse('Booking status updated successfully', 200);
         } catch (Exception $e) {
-            return $this->failedResponse('Error: ' . $e->getMessage(), 500);
+            return $this->failedResponse($e->getMessage(), 500);
         }
     }
 

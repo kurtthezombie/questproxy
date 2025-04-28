@@ -62,7 +62,7 @@ const handleSubmitReport = async () => {
     otherReasonText.value = '';
     toast.success('Report submitted successfully!');
 
-    router.push({ name: 'homepage' }); 
+    router.push({ name: 'MyReports' }); 
 
   } catch (error) {
     // --- Error Handling ---

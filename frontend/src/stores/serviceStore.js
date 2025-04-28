@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore'; 
+import toast from "@/utils/toast";
 export const useServiceStore = defineStore('service', () => {
 
     const services = ref([]);
@@ -398,7 +399,7 @@ export const useServiceStore = defineStore('service', () => {
             );
             console.log("MARK BOOKING AS COMPLETED: ", bookingId);
         } catch (error) {
-            console.error('Error marking booking as completed:', error);
+            toast.error(error.response.data.message);
             throw error;
         }
       }
