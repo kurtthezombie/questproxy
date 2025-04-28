@@ -50,6 +50,12 @@ class UserService
     public function deleteUser($id) {
         $user = $this->user->find($id);
 
+        if(!$user){
+            return false;
+        }
+
+        Otp::where('email', trim($user->email))->delete();
+
         return $user->delete();
     }
 
