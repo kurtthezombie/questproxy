@@ -419,7 +419,7 @@ const goToPublicPortfolio = () => {
             class="btn btn-sm btn-outline btn-success">Manage Portfolio</button>
           <button v-if="!isOwnProfile && isPilotProfile" @click="goToPublicPortfolio"
             class="btn btn-sm btn-outline btn-success">View Portfolio</button>
-          <button v-if="!isOwnProfile" @click="goToReportUser" class="btn btn-sm"
+          <button v-if="!isOwnProfile" @click="goToReportUser" class="btn btn-sm shadow-none"
             style="background-color: #dc2626 !important; color: white !important; border-color: #dc2626 !important;">
             Report User
           </button>

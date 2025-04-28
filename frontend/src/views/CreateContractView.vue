@@ -5,9 +5,13 @@ import { createBooking, fetchData, fetchPaymentUrl } from "@/services/agreement.
 import toast from "@/utils/toast";
 import { jsPDF } from "jspdf"
 import dayjs from "dayjs";
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useLoader } from '@/services/loader-service';
+import api from '@/utils/api';
+import axios from 'axios';
 
+
+const router = useRouter();
 const details = ref(null);
 const route = useRoute();
 const serviceId = route.params?.serviceId;
@@ -59,6 +63,28 @@ const handleSubmit = async () => {
     toast.error("Failed to submit agreement.");
   }
 };
+
+const handleGoBack = async () => {
+  console.log('BOOKING ID:',bookingId.value);
+  try {
+    if(isSubmitted.value){
+      const token = localStorage.getItem('authToken');
+
+      const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}api/bookings/${bookingId.value}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      toast.success('Booking cancelled..', response.data);
+    }
+
+    router.push({ name: 'PaymentView', params: { serviceId } });
+
+  } catch (error) {
+    console.error('Error deleting booking:', error);
+    toast.error('Failed to delete booking');
+  }
+}
 
 const proceedToPayment = async () => {
   const loader = loadShow();
@@ -143,7 +169,7 @@ onMounted(() => {
 
       <div class="card-body flex-col justify-center items-center">
         <div class="w-full flex items-center justify-between mb-6">
-          <button class="btn border-none shadow-none bg-transparent text-white btn-lg p-0" @click="$router.push(`/payment/${serviceId}`)">
+          <button class="btn border-none shadow-none bg-transparent text-white btn-lg p-0" @click="handleGoBack">
             <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
             </svg>
@@ -209,7 +235,7 @@ onMounted(() => {
             </button>
 
             <!-- Submit Agreement Button (Disabled after submission) -->
-            <button :disabled="isSubmitted" class="btn bg-green-500 h-12 border-none sm:w-auto shadow-none text-white" type="submit">
+            <button :disabled="isSubmitted" class="btn bg-green-500 border-none sm:w-auto shadow-none text-white" type="submit">
               {{ isSubmitted ? 'Agreement Submitted' : 'Submit Agreement' }}
             </button>
 
