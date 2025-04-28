@@ -7,6 +7,7 @@ import axios from 'axios';
 import PortfolioCard from '@/components/portfolio/PortfolioCard.vue';
 import ServiceDisplayCard from '@/components/ServiceDisplay.vue';
 import ReviewCard from '@/components/ReviewCard.vue';
+import UserSearchBar from '@/components/UserSearchBar.vue';
 import toast from '@/utils/toast';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -356,7 +357,12 @@ const goToPublicPortfolio = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-900 text-white p-4 md:p-10">
+  <div class="min-h-screen bg-gray-900 text-white p-4 md:p-10 relative">
+
+    <div class="absolute top-4 right-4 z-10 md:top-100 md:right-10">
+        <UserSearchBar />
+    </div>
+
     <div v-if="isLoading" class="flex justify-center items-center h-screen">
       <span class="loading loading-bars loading-xl text-accent scale-[3]"></span>
     </div>
@@ -370,8 +376,7 @@ const goToPublicPortfolio = () => {
       </div>
     </div>
 
-    <div v-else-if="profileData" class="max-w-5xl mx-auto space-y-8">
-      <section class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
+    <div v-else-if="profileData" class="max-w-5xl mx-auto space-y-8 mt-12"> <section class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
         <div class="p-6 md:p-8 flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
           <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-green-600 flex items-center justify-center text-4xl md:text-5xl font-semibold text-white flex-shrink-0">
             {{ initials }}
@@ -396,7 +401,14 @@ const goToPublicPortfolio = () => {
           <button v-if="isOwnProfile" @click="goToAccountSettings" class="btn btn-sm btn-outline btn-info">Account Settings</button>
           <button v-if="isOwnProfile && isPilotProfile" @click="goToMyPortfolio" class="btn btn-sm btn-outline btn-success">Manage Portfolio</button>
           <button v-if="!isOwnProfile && isPilotProfile" @click="goToPublicPortfolio" class="btn btn-sm btn-outline btn-success">View Portfolio</button>
-          <button v-if="userStore.userData?.id !== userId" @click="goToReportUser" class="btn btn-sm bg-red-600 hover:bg-red-700 text-white border-red-700">Report User</button>
+          <button
+            v-if="!isOwnProfile"
+            @click="goToReportUser"
+            class="btn btn-sm"
+            style="background-color: #dc2626 !important; color: white !important; border-color: #dc2626 !important;"
+          >
+            Report User
+          </button>
         </div>
       </section>
 
@@ -440,6 +452,34 @@ const goToPublicPortfolio = () => {
             </div>
       </section>
 
+
+      <section v-if="isPilotProfile" class="space-y-4">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-semibold">Reviews Received</h2>
+            <button
+                v-if="hasMoreReviews"
+                @click="openReviewsModal"
+                class="btn btn-sm btn-outline btn-secondary"
+            >
+                Show All {{ pilotReviews.length }} Reviews
+            </button>
+        </div>
+
+        <div v-if="isLoadingReviews" class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
+            <span class="loading loading-dots loading-lg text-accent"></span>
+        </div>
+        <div v-else-if="reviewsError" class="text-center text-red-400 py-10 bg-gray-800 rounded-lg border border-red-700">
+            <p>{{ reviewsError }}</p>
+            <button v-if="pilotIdForReviews" @click="fetchPilotReviews(pilotIdForReviews)" class="btn btn-sm btn-outline btn-warning mt-2">Retry Reviews</button>
+        </div>
+        <div v-else-if="pilotReviews.length === 0" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
+            This pilot hasn't received any reviews yet.
+        </div>
+        <div v-else class="space-y-4">
+            <ReviewCard v-for="review in displayedReviews" :key="review.id" :review="review" />
+        </div>
+      </section>
+
       <section v-if="isPilotProfile" class="space-y-4">
           <div class="flex items-center justify-between mb-4">
               <h2 class="text-2xl font-semibold">Portfolio Gallery</h2>
@@ -469,33 +509,6 @@ const goToPublicPortfolio = () => {
           <div v-else class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
               This pilot hasn't added any portfolio items yet.
           </div>
-      </section>
-
-      <section v-if="isPilotProfile" class="space-y-4">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-semibold">Reviews Received</h2>
-            <button
-                v-if="hasMoreReviews"
-                @click="openReviewsModal"
-                class="btn btn-sm btn-outline btn-secondary"
-            >
-                Show All {{ pilotReviews.length }} Reviews
-            </button>
-        </div>
-
-        <div v-if="isLoadingReviews" class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
-            <span class="loading loading-dots loading-lg text-accent"></span>
-        </div>
-        <div v-else-if="reviewsError" class="text-center text-red-400 py-10 bg-gray-800 rounded-lg border border-red-700">
-            <p>{{ reviewsError }}</p>
-            <button v-if="pilotIdForReviews" @click="fetchPilotReviews(pilotIdForReviews)" class="btn btn-sm btn-outline btn-warning mt-2">Retry Reviews</button>
-        </div>
-        <div v-else-if="pilotReviews.length === 0" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
-            This pilot hasn't received any reviews yet.
-        </div>
-        <div v-else class="space-y-4 max-h-96 overflow-y-auto pr-2">
-            <ReviewCard v-for="review in displayedReviews" :key="review.id" :review="review" />
-        </div>
       </section>
 
 
@@ -548,5 +561,9 @@ const goToPublicPortfolio = () => {
 .loading { margin: auto; }
 .btn { transition: all 0.2s ease-in-out; }
 .btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+
+.min-h-screen {
+    position: relative;
+}
 
 </style>
