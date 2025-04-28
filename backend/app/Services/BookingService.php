@@ -43,6 +43,11 @@ class BookingService
 
     public function markAsCompleted($booking_id){
         $booking = $this->booking->findOrFail($booking_id);
+
+        if (now()->toDateString() < $booking->instruction->start_date) {
+            throw new Exception('You cannot mark this booking as completed before the start date.');
+        }
+
         $booking->status = 'completed';
         $booking->save();
 
@@ -50,6 +55,7 @@ class BookingService
             'service.pilot.user',
             'client', 
         ]);
+        
         $this->sendCompletionEmail($booking);
 
         return $booking;
