@@ -18,8 +18,13 @@ class CategorySeeder extends Seeder
             ['title'=> 'League of Legends','game' => 'league_of_legends','category_type' => 'moba'],
             ['title'=> 'Valorant','game' => 'valorant','category_type' => 'fps'],
             ['title'=> 'Diablo IV','game' => 'diablo_4','category_type' => 'arpg'],
-            ['title'=> 'Torchlight Infinite','game' => 'torchlight_infinite','category_type' => 'arpg'],
+            ['title'=> 'Marvel Rivals','game' => 'marvel_rivals','category_type' => 'shooter'],
             ['title'=> 'Roblox','game' => 'roblox','category_type' => 'sandbox'],
+            ['title'=> 'Cabal Online','game' => 'cabal_online','category_type' => 'mmorpg'],
+            ['title'=> 'Dragon Nest','game' => 'dragon_nest','category_type' => 'mmorpg'],
+            ['title'=> 'Genshin Impact','game' => 'genshin_impact','category_type' => 'rpg'],
+            ['title'=> 'Crossfire','game' => 'crossfire','category_type' => 'fps'],
+            ['title'=> 'MU Online','game' => 'mu_online','category_type' => 'mmorpg'],
         ]);
     }
 }

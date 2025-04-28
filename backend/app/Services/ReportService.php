@@ -46,6 +46,14 @@ class ReportService {
             throw new \Exception("You cannot report yourself!");
         }
 
+        $existingReport = $this->report->where('reported_user_id', $reported_user)
+                                    ->where('reporting_user_id', $reporting_user)
+                                    ->first();
+
+        if ($existingReport) {
+            throw new \Exception("You have already reported this user.");
+        }
+
         $formData = [
             'reason' => $data['reason'],
             'reported_user_id' => $reported_user,
