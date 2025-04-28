@@ -104,7 +104,7 @@ const generateContractPdf = () => {
     const form = {
       commLink: props.selectedBooking.instruction.communication_link,  // Assuming communication link is in instruction
       additional_notes: props.selectedBooking.instruction.additional_notes,  // Additional notes
-      start_date: props.selectedBooking.instruction.start_date,  // Start date from instruction
+      start_date: dayjs(props.selectedBooking.instruction.start_date).format('MMMM D, YYYY'),  // Start date from instruction
     };
 
     generatePDF(serviceId, bookingId, form);

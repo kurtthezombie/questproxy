@@ -62,10 +62,6 @@ class InstructionService
         {
             throw new Exception("Instruction not found for booking ID $booking_id.");
         }
-
-        // Decrypt and set values directly on the instruction object
-        $instruction->credentials_username = Crypt::decryptString($instruction->credentials_username);
-        $instruction->credentials_password = Crypt::decryptString($instruction->credentials_password);
         
         return $instruction;
     }
