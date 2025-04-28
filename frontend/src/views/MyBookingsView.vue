@@ -54,6 +54,8 @@ onMounted(() => {
           :gameName="booking.gameTitle" :pilotName="booking.pilotName" :status="booking.booking.status"
           :bookedOn="dayjs(booking.created_at).format('MMMM D,YYYY')"
           :progress="booking.booking.progress"
+          :serviceId="booking.booking.service_id"
+          :bookingId="booking.booking.id"
           />
       </div>
     </div>

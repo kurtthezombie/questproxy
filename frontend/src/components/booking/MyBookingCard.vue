@@ -34,12 +34,20 @@
           {{ progress }}%
         </div>
       </div>
+      <!-- Download Agreement Button -->
+      <div class="mt-3">
+        <button class="btn bg-green-700 hover:bg-green-500 border-none shadow-none text-white" @click="handleDownloadAgreement">
+          Download Agreement
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from "vue";
+import { generatePdfForClient } from "@/services/agreement.service";
+import toast from '@/utils/toast';
 
 // Props passed from the parent component
 const props = defineProps({
@@ -48,11 +56,20 @@ const props = defineProps({
   pilotName: String,
   status: String,
   bookedOn: String,
-  progress: Number
+  progress: Number,
+  serviceId: Number,
+  bookingId: Number
 });
+
 
 // Computed property for dynamic status class
 const statusClass = computed(() => {
   return props.status === "completed" ? "bg-green-500" : "bg-yellow-500";
 });
+
+const handleDownloadAgreement = async () => {
+  await generatePdfForClient(props.serviceId, props.bookingId);
+  toast.success("Agreement downloaded successfully!");
+}
+
 </script>

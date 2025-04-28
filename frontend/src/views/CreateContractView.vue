@@ -98,7 +98,7 @@ Booking ID: bk-${bookingId.value}
 Agreement Date: ${currentDate}
 
 1. Description of Service
-The Pilot agrees to perform a ${details.value.description} for the client in ${details.value.category_title}. The expected duration for completion is ${details.value.duration} day(s) from the agreed start date.
+The Pilot agrees to perform a ${details.value.description} for the client in ${details.value.category_title}. The expected duration for completion is ${details.value.duration} day(s) from the agreed start date: ${dayjs(form.startDate).format('MMMM D, YYYY')}.
 
 2. Communication & Coordination
 The client has provided the following communication link for coordination with the pilot:
