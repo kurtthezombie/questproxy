@@ -359,10 +359,6 @@ const goToPublicPortfolio = () => {
 <template>
   <div class="min-h-screen bg-gray-900 text-white p-4 md:p-10 relative">
 
-    <div class="absolute top-4 right-4 z-10 md:top-100 md:right-10">
-        <UserSearchBar />
-    </div>
-
     <div v-if="isLoading" class="flex justify-center items-center h-screen">
       <span class="loading loading-bars loading-xl text-accent scale-[3]"></span>
     </div>
@@ -376,21 +372,40 @@ const goToPublicPortfolio = () => {
       </div>
     </div>
 
-    <div v-else-if="profileData" class="max-w-5xl mx-auto space-y-8 mt-12"> <section class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
+    <div v-else-if="profileData" class="max-w-5xl mx-auto space-y-8 mt-12">
+      <!-- USER SEARCH BAR -->
+      <div class="flex justify-end">
+        <div class="w-fit">
+          <UserSearchBar />
+        </div>
+      </div>
+      
+      <section class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
+
         <div class="p-6 md:p-8 flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
-          <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-green-600 flex items-center justify-center text-4xl md:text-5xl font-semibold text-white flex-shrink-0">
+          <div
+            class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-green-600 flex items-center justify-center text-4xl md:text-5xl font-semibold text-white flex-shrink-0">
             {{ initials }}
           </div>
           <div class="flex-grow text-center md:text-left">
             <h1 class="text-3xl md:text-4xl font-bold">{{ profileData.username }}</h1>
             <p class="text-green-400 capitalize">{{ profileRole?.replace('game ', '') }}</p>
             <div class="mt-3 flex flex-wrap justify-center md:justify-start items-center gap-2 md:gap-4 text-sm">
-              <div v-if="isPilotProfile" class="bg-emerald-950 text-emerald-400 px-3 py-1 rounded-full flex items-center border border-emerald-800">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="yellow" class="mr-1"><path d="M12 2L15 8L22 8.5L17 12.5L18 19.5L12 16.5L6 19.5L7 12.5L2 8.5L9 8L12 2Z"/></svg>
+              <div v-if="isPilotProfile"
+                class="bg-emerald-950 text-emerald-400 px-3 py-1 rounded-full flex items-center border border-emerald-800">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="yellow"
+                  class="mr-1">
+                  <path d="M12 2L15 8L22 8.5L17 12.5L18 19.5L12 16.5L6 19.5L7 12.5L2 8.5L9 8L12 2Z" />
+                </svg>
                 <span class="font-semibold">Points:</span><span class="font-bold ml-1">{{ points }}</span>
               </div>
-              <div class="flex items-center gap-1 text-blue-400 font-semibold bg-blue-950 px-3 py-1 rounded-full border border-blue-700">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A10.97 10.97 0 0112 15c2.21 0 4.25.672 5.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+              <div
+                class="flex items-center gap-1 text-blue-400 font-semibold bg-blue-950 px-3 py-1 rounded-full border border-blue-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M5.121 17.804A10.97 10.97 0 0112 15c2.21 0 4.25.672 5.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
                 Member since {{ memberSince }}
               </div>
             </div>
@@ -398,157 +413,153 @@ const goToPublicPortfolio = () => {
         </div>
 
         <div class="bg-gray-850 border-t border-gray-700 p-4 flex flex-wrap justify-center md:justify-end gap-3">
-          <button v-if="isOwnProfile" @click="goToAccountSettings" class="btn btn-sm btn-outline btn-info">Account Settings</button>
-          <button v-if="isOwnProfile && isPilotProfile" @click="goToMyPortfolio" class="btn btn-sm btn-outline btn-success">Manage Portfolio</button>
-          <button v-if="!isOwnProfile && isPilotProfile" @click="goToPublicPortfolio" class="btn btn-sm btn-outline btn-success">View Portfolio</button>
-          <button
-            v-if="!isOwnProfile"
-            @click="goToReportUser"
-            class="btn btn-sm"
-            style="background-color: #dc2626 !important; color: white !important; border-color: #dc2626 !important;"
-          >
+          <button v-if="isOwnProfile" @click="goToAccountSettings" class="btn btn-sm btn-outline btn-info">Account
+            Settings</button>
+          <button v-if="isOwnProfile && isPilotProfile" @click="goToMyPortfolio"
+            class="btn btn-sm btn-outline btn-success">Manage Portfolio</button>
+          <button v-if="!isOwnProfile && isPilotProfile" @click="goToPublicPortfolio"
+            class="btn btn-sm btn-outline btn-success">View Portfolio</button>
+          <button v-if="!isOwnProfile" @click="goToReportUser" class="btn btn-sm"
+            style="background-color: #dc2626 !important; color: white !important; border-color: #dc2626 !important;">
             Report User
           </button>
         </div>
       </section>
 
-      <section v-if="pilotDetails || gamerDetails" class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
-        <div class="border-b border-gray-700 p-4"><h2 class="text-2xl font-semibold">Details</h2></div>
+      <section v-if="pilotDetails || gamerDetails"
+        class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
+        <div class="border-b border-gray-700 p-4">
+          <h2 class="text-2xl font-semibold">Details</h2>
+        </div>
         <div class="p-6">
           <div v-if="pilotDetails" class="space-y-6">
-             <div class="bg-gray-750 p-4 rounded-lg"><h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Skills</h3><p class="text-gray-200 whitespace-pre-wrap">{{ pilotDetails.skills || 'No skills listed.' }}</p></div>
-             <div class="bg-gray-750 p-4 rounded-lg"><h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Bio</h3><p class="text-gray-200 whitespace-pre-wrap">{{ pilotDetails.bio || 'No bio available.' }}</p></div>
+            <div class="bg-gray-750 p-4 rounded-lg">
+              <h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Skills</h3>
+              <p class="text-gray-200 whitespace-pre-wrap">{{ pilotDetails.skills || 'No skills listed.' }}</p>
+            </div>
+            <div class="bg-gray-750 p-4 rounded-lg">
+              <h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Bio</h3>
+              <p class="text-gray-200 whitespace-pre-wrap">{{ pilotDetails.bio || 'No bio available.' }}</p>
+            </div>
           </div>
-          <div v-else-if="gamerDetails" class="bg-gray-750 p-4 rounded-lg"><h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Gamer Preference</h3><p class="text-gray-200">{{ gamerDetails.gamer_preference || 'No preference specified.' }}</p></div>
+          <div v-else-if="gamerDetails" class="bg-gray-750 p-4 rounded-lg">
+            <h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Gamer Preference</h3>
+            <p class="text-gray-200">{{ gamerDetails.gamer_preference || 'No preference specified.' }}</p>
+          </div>
         </div>
       </section>
 
       <section v-if="isPilotProfile" class="space-y-4">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-semibold">Services Offered</h2>
-             <button
-                v-if="hasMoreServices"
-                @click="openServicesModal"
-                class="btn btn-sm btn-outline btn-success"
-            >
-                Show All {{ serviceStore.services.length }} Services
-            </button>
+          <h2 class="text-2xl font-semibold">Services Offered</h2>
+          <button v-if="hasMoreServices" @click="openServicesModal" class="btn btn-sm btn-outline btn-success">
+            Show All {{ serviceStore.services.length }} Services
+          </button>
         </div>
 
-        <div v-if="serviceStore.loading" class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
-            <span class="loading loading-dots loading-lg text-accent"></span>
+        <div v-if="serviceStore.loading"
+          class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
+          <span class="loading loading-dots loading-lg text-accent"></span>
         </div>
-        <div v-else-if="serviceStore.services.length === 0" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
-            This pilot is not currently offering any services.
+        <div v-else-if="serviceStore.services.length === 0"
+          class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
+          This pilot is not currently offering any services.
         </div>
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            <ServiceDisplayCard
-                v-for="service in displayedServices"
-                :key="service.id"
-                :service="service"
-                :categories="categories"
-                :is-service-history="false"
-            />
-            </div>
+          <ServiceDisplayCard v-for="service in displayedServices" :key="service.id" :service="service"
+            :categories="categories" :is-service-history="false" />
+        </div>
       </section>
 
 
       <section v-if="isPilotProfile" class="space-y-4">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-semibold">Reviews Received</h2>
-            <button
-                v-if="hasMoreReviews"
-                @click="openReviewsModal"
-                class="btn btn-sm btn-outline btn-secondary"
-            >
-                Show All {{ pilotReviews.length }} Reviews
-            </button>
+          <h2 class="text-2xl font-semibold">Reviews Received</h2>
+          <button v-if="hasMoreReviews" @click="openReviewsModal" class="btn btn-sm btn-outline btn-secondary">
+            Show All {{ pilotReviews.length }} Reviews
+          </button>
         </div>
 
-        <div v-if="isLoadingReviews" class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
-            <span class="loading loading-dots loading-lg text-accent"></span>
+        <div v-if="isLoadingReviews"
+          class="flex justify-center items-center py-10 bg-gray-800 rounded-lg border border-gray-700">
+          <span class="loading loading-dots loading-lg text-accent"></span>
         </div>
-        <div v-else-if="reviewsError" class="text-center text-red-400 py-10 bg-gray-800 rounded-lg border border-red-700">
-            <p>{{ reviewsError }}</p>
-            <button v-if="pilotIdForReviews" @click="fetchPilotReviews(pilotIdForReviews)" class="btn btn-sm btn-outline btn-warning mt-2">Retry Reviews</button>
+        <div v-else-if="reviewsError"
+          class="text-center text-red-400 py-10 bg-gray-800 rounded-lg border border-red-700">
+          <p>{{ reviewsError }}</p>
+          <button v-if="pilotIdForReviews" @click="fetchPilotReviews(pilotIdForReviews)"
+            class="btn btn-sm btn-outline btn-warning mt-2">Retry Reviews</button>
         </div>
-        <div v-else-if="pilotReviews.length === 0" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
-            This pilot hasn't received any reviews yet.
+        <div v-else-if="pilotReviews.length === 0"
+          class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
+          This pilot hasn't received any reviews yet.
         </div>
         <div v-else class="space-y-4">
-            <ReviewCard v-for="review in displayedReviews" :key="review.id" :review="review" />
+          <ReviewCard v-for="review in displayedReviews" :key="review.id" :review="review" />
         </div>
       </section>
 
       <section v-if="isPilotProfile" class="space-y-4">
-          <div class="flex items-center justify-between mb-4">
-              <h2 class="text-2xl font-semibold">Portfolio Gallery</h2>
-              </div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-2xl font-semibold">Portfolio Gallery</h2>
+        </div>
 
-          <div v-if="portfolios.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              <template v-for="(portfolio, index) in portfolios" :key="portfolio.id">
-                  <PortfolioCard
-                      v-if="index < 2 || portfolios.length <= 3"
-                      :username="profileUsername"
-                      :portfolio="portfolio"
-                      :hide-actions="true" />
-              </template>
+        <div v-if="portfolios.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <template v-for="(portfolio, index) in portfolios" :key="portfolio.id">
+            <PortfolioCard v-if="index < 2 || portfolios.length <= 3" :username="profileUsername" :portfolio="portfolio"
+              :hide-actions="true" />
+          </template>
 
-              <div
-                  v-if="portfolios.length > 3"
-                  class="relative flex items-center justify-center bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700 cursor-default"
-                  >
-                  <div class="absolute inset-0 bg-black opacity-50"></div> <div class="relative z-10 text-white text-4xl font-bold">
-                      +{{ portfolios.length - 2 }} </div>
-                  <div class="absolute bottom-4 text-gray-300 text-sm">
-                      More Images
-                  </div>
-              </div>
+          <div v-if="portfolios.length > 3"
+            class="relative flex items-center justify-center bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700 cursor-default">
+            <div class="absolute inset-0 bg-black opacity-50"></div>
+            <div class="relative z-10 text-white text-4xl font-bold">
+              +{{ portfolios.length - 2 }} </div>
+            <div class="absolute bottom-4 text-gray-300 text-sm">
+              More Images
+            </div>
           </div>
+        </div>
 
-          <div v-else class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
-              This pilot hasn't added any portfolio items yet.
-          </div>
+        <div v-else class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
+          This pilot hasn't added any portfolio items yet.
+        </div>
       </section>
 
 
-      <div v-if="!isPilotProfile && !gamerDetails" class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
-         Profile details loaded. No specific sections applicable for this role.
-       </div>
+      <div v-if="!isPilotProfile && !gamerDetails"
+        class="text-center text-gray-500 py-10 bg-gray-800 rounded-lg border border-gray-700">
+        Profile details loaded. No specific sections applicable for this role.
+      </div>
     </div>
 
     <div v-if="showAllReviewsModal" class="modal modal-open">
-        <div class="modal-box max-w-3xl bg-gray-800 text-white border border-gray-700">
-            <h3 class="font-bold text-lg mb-4">All Reviews for {{ profileUsername }}</h3>
+      <div class="modal-box max-w-3xl bg-gray-800 text-white border border-gray-700">
+        <h3 class="font-bold text-lg mb-4">All Reviews for {{ profileUsername }}</h3>
 
-            <div class="space-y-4 max-h-96 overflow-y-auto pr-2 -mr-2">
-                <ReviewCard v-for="review in pilotReviews" :key="'modal-' + review.id" :review="review" />
-            </div>
-
-            <div class="modal-action">
-                <button @click="closeReviewsModal" class="btn btn-secondary">Close</button>
-            </div>
+        <div class="space-y-4 max-h-96 overflow-y-auto pr-2 -mr-2">
+          <ReviewCard v-for="review in pilotReviews" :key="'modal-' + review.id" :review="review" />
         </div>
+
+        <div class="modal-action">
+          <button @click="closeReviewsModal" class="btn btn-secondary">Close</button>
+        </div>
+      </div>
     </div>
 
     <div v-if="showAllServicesModal" class="modal modal-open">
-        <div class="modal-box max-w-3xl bg-gray-800 text-white border border-gray-700">
-            <h3 class="font-bold text-lg mb-4">All Services by {{ profileUsername }}</h3>
+      <div class="modal-box max-w-3xl bg-gray-800 text-white border border-gray-700">
+        <h3 class="font-bold text-lg mb-4">All Services by {{ profileUsername }}</h3>
 
-            <div class="service-modal-list flex flex-col items-center space-y-4 max-h-96 overflow-y-auto pr-2 -mr-2 pb-0">
-                <ServiceDisplayCard
-                    v-for="service in serviceStore.services"
-                    :key="'modal-service-' + service.id"
-                    :service="service"
-                    :categories="categories"
-                    :is-service-history="false"
-                />
-            </div>
-
-            <div class="modal-action">
-                <button @click="closeServicesModal" class="btn btn-secondary">Close</button>
-            </div>
+        <div class="service-modal-list flex flex-col items-center space-y-4 max-h-96 overflow-y-auto pr-2 -mr-2 pb-0">
+          <ServiceDisplayCard v-for="service in serviceStore.services" :key="'modal-service-' + service.id"
+            :service="service" :categories="categories" :is-service-history="false" />
         </div>
+
+        <div class="modal-action">
+          <button @click="closeServicesModal" class="btn btn-secondary">Close</button>
+        </div>
+      </div>
     </div>
 
   </div>
