@@ -2,39 +2,51 @@
 import NavBar from '@/components/NavBar.vue';
 import { submitReport } from '@/services/report.service';
 import toast from '@/utils/toast';
-import { ref } from 'vue';
-// Import useRouter to handle navigation
-import { useRoute, useRouter } from 'vue-router'; // Import useRouter
+import { ref, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
 
 const route = useRoute();
-const router = useRouter(); // Get the router instance
+const router = useRouter();
+const userStore = useUserStore();
+
 const usernameToReport = ref(route.params.username);
-const reason = ref(''); // This ref seems unused, consider removing if not needed elsewhere
+const reason = ref(''); 
 const selectedReasons = ref([]);
 const otherReasonText = ref('');
 const loading = ref(false);
 
+const isReportingSelf = computed(() => {
+  return userStore.userData?.username && usernameToReport.value
+    ? userStore.userData.username === usernameToReport.value
+    : false;
+});
+
 const handleSubmitReport = async () => {
+  // Prevent submission if reporting self
+  if (isReportingSelf.value) {
+    toast.warning("You cannot report yourself.");
+    return;
+  }
+
   // --- Validation ---
   if (selectedReasons.value.length === 0) {
     toast.error('Please select at least one reason for reporting.');
     return;
   }
 
-  // Validate that other reason has text if "Other" is selected
   if (selectedReasons.value.includes('Other') && !otherReasonText.value.trim()) {
     toast.error('Please provide details for the "Other" reason.');
     return;
   }
 
   // --- Prepare Data ---
-  // Combine selected reasons, using otherReasonText if 'Other' is chosen
   const reasons = selectedReasons.value.map(reasonValue =>
     reasonValue === 'Other' ? otherReasonText.value.trim() : reasonValue
   );
 
   const reportData = {
-    reason: reasons.join(', '), // Join reasons into a comma-separated string
+    reason: reasons.join(', '), 
     reported_user: usernameToReport.value,
   };
 
@@ -43,39 +55,38 @@ const handleSubmitReport = async () => {
     loading.value = true;
 
     // Call the API service to submit the report
-    const result = await submitReport(reportData); // Assuming submitReport handles the API call
+    const result = await submitReport(reportData); 
 
     // --- Success Handling ---
-    // Reset form fields
     selectedReasons.value = [];
     otherReasonText.value = '';
     toast.success('Report submitted successfully!');
 
-    // Redirect to the homepage after successful submission
-    router.push({ name: 'homepage' }); // Use the route name defined in your router config (index.txt)
+    router.push({ name: 'homepage' }); 
 
   } catch (error) {
     // --- Error Handling ---
-    // Log the error for debugging
     console.error('Error submitting report:', error);
 
-    // Show user-friendly error message
-    // Check for specific error details if available from the backend response
     const errorMessage = error?.response?.data?.message || 'Failed to submit report. Please try again later.';
     toast.error(errorMessage);
 
   } finally {
-    // Ensure loading state is turned off regardless of success or failure
     loading.value = false;
   }
 }
+
+// Function to go back to the previous page 
+const goBackToProfile = () => {
+  router.back();
+};
 
 </script>
 
 <template>
   <NavBar />
-  <div class="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-6 -mt-5">
-    <div class="w-full max-w-lg border border-gray-700 rounded-lg shadow-lg overflow-hidden bg-gray-800 bg-opacity-60 backdrop-blur-sm">
+  <div class="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-6 -mt-5 relative">
+    <div class="w-full max-w-lg border border-gray-700 rounded-lg shadow-lg overflow-hidden bg-gray-800 bg-opacity-60 backdrop-blur-sm relative">
       <div class="bg-gray-800 bg-opacity-50 p-4 pt-6 border-b border-gray-700">
         <h1 class="text-3xl font-bold text-white ml-4">Report User</h1>
       </div>
@@ -114,7 +125,7 @@ const handleSubmitReport = async () => {
                 class="w-full px-4 py-3 border border-gray-600 bg-[#1e293b] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 shadow-inner"
                 rows="4"
                 placeholder="Explain the reason for reporting..."
-                required>
+                :required="selectedReasons.includes('Other')">
               </textarea>
             </div>
           </div>
@@ -128,16 +139,23 @@ const handleSubmitReport = async () => {
               type="submit"
               :class="[
                 'w-full flex justify-center items-center',
-                'bg-red-600 hover:bg-red-700',
+                isReportingSelf ? 'bg-gray-600 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700', // Change background based on self-reporting
                 'text-white font-medium',
                 'py-3 px-4 rounded-md',
                 'transition duration-200 ease-in-out',
                 'text-base shadow-md',
                 'disabled:opacity-50 disabled:cursor-not-allowed'
               ]"
-              :disabled="loading || selectedReasons.length === 0 || (selectedReasons.includes('Other') && !otherReasonText.trim())">
+              :disabled="loading || isReportingSelf || selectedReasons.length === 0 || (selectedReasons.includes('Other') && !otherReasonText.trim())">
               <span v-if="loading" class="loading loading-spinner loading-sm mr-2"></span>
-              <span>{{ loading ? 'Submitting...' : 'Submit Report' }}</span>
+              <span>{{ isReportingSelf ? "Can't Self report" : (loading ? 'Submitting...' : 'Submit Report') }}</span>
+            </button>
+
+             <button
+              type="button"
+              @click="goBackToProfile"
+              class="w-full flex justify-center items-center bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-md transition duration-200 ease-in-out text-base shadow-md mt-3">
+              Cancel
             </button>
           </div>
         </form>
@@ -147,9 +165,7 @@ const handleSubmitReport = async () => {
 </template>
 
 <style scoped>
-/* Add custom styles if needed, Tailwind handles most */
 input[type="checkbox"] {
-  /* Slightly larger checkbox for easier clicking */
   transform: scale(1.1);
 }
 </style>

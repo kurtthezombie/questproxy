@@ -72,6 +72,7 @@ const router = createRouter({
       path: '/leaderboards',
       name: 'leaderboards',
       component: LeaderboardsView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/confirm-delete',
@@ -82,11 +83,13 @@ const router = createRouter({
       path: '/account-settings',
       name: 'account-settings',
       component: AccountSettingview,
+      meta: { requiresAuth: true },
     },
     {
       path: '/create-service',
       name: 'create-service',
       component: CreateServiceView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/users/:id',
@@ -102,12 +105,14 @@ const router = createRouter({
     {
       path: '/services/:title',
       name: 'ServiceView',
-      component: ServiceView
+      component: ServiceView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/services-history',
       name: 'ServicesHistory',
-      component: ServicesHistory
+      component: ServicesHistory,
+      meta: { requiresAuth: true }
     },
     {
       path: '/services/:id/edit',
@@ -119,11 +124,13 @@ const router = createRouter({
       path: '/payment/:serviceId',
       name: 'PaymentView',
       component: PaymentView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/payment-history/',
       name: 'PaymentHistoryView',
       component: PaymentHistoryView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/payment/success/:booking_id',

@@ -35,6 +35,7 @@ const isLoadingReviews = ref(false);
 const reviewsError = ref(null);
 
 // --- Computed Properties ---
+// Keeping isOwnProfile computed for other potential uses, but using a direct check for the button
 const isOwnProfile = computed(() => {
   if (!userStore.isLoggedIn || !userStore.userData?.id || !userId.value) {
     return false;
@@ -193,7 +194,6 @@ const fetchCategories = async () => {
 };
 
 // --- Fetch Reviews for Pilot Profile  ---
-
 const fetchPilotReviews = async (pilotId) => {
     if (!pilotId) {
         console.warn("Cannot fetch reviews without pilot ID.");
@@ -396,7 +396,7 @@ const goToPublicPortfolio = () => {
           <button v-if="isOwnProfile" @click="goToAccountSettings" class="btn btn-sm btn-outline btn-info">Account Settings</button>
           <button v-if="isOwnProfile && isPilotProfile" @click="goToMyPortfolio" class="btn btn-sm btn-outline btn-success">Manage Portfolio</button>
           <button v-if="!isOwnProfile && isPilotProfile" @click="goToPublicPortfolio" class="btn btn-sm btn-outline btn-success">View Portfolio</button>
-          <button v-if="!isOwnProfile" @click="goToReportUser" class="btn btn-sm bg-red-600 hover:bg-red-700 text-white border-red-700">Report User</button>
+          <button v-if="userStore.userData?.id !== userId" @click="goToReportUser" class="btn btn-sm bg-red-600 hover:bg-red-700 text-white border-red-700">Report User</button>
         </div>
       </section>
 
