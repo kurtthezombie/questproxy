@@ -5,6 +5,7 @@ import { useLoader } from '@/services/loader-service';
 import { useServiceStore } from '@/stores/serviceStore';
 import axios from 'axios';
 import { generatePDF } from '@/services/agreement.service';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
   selectedBooking: {
@@ -24,6 +25,7 @@ const emit = defineEmits(['close']);
 const { loadShow, loadHide } = useLoader();
 const confirmationVisible = ref(false);
 const progressModalVisible = ref(false);
+const router = useRouter();
 
 const openProgressModal = () => {
   if (props.selectedBooking?.progress !== undefined) {
@@ -59,7 +61,6 @@ const markAsCompleted = async (bookingId) => {
 const saveProgress = async () => {
   if (props.selectedBooking?.id) {
     await updateBookingProgress(props.selectedBooking.id, progressValue.value);
-    console.log('Saving progress:', progressValue.value);
     props.selectedBooking.progress = progressValue.value;
 
     closeProgressModal();
@@ -98,7 +99,6 @@ const updateBookingProgress = async (bookingId, progress) => {
 
 const generateContractPdf = () => {
   if (props.selectedBooking && props.selectedBooking.id) {
-    console.log("HELLO BOOKING ID: ",props.selectedBooking.service_id);
     const serviceId = props.selectedBooking.service_id;
     const bookingId = props.selectedBooking.id;
     const form = {
@@ -129,16 +129,17 @@ const cancelMarkAsCompleted = () => {
 };
 
 const canMarkAsCompleted = computed(() => {
-  console.log('Progress Value:', progressValue.value);
   return progressValue.value === 100;
 });
 
 watch(() => props.selectedBooking, (newVal) => {
+  console.log('Selected Booking:', newVal); // 👈 Add this
+
   if (newVal && newVal.hasOwnProperty('progress')) {
     progressValue.value = newVal.progress;
     originalProgress.value = newVal.progress;
   } else {
-    console.log('Progress not available for selected booking');
+    console.error('Progress not available for selected booking');
   }
 });
 </script>
@@ -156,8 +157,14 @@ watch(() => props.selectedBooking, (newVal) => {
           <p class="text-base font-medium">{{ selectedBooking.service?.description || 'Unknown Service' }}</p>
         </div>
         <div>
-          <p class="text-sm text-gray-400">Client</p>
-          <p class="text-base font-medium ">{{ selectedBooking.client?.username || 'Unknown' }}</p>
+          <button @click="router.push(`/users/${selectedBooking?.client_id}`)" class="text-left">
+            <div>
+              <p class="text-sm text-gray-400">Client</p>
+              <p class="text-base font-medium">
+                {{ selectedBooking.client?.username || 'Unknown' }}
+              </p>
+            </div>
+          </button>
         </div>
         <div class="space-y-2">
           <p class="text-sm text-gray-400">Game</p>
