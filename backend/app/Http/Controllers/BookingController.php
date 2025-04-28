@@ -197,4 +197,14 @@ class BookingController extends Controller
             return $this->failedResponse('Error: ' . $e->getMessage(), 500);
         }
     }
+
+    public function delete($booking_id){
+        try {
+            $this->bookingService->deleteBooking($booking_id);
+
+            return $this->successResponse('Booking deleted.', 200);
+        } catch (Exception $e){
+            return $this->failedResponse($e->getMessage(), 500);
+        }
+    }
 }

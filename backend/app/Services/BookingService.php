@@ -137,6 +137,15 @@ class BookingService
         return $booking;
     }
 
+    public function deleteBooking($booking_id)
+    {
+        $booking = $this->booking->findOrFail($booking_id);
+        
+        $booking->instruction()->delete();
+    
+        $booking->delete();
+    }
+
     private function sendCompletionEmail($booking)
     {
         $service = $booking->service;

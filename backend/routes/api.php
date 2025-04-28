@@ -126,7 +126,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('bookings/instructions/{booking_id}', 'getBookingInstructions');
         Route::get('bookings/{booking_id}', 'show');
         Route::post('bookings/store', 'store');
-        Route::delete('bookings/{booking_id}', 'destroy');
+        Route::delete('bookings/{booking_id}', 'delete');
         Route::put('bookings/{booking_id}/status', 'markAsCompleted');
         Route::put('bookings/{booking_id}/instruction', 'updateInstruction');
         Route::get('bookings/service/{service_id}', 'booksByService');
