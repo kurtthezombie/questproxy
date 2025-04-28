@@ -32,7 +32,6 @@
             <thead class="text-white">
               <tr>
                 <th class="font-semibold py-2 px-4">Amount</th>
-                <th class="font-semibold py-2 px-4">Status</th>
                 <th class="font-semibold py-2 px-4">Method</th>
                 <th class="font-semibold py-2 px-4">Date</th>
               </tr>
@@ -40,7 +39,6 @@
             <tbody>
               <tr v-for="payment in payments" :key="payment.id" class="border-t text-white">
                 <td class="py-2 px-4">PHP {{ payment.amount }}</td>
-                <td class="py-2 px-4">{{ payment.status }}</td>
                 <td class="py-2 px-4">{{ payment.method }}</td>
                 <td class="py-2 px-4">{{ new Date(payment.created_at).toLocaleString() }}</td>
               </tr>
