@@ -31,7 +31,6 @@ const callLogout = () => {
 };
 
 const fetchUserData = async () => {
-  const loader = loadShow();
   try {
     const userData = await loginService.fetchUserData();
     username.value = userData.username;
