@@ -166,7 +166,7 @@ import { useRouter } from 'vue-router';
 import { useServiceStore } from '@/stores/serviceStore';
 import { useUserStore } from '@/stores/userStore';
 import NavBar from '@/components/NavBar.vue';
-
+import toast from '@/utils/toast'; 
 
 
 const router = useRouter();
@@ -231,11 +231,17 @@ const submitService = async () => {
 
     if (!serviceStore.error) {
       resetForm();
+      toast.success('Service created successfully!');
       router.push({ name: 'ServicesHistory' }); 
     }
   } catch (error) {
     console.error('Error in submitService:', error);
     serviceStore.error = error.message;
+    if (error.message) {
+      toast.error(`Failed to create service: ${error.message}`);
+    } else {
+      toast.error('Failed to create service.');
+    }
   }
 };
 
