@@ -128,7 +128,7 @@
                   <div class="mt-3 text-gray-300">
                     <div class="flex items-center mt-2 w-full">
                       <div
-                        class="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-500 font-semibold text-white mr-2 text-lg uppercase">
+                        class="w-10 h-10 flex items-center justify-center rounded-full bg-green-500 font-semibold text-white mr-2 text-lg uppercase">
                         {{ booking.client?.username?.charAt(0) || '?' }}
                       </div>
 
@@ -164,7 +164,7 @@
                 class="bg-blue-900 bg-opacity-20 p-4 rounded-xl border border-gray-700 hover:border-green-400 transition-all">
                 <div class="flex justify-between items-start">
                   <h3 class="text-xl font-bold text-white mt-1">
-                    {{ history.service?.game || 'Unknown Service' }}
+                    {{ history.service?.category?.title || 'Unknown Service' }}
                   </h3>
                   <div class="mt-2">
                     <span class="bg-blue-500 font-bold text-white px-2 py-1 rounded-full text-xs capitalize">
@@ -181,7 +181,8 @@
                 <div class="mt-3 text-gray-300">
                   <div class="flex items-center mt-2 w-full">
                     <div
-                      class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 font-semibold text-white mr-2 text-lg uppercase">
+                      class="w-10 h-10 flex items-center justify-center rounded-full font-semibold text-white mr-2 text-lg uppercase"
+                       :class="history.status === 'completed' ? 'bg-green-500' : 'bg-blue-500'">
                       {{ history.client?.username?.charAt(0) || '?' }}
                     </div>
 
@@ -241,13 +242,13 @@ const filteredBookings = computed(() => {
 });
 
 const filteredUserServices = computed(() => {
-  // Add a check for userStore.userData before accessing pilot_id
-  if (!userStore.userData) {
+  // More robust check for userStore.userData and pilot_id, and service and service.pilot_id
+  if (!userStore.userData || !userStore.userData.pilot_id || !serviceStore.services) {
     return [];
   }
   const userId = userStore.userData.pilot_id;
-  // Add a check for service.pilot_id before comparing
-  return userId ? serviceStore.services.filter(service => service && service.pilot_id === userId) : [];
+  // Ensure service and service.pilot_id exist before comparing
+  return serviceStore.services.filter(service => service && service.pilot_id === userId);
 });
 
 const serviceHistory = computed(() => {
@@ -296,6 +297,7 @@ const fetchData = async () => {
   const pilot_id = userStore.userData?.pilot_id;
   if (!pilot_id) {
     console.error("Pilot ID not found.");
+    // Optionally redirect or show an error message if pilot_id is crucial for this page
     return;
   }
 
@@ -321,6 +323,11 @@ const closeModal = () => {
 
 onMounted(async () => {
   if (checkAuth()) {
+    // Ensure user data is loaded before fetching pilot-specific data
+    if (!userStore.userData) {
+        await userStore.fetchUserData(); // Assuming you have a fetchUserData action in your user store
+    }
+    // Now that user data is likely loaded, call fetchData
     await fetchData();
   }
 });
