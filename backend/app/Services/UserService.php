@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Otp;
 use App\Models\User;
 use Exception;
 use Hash;
@@ -60,7 +61,10 @@ class UserService
             throw new Exception('User not found');
         }  
 
+        // Delete all OTP records associated with the user
+        Otp::where('email', $email)->delete();
         //delete happens here
+        
         if (!$user->delete()) {
             throw new Exception('Failed to delete the user');
         }
