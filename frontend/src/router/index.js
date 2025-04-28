@@ -259,4 +259,12 @@ router.beforeEach((to, from, next) => {
   }
 });
 
+// Add the afterEach hook to track page views
+router.afterEach((to, from) => {
+  // Send pageview event to Google Analytics
+  window.gtag('event', 'page_view', {
+    page_path: to.fullPath
+  });
+});
+
 export default router;

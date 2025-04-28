@@ -50,6 +50,11 @@ const handleSubmitOtp = async () => {
         const response = await submitOtp(formData);
 
         console.log(response);
+        gtag('event', 'sign_up', {
+            'event_category': 'authentication',
+            'event_label': 'OTP Verification',
+            'value': 1
+        });
         router.push({ name: 'homepage' });
     } catch (error) {
         otpError.value = error.message || 'An unexpected error occurred';

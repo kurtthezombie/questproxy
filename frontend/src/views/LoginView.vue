@@ -70,7 +70,13 @@ const submitForm = async () => {
 
       if (userRole === 'gamer' || userRole === 'game pilot') {
         console.log("Navigating to homepage..")
-        await router.push({ name: 'homepage' });  
+        await router.push({ name: 'homepage' }); 
+        
+        gtag('event', 'login', {
+          'event_category': 'user_engagement',
+          'event_label': 'user_login',
+          'value': 1
+        });
       }
 
       message.value = response.message;
