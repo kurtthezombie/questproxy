@@ -34,6 +34,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// Route for searching users 
+Route::get('/users/search', [UserController::class, 'search']);
 
 //verify-email
 Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])
@@ -73,6 +75,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('check_login', 'checklogin'); //just for checking
         Route::get('users/edit/{id}', 'edit');
         Route::patch('users/edit/{id}', 'update');
+        Route::get('users/search', 'search');
     });
 
     Route::controller(PilotController::class)->group(function () {
