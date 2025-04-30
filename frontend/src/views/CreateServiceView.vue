@@ -45,7 +45,7 @@
 
         <div>
           <label class="block text-sm mb-1">Game</label>
-          <select v-model="formData.game" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2">
+          <select v-model="formData.game" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2">
             <option value="" disabled>Select a game</option>
             <option v-for="category in serviceStore.categories" :key="category.id" :value="category.game">
               {{ category.title }}
@@ -177,11 +177,13 @@ const username = ref(userStore.userData?.username || '');
 const email = ref(userStore.userData?.email || '');
 const role = ref(userStore.userData?.role || '');
 
+
+
 const formData = reactive({
   game: '',
   description: '',
   price: null,
-  duration: 1,
+  duration: '',
   availability: 1,
   category_id: null
 });

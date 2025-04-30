@@ -47,7 +47,7 @@
 
         <div>
           <label class="block text-sm mb-1">Game</label>
-          <select v-model="formData.game" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2">
+          <select v-model="formData.game" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2">
             <option value="" disabled>Select a game</option>
             <option v-for="category in serviceStore.categories" :key="category.id" :value="category.game">
               {{ category.title }}
@@ -62,7 +62,7 @@
             </svg>
             <label class="text-sm">Description</label>
           </div>
-          <textarea v-model="formData.description" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2" rows="3" placeholder="Describe your service..."></textarea>
+          <textarea v-model="formData.description" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2" rows="3" placeholder="Describe your service..."></textarea>
         </div>
 
         <div>
@@ -100,7 +100,7 @@
               </svg>
               <label class="text-sm">Availability</label>
             </div>
-            <select v-model="formData.availability" class="w-full rounded-md bg-[#1e293b] text-white border border-gray-600 p-2">
+            <select v-model="formData.availability" class="w-full rounded-md bg-gray-700 text-white border border-gray-600 p-2">
               <option :value="1">Available</option>
               <option :value="0">Not Available</option>
             </select>
@@ -243,5 +243,4 @@
   localStorage.removeItem('tokenType');
   router.push({ name: 'login' });
 };
-
   </script>

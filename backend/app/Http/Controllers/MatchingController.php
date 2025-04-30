@@ -12,14 +12,15 @@ use Str;
 class MatchingController extends Controller
 {
     use ApiResponseTrait;
-
     public function matchPilot(Request $request){
+        //game and task details from the form input
+        //validate
         $request->validate([
-            'game' => 'required|int',
-            'service' => 'required|string',
+            'game' => 'required|string',
+            'task' => 'required|text',
             'points' => 'required|int' 
         ]);
-
+        $game = Str::snake($request->game);
         //query matching pilots
         $matchingPilot = Pilot::with('rank') // Eager load the 'rank' relationship
             ->whereHas('services', function($query) use ($request) {
@@ -31,28 +32,16 @@ class MatchingController extends Controller
             })->where('user_id', '!=', $request->user()->id)
             ->get();
 
-        //return if no pilots are found
+        //check results
         if ($matchingPilot->isEmpty()){
-            return $this->successResponse('No matching pilots found.', 200);
+            return $this->successResponse('No matching pilots found.', 404);
         }
-
-        //select random pilot from the collection
-        $randomPilot = $matchingPilot->random();
-
-        //get pilot and your user records
-        $pilotUser = $randomPilot->user;
+        //trigger notifications
+        $pilot_user = $matchingPilot->user;
         $user = $request->user();
-
-        //$this->sendNotifToPilot($pilotUser, $user);
-        
+        $pilot_user->notify(new PilotMatchedNotification($user));
+        event(new NotificationBroadcastEvent($user));
         //return response
-        return $this->successResponse('Matching pilots found.', 200, ['pilot' => $pilotUser, 'pilot_details' => $randomPilot]);
-    }
-
-    private function sendNotifToPilot($pilot, $gamer)
-    {
-        //send notification
-        $pilot->notify(new PilotMatchedNotification($gamer));
-        event(new NotificationBroadcastEvent($gamer));
+        return $this->successResponse('Matching pilots found.', 200, ['pilot' => $pilot_user]);
     }
 }

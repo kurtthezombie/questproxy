@@ -199,9 +199,7 @@
         </div>
       </template>
     </div>
-
     <ViewBookingDialog :selectedBooking="selectedBooking" :isModalOpen="isModalOpen" @close="closeModal" />
-
   </div>
 </template>
 

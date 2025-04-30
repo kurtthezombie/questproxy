@@ -167,6 +167,7 @@ const fetchServiceDetails = async () => {
 
     const response = await axios.get(`http://127.0.0.1:8000/api/services/${route.params.serviceId}`, {
       headers: { Authorization: `${tokenType} ${authToken}` },
+      headers: { Authorization: `${tokenType} ${authToken}` },
     });
 
     if (response.data?.service) {

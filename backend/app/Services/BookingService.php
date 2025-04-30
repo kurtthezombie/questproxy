@@ -134,6 +134,12 @@ class BookingService
         $booking->progress = $progress;
         $booking->save();
 
+        $booking->load([
+            'service.pilot.user',
+            'client', 
+        ]);
+        $this->sendCompletionEmail($booking);
+
         return $booking;
     }
 
