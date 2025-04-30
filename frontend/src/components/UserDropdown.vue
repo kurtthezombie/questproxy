@@ -51,6 +51,11 @@
             Payment History
           </router-link>
         </li>
+        <li>
+          <router-link to="/transaction-history" @click="closeDropdown" class="block px-4 py-2 text-white hover:bg-gray-600 dark:hover:bg-gray-700">
+            Transaction History
+          </router-link>
+        </li>
         <div class="border-t border-gray-700 dark:border-gray-600 my-1"></div> 
 
         <div class="py-0">
