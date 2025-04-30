@@ -12,7 +12,9 @@ use App\Traits\ApiResponseTrait;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Log;
 use Mail;
+use Illuminate\Support\Facades\DB;
 
 
 class UserController extends Controller
@@ -178,6 +180,49 @@ class UserController extends Controller
             ->exists();
 
         return $hasAvailableServices || $hasActiveBookingsByClient;
+    }
+
+    // Search method to handle user search with filtering
+    public function search(Request $request) 
+    {
+        try {
+            $query = $request->input('query');
+            $filterBy = $request->input('filter_by', 'username'); 
+
+            $users = User::query();
+
+            switch ($filterBy) {
+                case 'username':
+                    $users->where('username', 'like', '%' . $query . '%');
+                    break;
+                case 'role':
+                    $users->where(function ($q) use ($query) {
+                        $q->where('role', 'like', '%' . $query . '%')
+                          ->orWhere('username', 'like', '%' . $query . '%'); 
+                    });
+                    break;
+                case 'points':
+                    $users->whereIn('role', ['pilot', 'game pilot'])
+                          ->whereHas('pilot.rank', function ($q) use ($query) {
+                              $q->where(DB::raw('CAST(points AS CHAR)'), 'like', '%' . $query . '%');
+                          })
+                          ->orWhere('username', 'like', '%' . $query . '%'); 
+                    break;
+                default:
+                    $users->where('username', 'like', '%' . $query . '%');
+                    break;
+            }
+
+            $users->with(['pilot.rank', 'gamer']);
+
+            $searchResults = $users->get();
+
+            return $this->successResponse('Search results.', 200, ['users' => $searchResults]);
+
+        } catch (Exception $e) {
+            Log::error("Error during user search: " . $e->getMessage());
+            return $this->failedResponse('Failed to perform search.', 500);
+        }
     }
 
     //for testing, not a major function

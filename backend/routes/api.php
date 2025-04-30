@@ -34,6 +34,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// Route for searching users 
+Route::get('/users/search', [UserController::class, 'search']);
 
 //verify-email
 Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])
@@ -73,6 +75,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('check_login', 'checklogin'); //just for checking
         Route::get('users/edit/{id}', 'edit');
         Route::patch('users/edit/{id}', 'update');
+        Route::get('users/search', 'search');
     });
 
     Route::controller(PilotController::class)->group(function () {
@@ -109,6 +112,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::patch('services/edit/{id}', 'update');
         Route::delete('services/destroy/{id}', 'destroy');
         Route::get('pilots/{pilot_id}/services','getServicesByPilot');
+        Route::get('services/{id}/details', 'getServiceDetails');
     });
 
     Route::controller(ReportController::class)->group(function () {
@@ -122,12 +126,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('bookings/instructions/{booking_id}', 'getBookingInstructions');
         Route::get('bookings/{booking_id}', 'show');
         Route::post('bookings/store', 'store');
-        Route::delete('bookings/{booking_id}', 'destroy');
+        Route::delete('bookings/{booking_id}', 'delete');
         Route::put('bookings/{booking_id}/status', 'markAsCompleted');
         Route::put('bookings/{booking_id}/instruction', 'updateInstruction');
         Route::get('bookings/service/{service_id}', 'booksByService');
         Route::get('bookings/client/{client_id}', 'booksByClient');
         Route::get('/pilot/bookings', 'getBookingByPilot');
+        Route::put('bookings/{booking_id}/progress', 'updateProgress');
     });
 
     Route::controller(PaymentController::class)->group(function() {
@@ -135,6 +140,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('payments/{booking_id}', 'pay');
         Route::get('payments/success/{id}', 'success');
         Route::get('users/{user_id}/payments/paid', 'paymentsPaid');
+        Route::get('payments/paid/export', 'exportPaidPayments');
     });
 
     Route::controller(TransactionController::class)->group(function() {
@@ -153,6 +159,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::controller(ReviewController::class)->group(function() {
         Route::get('reviews/{id}/info', 'fetchServiceInfo');
         Route::post('reviews', 'store');
+        Route::get('pilots/{pilotId}/reviews', 'indexByPilot');
     });
 
     Route::post('match-pilot',[MatchingController::class,'matchPilot']);

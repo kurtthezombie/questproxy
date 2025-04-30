@@ -31,18 +31,14 @@
           <table class="table w-full">
             <thead class="text-white">
               <tr>
-                <th class="font-semibold py-2 px-4">Payment ID</th>
                 <th class="font-semibold py-2 px-4">Amount</th>
-                <th class="font-semibold py-2 px-4">Status</th>
                 <th class="font-semibold py-2 px-4">Method</th>
                 <th class="font-semibold py-2 px-4">Date</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="payment in payments" :key="payment.id" class="border-t text-white">
-                <td class="py-2 px-4">{{ payment.transaction_id }}</td>
                 <td class="py-2 px-4">PHP {{ payment.amount }}</td>
-                <td class="py-2 px-4">{{ payment.status }}</td>
                 <td class="py-2 px-4">{{ payment.method }}</td>
                 <td class="py-2 px-4">{{ new Date(payment.created_at).toLocaleString() }}</td>
               </tr>
@@ -57,48 +53,74 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
 import NavBar from '@/components/NavBar.vue';
 import { useUserStore } from '@/stores/userStore';
+import api from '@/utils/api';
+import toast from '@/utils/toast';
+import dayjs from 'dayjs';
 
 const payments = ref([]);
 const userId = ref('');
 const userStore = useUserStore();
+const isLoading = ref(false);
 
-async function fetchPaymentHistory() {
+const fetchPaymentHistory = async () => {
   try {
+    isLoading.value = true;
     const userToken = localStorage.getItem('authToken');
     const user_id = userId.value;
-    console.log("UserId: ", user_id);
+    
     if (!userToken) {
       throw new Error('Unauthorized: Missing authentication token');
     }
 
-    const response = await axios.get(`http://127.0.0.1:8000/api/users/${user_id}/payments/paid`, {
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-      },
-    });
+    const response = await api.get(`/users/${user_id}/payments/paid`);
 
-    payments.value = response.data.payments;
+    payments.value = response.payments;
   } catch (error) {
     console.error('Error fetching payment history:', error);
+    toast.error('Failed to fetch payment history. Please try again later.');
+  } finally {
+    isLoading.value = false;
   }
 }
+
+const handleExport = async () => {
+  try {
+    isLoading.value = true;
+
+    // Make a GET request to the backend to export the transaction history as a Blob
+    const response = await api.get('/payments/paid/export', { responseType: 'blob' });
+
+    const currentDate = dayjs().format('YYYY-MM-DD');
+    const filename = `${currentDate}_payments_history.xlsx`;
+    
+    //create blob from the response data
+    const blob = new Blob([response], { 
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+    });
+
+    //create download link
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error("Error exporting transactions:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+
 
 onMounted(() => {
   const user = userStore.userData;
   userId.value=user.id;
   fetchPaymentHistory();
-  // const storedUserData = localStorage.getItem('userData');
-  // if (storedUserData) {
-  //   const user = JSON.parse(storedUserData);
-  //   userId.value = user.id;
-  //   fetchPaymentHistory();
-  // } else {
-  //   console.error('User not logged in');
-    
-  // }
 });
 
 </script>

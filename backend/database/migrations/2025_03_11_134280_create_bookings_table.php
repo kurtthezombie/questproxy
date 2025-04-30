@@ -15,14 +15,13 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('client_id'); //user who booked
             $table->unsignedBigInteger('service_id'); //service booked
-            $table->string('status')->default('pending');
+            $table->string('status')->default('in_progress');
+            $table->integer('progress')->default(0);
             $table->timestamps();
 
             $table->foreign('client_id')->references('id')->on('users');
             $table->foreign('service_id')->references('id')->on('services');
         });
-
-        
     }
 
     /**

@@ -37,8 +37,6 @@ const loadPortfolios = async (isSubmit = false) => {
             }));
 
             const message = isSubmit ? "Portfolios refreshed" : "Portfolios fetched successfully";
-
-            toast.info(message);
         } else {
             portfolios.value = [];
             toast.info("No portfolios found.");
@@ -180,6 +178,12 @@ const generateParticleStyle = (index) => {
                         </div>
                     </template>
                     <template v-else>
+                        <!-- Check if there are no portfolios -->
+                        <div v-if="portfolios.length === 0" class="col-span-2 text-center text-white font-semibold">
+                            No portfolios yet.
+                        </div>
+                        
+                        <!-- Display portfolio cards if there are portfolios -->
                         <PortfolioCard v-for="portfolio in portfolios" :key="portfolio.id" :username="userName"
                             :portfolio="portfolio" class="w-full" @deleted="handlePortfolioDeleted"
                             @edit="openEditModal" />

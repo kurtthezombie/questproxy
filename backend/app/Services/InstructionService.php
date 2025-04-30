@@ -18,9 +18,9 @@ class InstructionService
     {
         $instruction = new Instruction();
         $instruction->booking_id = $booking_id;
-        $instruction->credentials_username = Crypt::encryptString($data['credentials_username']);
-        $instruction->credentials_password = Crypt::encryptString($data['credentials_password']);
-        $instruction->additional_notes = $data['additional_notes'];
+        $instruction->start_date = $data['start_date'];
+        $instruction->communication_link = $data['communication_link'];
+        $instruction->additional_notes = $data['additional_notes'] ?? null;
 
         if (!$instruction->save()) {
             throw new Exception('Failed to create instruction.');
@@ -62,10 +62,6 @@ class InstructionService
         {
             throw new Exception("Instruction not found for booking ID $booking_id.");
         }
-
-        // Decrypt and set values directly on the instruction object
-        $instruction->credentials_username = Crypt::decryptString($instruction->credentials_username);
-        $instruction->credentials_password = Crypt::decryptString($instruction->credentials_password);
         
         return $instruction;
     }

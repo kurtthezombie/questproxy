@@ -25,4 +25,8 @@ class Review extends Model
     public function pilot(){
         return $this->belongsTo(Pilot::class);
     }
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
 }

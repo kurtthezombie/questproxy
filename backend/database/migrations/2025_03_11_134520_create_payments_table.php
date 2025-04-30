@@ -18,8 +18,8 @@ return new class extends Migration
             $table->decimal('amount',10,2);
             $table->string('method')->nullable();
             $table->string('details')->nullable();
-            $table->string('transaction_id');
-            $table->string('payment_link');
+            $table->string('transaction_id')->nullable();
+            $table->string('payment_link')->nullable();
             $table->string('status')->default('pending');
             $table->timestamps();
 

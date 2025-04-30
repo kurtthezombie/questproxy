@@ -1,4 +1,5 @@
 import { useUserStore } from '@/stores/userStore';
+import toast from '@/utils/toast';
 import axios from 'axios';
 
 const register = async (user) => {
@@ -65,7 +66,7 @@ const updateUser = async ({ id, firstName, lastName, contactNumber, email }) => 
     return response.data;
   } catch (error) {
     console.error('Error updating account:', error);
-    alert('Failed to update account.');
+    toast.error('Failed to update account.');
     throw error;
   }
 };
@@ -140,7 +141,7 @@ const reportUser = async ({ reportedUserId, reason }) => {
     return response.data; 
   } catch (error) {
     console.error('Error reporting user:', error);
-    alert('Failed to report user.');
+    toast.error('Failed to report user.');
     throw error; 
   }
 };

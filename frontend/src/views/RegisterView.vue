@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import loginservice from '@/services/login-service';
 import { useLoader } from '@/services/loader-service';
@@ -159,7 +159,7 @@ onMounted(() => {
           <input type="email" id="email" v-model="form.email" placeholder="Email" required class="w-full p-3 bg-[#1e293b] text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
           <input type="password" id="password" v-model="form.password" placeholder="Password" required class="w-full p-3 bg-[#1e293b] text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
           <input type="password" id="confirm-password" v-model="form.confirmPassword" placeholder="Confirm Password" required class="w-full p-3 bg-[#1e293b] text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-          <input type="text" id="contact-number" v-model="form.contact_number" placeholder="Contact Number" required class="w-full p-3 bg-[#1e293b] text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input type="text" id="contact-number" v-model="form.contact_number" @input="form.contact_number = form.contact_number.replace(/[^0-9]/g, '')" inputmode="numeric" pattern="[0-9]*" placeholder="Contact Number" required class="w-full p-3 bg-[#1e293b] text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
           <select id="role" v-model="form.role" required class="w-full p-3 bg-[#1e293b] border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
             <option value="" disabled>Select Role</option>
             <option value="gamer">Online Games Enthusiast</option>
@@ -171,6 +171,9 @@ onMounted(() => {
         <div class="flex flex-col space-y-4 w-3/4">
           <div class="flex space-x-4">
             <button 
+                type="button" 
+                class="w-1/2 p-3 border border-gray-700 bg-transparent rounded-lg text-white hover:bg-gray-700 transition duration-300"
+                @click="cancelHandler">Back
                 type="button" 
                 class="w-1/2 p-3 border border-gray-700 bg-transparent rounded-lg text-white hover:bg-gray-700 transition duration-300"
                 @click="cancelHandler">Back

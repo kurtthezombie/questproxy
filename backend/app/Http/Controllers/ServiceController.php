@@ -55,7 +55,12 @@ class ServiceController extends Controller
         {
             $service = Service::find($service_id);
 
-            return $this->successResponse('Service listing retrieved.',200,['service' => $service]);
+            return $this->successResponse('Service listing retrieved.',200,
+            [
+                'service' => $service, 
+                'category_title' => $service->category->title,
+                'pilot' => $service->pilot->user,
+            ]);
         }
         catch (ModelNotFoundException $e) {
             return $this->failedResponse("Service listing {$service_id} not found.", 404);
@@ -160,6 +165,18 @@ class ServiceController extends Controller
         try{
             $services = $this->listingService->getServiceByCategory($category_id);
             return $this->successResponse('Servvices retrieved successfully', 200, ['services' => $services]);
+        } catch (Exception $e) {
+            return $this->failedResponse($e->getMessage(), 500);
+        }
+    }
+
+    public function getServiceDetails($id)
+    {
+        try {
+            $service = $this->listingService->getServiceDetails($id);
+            return $this->successResponse('Service details retrieved successfully.', 200, ['service' => $service]);
+        } catch (ModelNotFoundException $e) {
+            return $this->failedResponse("Service listing {$id} not found.", 404);
         } catch (Exception $e) {
             return $this->failedResponse($e->getMessage(), 500);
         }
