@@ -173,10 +173,7 @@ onMounted(() => {
             <button 
                 type="button" 
                 class="w-1/2 p-3 border border-gray-700 bg-transparent rounded-lg text-white hover:bg-gray-700 transition duration-300"
-                @click="cancelHandler">Back
-                type="button" 
-                class="w-1/2 p-3 border border-gray-700 bg-transparent rounded-lg text-white hover:bg-gray-700 transition duration-300"
-                @click="cancelHandler">Back
+                @click="cancelHandler">Back  
             </button>
 
             <button 

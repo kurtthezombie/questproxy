@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueform/slider": "^2.1.10",
     "axios": "^1.7.7",
     "daisyui": "^5.0.4",
     "dayjs": "^1.11.13",
