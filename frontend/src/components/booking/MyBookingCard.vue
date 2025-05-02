@@ -1,6 +1,6 @@
 <template>
   <div
-    class="max-w-sm mx-auto bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform duration-200 hover:cursor-pointer">
+    class="max-w-sm mx-auto bg-gray-800 rounded-lg overflow-hidden shadow-lg">
     <div class="p-5">
       <h3 class="text-2xl font-semibold text-white">{{ serviceTitle }}</h3>
       <div class="flex flex-row items-center justify-between">
@@ -25,11 +25,12 @@
           </div>
         </div>
         <div 
-          class="radial-progress text-success"
+          class="radial-progress text-success hover:cursor-pointer hover:shadow-md hover:shadow-lime-300 hover:scale-105 transition-transform duration-200"
           :style="{ '--value': progress, '--size': '8rem' }" role="progressbar"
           :aria-valuenow="progress" 
           aria-valuemin="0" 
           aria-valuemax="100"
+          @click="goToProgressPage"
           >
           {{ progress }}%
         </div>
@@ -48,6 +49,9 @@
 import { computed } from "vue";
 import { generatePdfForClient } from "@/services/agreement.service";
 import toast from '@/utils/toast';
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 // Props passed from the parent component
 const props = defineProps({
@@ -71,5 +75,9 @@ const handleDownloadAgreement = async () => {
   await generatePdfForClient(props.serviceId, props.bookingId);
   toast.success("Agreement downloaded successfully!");
 }
+
+const goToProgressPage = () => {
+  router.push(`/progress/${props.bookingId}`);
+};
 
 </script>

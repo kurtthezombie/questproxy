@@ -152,6 +152,18 @@ class BookingService
         $booking->delete();
     }
 
+    public function getBookingWithRelations($bookingId)
+    {
+        $booking = $this->booking->with([
+            'service.category',
+            'service.pilot.user',
+            'client',
+            'instruction',
+        ])->findOrFail($bookingId);
+
+        return $booking;
+    }
+
     private function sendCompletionEmail($booking)
     {
         $service = $booking->service;

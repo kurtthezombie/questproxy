@@ -207,4 +207,15 @@ class BookingController extends Controller
             return $this->failedResponse($e->getMessage(), 500);
         }
     }
+
+    public function getBookingWithRelations($booking_id)
+    {
+        try {
+            $booking = $this->bookingService->getBookingWithRelations($booking_id);
+
+            return $this->successResponse('Booking details retrieved', 200, ['data' => $booking]);
+        } catch (Exception $e){
+            $this->failedResponse($e->getMessage(), 500);
+        }
+    }
 }

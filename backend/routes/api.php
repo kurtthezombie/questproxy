@@ -14,6 +14,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PilotController;
 use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReviewController;
@@ -133,6 +134,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('bookings/client/{client_id}', 'booksByClient');
         Route::get('/pilot/bookings', 'getBookingByPilot');
         Route::put('bookings/{booking_id}/progress', 'updateProgress');
+        Route::get('bookings/{booking_id}/with-relations', 'getBookingWithRelations');
+    });
+
+    Route::controller(ProgressController::class)->group(function() {
+        Route::get('progress/booking/{booking_id}', 'getProgressByBooking');
+        Route::post('progress', 'create');
+        Route::delete('progress/{id}', 'delete');
     });
 
     Route::controller(PaymentController::class)->group(function() {
