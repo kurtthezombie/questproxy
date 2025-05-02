@@ -33,4 +33,9 @@ class Booking extends Model
     public function payment(){
         return $this->hasOne(Payment::class);
     }
+
+    public function progressLogs()
+    {
+        return $this->hasMany(ProgressLog::class);
+    }
 }
