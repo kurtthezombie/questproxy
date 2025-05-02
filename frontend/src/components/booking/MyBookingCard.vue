@@ -30,6 +30,7 @@
           :aria-valuenow="progress" 
           aria-valuemin="0" 
           aria-valuemax="100"
+          @click="goToProgressPage"
           >
           {{ progress }}%
         </div>
@@ -48,6 +49,9 @@
 import { computed } from "vue";
 import { generatePdfForClient } from "@/services/agreement.service";
 import toast from '@/utils/toast';
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 // Props passed from the parent component
 const props = defineProps({
@@ -71,5 +75,9 @@ const handleDownloadAgreement = async () => {
   await generatePdfForClient(props.serviceId, props.bookingId);
   toast.success("Agreement downloaded successfully!");
 }
+
+const goToProgressPage = () => {
+  router.push(`/progress/${props.bookingId}`);
+};
 
 </script>

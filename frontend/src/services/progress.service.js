@@ -35,4 +35,4 @@ const deleteProgress = async (id) => {
 }
 
 
-export { fetchBookingData, fetchProgressLogs, createProgressUpdate };
+export { fetchBookingData, fetchProgressLogs, createProgressUpdate, deleteProgress };

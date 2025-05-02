@@ -8,6 +8,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
 import AddProgressForm from '@/components/progress/AddProgressForm.vue';
+import NavBar from '@/components/NavBar.vue';
 
 const route = useRoute();
 const bookingId = route.params.bookingId;
@@ -55,6 +56,7 @@ onMounted(() => {
 });
 </script>
 <template>
+  <NavBar />
   <div class="bg-gray-900 min-h-screen text-white p-6">
     <div class="flex flex-col gap-y-6 max-w-4xl mx-auto">
       <!-- Header Section -->
@@ -101,6 +103,7 @@ onMounted(() => {
           :key="log.id"
           :progress-log="log"
           :is-pilot="isPilot"
+          @progress-deleted="handleFetchProgressLogs"
         />
       </div>
     </div>

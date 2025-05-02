@@ -148,7 +148,10 @@ watch(() => props.selectedBooking, (newVal) => {
   <!-- Modal for booking details -->
   <dialog id="bookingModal" class="modal" :open="isModalOpen">
     <div class="modal-box bg-gray-900 border border-gray-700 rounded-xl shadow-xl p-6 text-white">
-      <h3 class="text-2xl font-bold">Booking Details</h3>
+      <div class="flex justify-between">
+        <h3 class="text-2xl font-bold">Booking Details</h3>
+        <button class="btn btn-ghost" @click="router.push(`/progress/${selectedBooking?.id}`)">See Progress Updates</button>
+      </div>
 
       <!-- Booking Info -->
       <div v-if="selectedBooking" class="mt-4 space-y-4">

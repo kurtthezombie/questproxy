@@ -1,4 +1,5 @@
 <script setup>
+import { deleteProgress } from '@/services/progress.service';
 import toast from '@/utils/toast';
 import dayjs from 'dayjs';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
@@ -14,6 +15,8 @@ const props = defineProps({
     required: true,
   }
 });
+
+const emit = defineEmits(['progress-deleted']);
 
 const showLightbox = ref(false);
 
@@ -35,7 +38,8 @@ const handleKeyDown = (e) => {
 const handleDeleteProgress = async (id) => {
   try {
     await deleteProgress(id);
-    
+    emit('progress-deleted');
+    toast.success('Progress item deleted.');
   } catch (error) {
     toast.error('Failed to delete progress item.');
   }
@@ -91,7 +95,6 @@ onBeforeUnmount(() => {
         <path stroke-linecap="round" stroke-linejoin="round"
               d="M6 18 18 6M6 6l12 12" />
       </svg>
-      Delete
     </button>
 
     <!-- Full-size image -->
