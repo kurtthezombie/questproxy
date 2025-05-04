@@ -18,24 +18,43 @@
         <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-green-500 mx-auto"></div>
       </div>
       <div v-else-if="notifications.length === 0" class="p-2 text-gray-400 text-sm">No notifications</div>
-      <ul v-else class="max-h-[60vh] overflow-y-auto">
-        <li v-for="notif in notifications" :key="notif.id" 
-          class="p-2 hover:bg-gray-700 text-sm border-b border-gray-700 cursor-pointer"
-          :class="{ 'bg-gray-700': !notif.read_at }"
-          @click="handleNotificationClick(notif)">
-          <div class="flex items-start gap-2">
-            <div class="flex-1">
-              <p class="text-gray-200">{{ notif.data.message }}</p>
-              <p class="text-xs text-gray-400">{{ formatDate(notif.created_at) }}</p>
+      <div v-else class="max-h-[60vh] overflow-y-auto">
+        <ul>
+          <li v-for="notif in notifications" :key="notif.id" 
+            class="p-2 hover:bg-gray-700 text-sm border-b border-gray-700 cursor-pointer"
+            :class="{ 'bg-gray-700': !notif.read_at }"
+            @click="handleNotificationClick(notif)">
+            <div class="flex items-start gap-2">
+              <div class="flex-1">
+                <p class="text-gray-200">{{ notif.data.message }}</p>
+                <p class="text-xs text-gray-400">{{ formatDate(notif.created_at) }}</p>
+              </div>
+              <button v-if="!notif.read_at" @click.stop="markAsRead(notif.id)" class="text-green-400 hover:text-green-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </button>
             </div>
-            <button v-if="!notif.read_at" @click.stop="markAsRead(notif.id)" class="text-green-400 hover:text-green-300">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </li>
+        </ul>
+        <!-- Load More Button -->
+        <div v-if="currentPage < totalPages" class="p-2 text-center border-t border-gray-700">
+          <button 
+            @click.stop="loadMoreNotifications" 
+            class="text-sm text-green-400 hover:text-green-300 w-full py-1"
+            :disabled="isLoadingMore"
+          >
+            <span v-if="!isLoadingMore">Load More</span>
+            <span v-else class="flex items-center justify-center">
+              <svg class="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-            </button>
-          </div>
-        </li>
-      </ul>
+              Loading...
+            </span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -59,6 +78,7 @@ const unreadCount = ref(0);
 const isLoading = ref(false);
 const currentPage = ref(1);
 const totalPages = ref(1);
+const isLoadingMore = ref(false);
 
 const formatDate = (date) => {
   return dayjs(date).fromNow();
@@ -76,6 +96,8 @@ const handleFetchNotifications = async (page = 1) => {
   try {
     isLoading.value = true;
     const response = await notificationService.fetchNotifications(page);
+    console.log('Notification Response:', response);
+    
     if (response && response.notifications) {
       notifications.value = response.notifications;
       unreadCount.value = response.notifications.filter(n => !n.read_at).length;
@@ -124,8 +146,28 @@ const handleNotificationClick = async (notification) => {
         router.push(`/users/${notification.data.user_id}`);
       }
       break;
+    case 'user_matched':
+      if (notification.data.user_id) {
+        router.push(`/users/${notification.data.user_id}`);
+      }
+      break;
     case 'booking_confirmed':
       router.push('/services-history');
+      break;
+    case 'booking_completed':
+      if (notification.data.booking_id) {
+        router.push(`/progress/${notification.data.booking_id}`);
+      }
+      break;
+    case 'progress_updated':
+      if (notification.data.booking_id) {
+        router.push(`/progress/${notification.data.booking_id}`);
+      }
+      break;
+    case 'progress_item_added':
+      if (notification.data.booking_id) {
+        router.push(`/progress/${notification.data.booking_id}`);
+      }
       break;
     // Add more cases for other notification types here
     default:
@@ -134,6 +176,28 @@ const handleNotificationClick = async (notification) => {
 
   // Close the notification popover
   notifOpen.value = false;
+};
+
+const loadMoreNotifications = async () => {
+  if (isLoadingMore.value) return;
+  
+  try {
+    isLoadingMore.value = true;
+    const nextPage = currentPage.value + 1;
+    const response = await notificationService.fetchNotifications(nextPage);
+    console.log('Load More Response:', response);
+    
+    if (response && response.notifications) {
+      // Append new notifications to existing ones
+      notifications.value = [...notifications.value, ...response.notifications];
+      currentPage.value = response.pagination.current_page;
+      totalPages.value = response.pagination.last_page;
+    }
+  } catch (error) {
+    console.error('Failed to load more notifications:', error);
+  } finally {
+    isLoadingMore.value = false;
+  }
 };
 
 // Close notification popover when clicking outside
