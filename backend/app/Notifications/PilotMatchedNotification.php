@@ -2,12 +2,7 @@
 
 namespace App\Notifications;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
-use Illuminate\Notifications\Messages\BroadcastMessage;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Log;
 use App\Models\User;
 
 class PilotMatchedNotification extends Notification 
@@ -39,9 +34,9 @@ class PilotMatchedNotification extends Notification
     public function toDatabase(object $notifiable): array
     {
         return [
-            'message' => 'A user has matched with you!',
-            'user_id' => $this->user->id,
-            'user_name' => $this->user->username,
+            'type' => 'pilot_matched',
+            'message' => $this->user->username . ' has matched with you!',
+            'user_id' => $this->user->id
         ];
     }
 

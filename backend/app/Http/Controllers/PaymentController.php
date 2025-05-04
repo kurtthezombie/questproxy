@@ -12,6 +12,8 @@ use DB;
 use Http;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Notifications\BookingConfirmedNotification;
+use App\Models\Service;
 
 class PaymentController extends Controller
 {
@@ -144,6 +146,14 @@ class PaymentController extends Controller
                 $payment->status = $status;
                 $payment->save();
 
+                // Get the booking and update its status
+                $booking = $payment->booking;
+                $booking->status = 'in_progress';
+                $booking->save();
+
+                // Send notification
+                $this->sendBookingConfirmedNotification($booking);
+
                 //return response
                 return $this->successResponse('Payment successful.', 200, ['payment_status' => $status]);
             }
@@ -169,5 +179,29 @@ class PaymentController extends Controller
     {
         $user_id = Auth::user()->id;
         return Excel::download(new PaymentsPaidExport($user_id), 'payments_paid.xlsx');
+    }
+
+    private function getPilotUserFromBooking(Booking $booking)
+    {
+        return $booking->service->pilot->user;
+    }
+
+    private function getClientUserFromBooking(Booking $booking)
+    {
+        return $booking->client;
+    }
+
+    private function getServiceFromBooking(Booking $booking)
+    {
+        return $booking->service;
+    }
+
+    private function sendBookingConfirmedNotification(Booking $booking)
+    {
+        $pilotUser = $this->getPilotUserFromBooking($booking);
+        $clientUser = $this->getClientUserFromBooking($booking);
+        $service = $this->getServiceFromBooking($booking);
+        
+        $pilotUser->notify(new BookingConfirmedNotification($clientUser, $service, $booking));
     }
 }
