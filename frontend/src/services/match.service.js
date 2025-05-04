@@ -2,7 +2,7 @@ import api from "@/utils/api";
 
 const fetchCategories = async () => {
   const response = await api.get(`/categories`);
-  
+
   return response;
 };
 
