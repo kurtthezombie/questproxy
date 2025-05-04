@@ -11,12 +11,28 @@ class NotificationController extends Controller
 
     //to do: revise this one since there is pilot notification
     //but maybe think about centralizing stuff
-    public function index (Request $request){
+    public function index(Request $request)
+    {
         $user = $request->user();
-
-        $notifications = $user->notifications()->latest()->get();
-        //revise response
-        return $this->successResponse('Notifications retrieved',200,['notifications' => $notifications]);
+        
+        // Get notifications with pagination (5 per page)
+        $notifications = $user->notifications()
+            ->latest()
+            ->paginate(5);
+        
+        return $this->successResponse(
+            'Notifications retrieved successfully',
+            200,
+            [
+                'notifications' => $notifications->items(),
+                'pagination' => [
+                    'total' => $notifications->total(),
+                    'per_page' => $notifications->perPage(),
+                    'current_page' => $notifications->currentPage(),
+                    'last_page' => $notifications->lastPage(),
+                ]
+            ]
+        );
     }
 
     public function markAsRead($id){

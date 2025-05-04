@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\Booking;
 use App\Models\ProgressLog;
+use App\Notifications\ProgressItemAddedNotification;
 use Exception;
-use Log;
 
 class ProgressService
 {
@@ -32,7 +32,18 @@ class ProgressService
                   throw new Exception("Failed to add progress item.");
             }
 
+            // Load the booking with its relationships
+            $booking = $this->booking->with(['client'])->findOrFail($data['booking_id']);
+            
+            // Send notification to the client
+            $this->sendProgressNotification($booking, $created);
+
             return $created;
+      }
+
+      private function sendProgressNotification($booking, $progressLog)
+      {
+            $booking->client->notify(new ProgressItemAddedNotification($booking, $progressLog));
       }
 
       public function getProgressByBooking($bookingId)

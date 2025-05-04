@@ -4,20 +4,21 @@ import ProgressCard from '@/components/progress/ProgressCard.vue';
 import { fetchBookingData, fetchProgressLogs } from '@/services/progress.service';
 import toast from '@/utils/toast';
 import dayjs from 'dayjs';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
 import AddProgressForm from '@/components/progress/AddProgressForm.vue';
 import NavBar from '@/components/NavBar.vue';
 
 const route = useRoute();
-const bookingId = route.params.bookingId;
+const bookingId = computed(() => route.params.bookingId);
 
 const userStore = useUserStore();
 const loggedUserId = userStore?.userData?.id;
 
 const booking = ref(null);
 const progress = ref([]);
+const isLoading = ref(false);
 
 const formRef = ref();
 
@@ -27,7 +28,7 @@ const openForm = () => {
 
 const handleFetchBookingData = async () => {
   try {
-    const bookingData = await fetchBookingData(bookingId);
+    const bookingData = await fetchBookingData(bookingId.value);
     booking.value = bookingData;
   } catch (error) {
     toast.error(error);
@@ -36,7 +37,7 @@ const handleFetchBookingData = async () => {
 
 const handleFetchProgressLogs = async () => {
   try {
-    const progressData = await fetchProgressLogs(bookingId);
+    const progressData = await fetchProgressLogs(bookingId.value);
     console.log("Progress: ",progressData);
     progress.value = progressData;
   } catch (error) {
@@ -44,21 +45,37 @@ const handleFetchProgressLogs = async () => {
   }
 }
 
+const loadData = async () => {
+  isLoading.value = true;
+  try {
+    await handleFetchBookingData();
+    await handleFetchProgressLogs();
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 const isPilot = computed(() => {
   if (!booking.value?.service?.pilot?.user?.id) return false;
   return loggedUserId === booking.value?.service?.pilot?.user?.id;
 });
 
+// Watch for changes in the bookingId
+watch(bookingId, () => {
+  loadData();
+});
+
 onMounted(() => {
-  //insert code here
-  handleFetchBookingData();
-  handleFetchProgressLogs();
+  loadData();
 });
 </script>
 <template>
   <NavBar />
   <div class="bg-gray-900 min-h-screen text-white p-6">
-    <div class="flex flex-col gap-y-6 max-w-4xl mx-auto">
+    <div v-if="isLoading" class="flex justify-center items-center min-h-[60vh]">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+    </div>
+    <div v-else class="flex flex-col gap-y-6 max-w-4xl mx-auto">
       <!-- Header Section -->
       <div class="bg-gray-800 shadow-md rounded-2xl p-6 relative">
         <!-- Status Pill -->

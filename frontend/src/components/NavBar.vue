@@ -10,12 +10,15 @@
         </router-link>
       </div>
 
-      <!-- Hamburger button (mobile) -->
-      <button @click="toggleMenu" class="text-white lg:hidden focus:outline-none">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
+      <!-- Mobile Nav Controls -->
+      <div class="flex justify-center items-center gap-4 lg:hidden">
+        <NotificationPopover />
+        <button @click="toggleMenu" class="text-white focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
 
       <!-- Desktop Nav -->
       <nav class="hidden lg:flex items-center gap-">
@@ -24,6 +27,7 @@
         <router-link to="/mybookings" class="text-white hover:text-green-500 transition">My Bookings</router-link>
         <router-link v-if="role === 'game pilot'" to="/services-history" class="text-white hover:text-green-500 transition">Service</router-link>
         <router-link v-if="role === 'game pilot'" to="/myportfolios" class="text-white hover:text-green-500 transition">Portfolio</router-link>
+        <NotificationPopover />
         <UserDropdown :username="username" :email="email" :role="role" @logout="callLogout" />
       </nav>
     </div>
@@ -56,11 +60,11 @@
 import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 import UserDropdown from '@/components/UserDropdown.vue';
+import NotificationPopover from '@/components/NotificationPopover.vue';
 import loginService from '@/services/login-service';
 import router from '@/router';
 
 const userStore = useUserStore();
-
 
 const username = computed(() => userStore.userData?.username || '');
 const email = computed(() => userStore.userData?.email || '');
@@ -77,5 +81,4 @@ const callLogout = async () => {
   await loginService.logout();
   router.push({ name: 'login' });
 };
-
 </script>
