@@ -3,22 +3,20 @@
 namespace App\Notifications;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Log;
+use App\Models\User;
 
-class PilotMatchedNotification extends Notification implements ShouldQueue
+class PilotMatchedNotification extends Notification 
 {
-    use Queueable;
     protected $user;
     /**
      * Create a new notification instance.
      */
-    public function __construct($user)
+    public function __construct(User $user)
     {
         $this->user = $user;
     }
@@ -38,7 +36,7 @@ class PilotMatchedNotification extends Notification implements ShouldQueue
      *
      * @return array<string, mixed>
      */
-    public function toArray(object $notifiable): array
+    public function toDatabase(object $notifiable): array
     {
         return [
             'message' => 'A user has matched with you!',
@@ -46,6 +44,7 @@ class PilotMatchedNotification extends Notification implements ShouldQueue
             'user_name' => $this->user->username,
         ];
     }
+
 
     // public function toBroadcast(object $notifiable) : BroadcastMessage {
     //     Log::info('Broadcasting NOTIFICATION for USER', ['user' => $this->user]);

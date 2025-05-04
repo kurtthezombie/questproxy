@@ -16,11 +16,10 @@ class MatchingController extends Controller
         //game and task details from the form input
         //validate
         $request->validate([
-            'game' => 'required|string',
-            'task' => 'required|text',
+            'game' => 'required|int',
+            'service' => 'required|string',
             'points' => 'required|int' 
         ]);
-        $game = Str::snake($request->game);
         //query matching pilots
         $matchingPilot = Pilot::with('rank') // Eager load the 'rank' relationship
             ->whereHas('services', function($query) use ($request) {
@@ -34,14 +33,24 @@ class MatchingController extends Controller
 
         //check results
         if ($matchingPilot->isEmpty()){
-            return $this->successResponse('No matching pilots found.', 404);
+            return $this->successResponse('No matching pilots found.', 200);
         }
-        //trigger notifications
-        $pilot_user = $matchingPilot->user;
+
+        $randomPilot = $matchingPilot->random();
+
+        $pilotUser = $randomPilot->user;
         $user = $request->user();
-        $pilot_user->notify(new PilotMatchedNotification($user));
-        event(new NotificationBroadcastEvent($user));
+
+        $this->sendNotifToPilot($pilotUser, $user);
+
+        //event(new NotificationBroadcastEvent($user));
         //return response
-        return $this->successResponse('Matching pilots found.', 200, ['pilot' => $pilot_user]);
+        return $this->successResponse('Matching pilots found.', 200, ['pilot' => $pilotUser, 'pilot_details' => $randomPilot]);
+    }
+
+    private function sendNotifToPilot($pilot, $gamer)
+    {
+        $pilot->notify(new PilotMatchedNotification($gamer));
+        //event(new NotificationBroadcastEvent($gamer));
     }
 }
