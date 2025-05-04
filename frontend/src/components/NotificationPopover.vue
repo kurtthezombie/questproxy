@@ -29,11 +29,14 @@
                 <p class="text-gray-200">{{ notif.data.message }}</p>
                 <p class="text-xs text-gray-400">{{ formatDate(notif.created_at) }}</p>
               </div>
-              <button v-if="!notif.read_at" @click.stop="markAsRead(notif.id)" class="text-green-400 hover:text-green-300">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </button>
+              <div class="flex items-center gap-2">
+                <div v-if="navigatingNotificationId === notif.id" class="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500"></div>
+                <button v-if="!notif.read_at" @click.stop="markAsRead(notif.id)" class="text-green-400 hover:text-green-300">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </li>
         </ul>
@@ -76,6 +79,7 @@ const notifOpen = ref(false);
 const notifications = ref([]);
 const unreadCount = ref(0);
 const isLoading = ref(false);
+const navigatingNotificationId = ref(null);
 const currentPage = ref(1);
 const totalPages = ref(1);
 const isLoadingMore = ref(false);
@@ -134,48 +138,53 @@ const markAsRead = async (notificationId) => {
 };
 
 const handleNotificationClick = async (notification) => {
-  // Mark as read if not already read
-  if (!notification.read_at) {
-    await markAsRead(notification.id);
-  }
+  if (navigatingNotificationId.value) return; // Prevent multiple clicks
+  
+  navigatingNotificationId.value = notification.id;
+  try {
+    // Mark as read if not already read
+    if (!notification.read_at) {
+      await markAsRead(notification.id);
+    }
 
-  // Handle different notification types
-  switch (notification.data.type) {
-    case 'pilot_matched':
-      if (notification.data.user_id) {
-        router.push(`/users/${notification.data.user_id}`);
-      }
-      break;
-    case 'user_matched':
-      if (notification.data.user_id) {
-        router.push(`/users/${notification.data.user_id}`);
-      }
-      break;
-    case 'booking_confirmed':
-      router.push('/services-history');
-      break;
-    case 'booking_completed':
-      if (notification.data.booking_id) {
-        router.push(`/progress/${notification.data.booking_id}`);
-      }
-      break;
-    case 'progress_updated':
-      if (notification.data.booking_id) {
-        router.push(`/progress/${notification.data.booking_id}`);
-      }
-      break;
-    case 'progress_item_added':
-      if (notification.data.booking_id) {
-        router.push(`/progress/${notification.data.booking_id}`);
-      }
-      break;
-    // Add more cases for other notification types here
-    default:
-      console.log('Unknown notification type:', notification.data.type);
+    // Handle different notification types
+    switch (notification.data.type) {
+      case 'pilot_matched':
+        if (notification.data.user_id) {
+          await router.push(`/users/${notification.data.user_id}`);
+        }
+        break;
+      case 'user_matched':
+        if (notification.data.user_id) {
+          await router.push(`/users/${notification.data.user_id}`);
+        }
+        break;
+      case 'booking_confirmed':
+        await router.push('/services-history');
+        break;
+      case 'booking_completed':
+        if (notification.data.booking_id) {
+          await router.push(`/progress/${notification.data.booking_id}`);
+        }
+        break;
+      case 'progress_updated':
+        if (notification.data.booking_id) {
+          await router.push(`/progress/${notification.data.booking_id}`);
+        }
+        break;
+      case 'progress_item_added':
+        if (notification.data.booking_id) {
+          await router.push(`/progress/${notification.data.booking_id}`);
+        }
+        break;
+      default:
+        console.log('Unknown notification type:', notification.data.type);
+    }
+  } finally {
+    navigatingNotificationId.value = null;
+    // Close the notification popover
+    notifOpen.value = false;
   }
-
-  // Close the notification popover
-  notifOpen.value = false;
 };
 
 const loadMoreNotifications = async () => {
