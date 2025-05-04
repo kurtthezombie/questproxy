@@ -140,7 +140,6 @@ class MatchingController extends Controller
             Log::info('Matching pilot and services found.', ['pilot_details' => $pilotDetails]);
 
             return $this->successResponse('Matching pilot found.', 200, ['pilot_details' => $pilotDetails]);
-
         } catch (\Exception $e) {
             Log::error('Error in matchPilot: ' . $e->getMessage(), [
                 'file' => $e->getFile(),
