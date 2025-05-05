@@ -55,6 +55,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Report::class, 'reported_user_id');  
     }
+
+    public function preference()
+    {
+        return $this->hasOne(Preference::class);
+    }
     
     /**
      * The attributes that should be hidden for serialization.

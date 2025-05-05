@@ -16,9 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('game_id');
             $table->enum('service', ['level', 'grind', 'farm', 'quest']);
-            $table->integer('points')->default(0);
-            $table->string('duration')->nullable();
-            $table->decimal('max_price', 10, 2)->nullable();
+            $table->integer('points');
+            $table->integer('duration')->nullable();
+            $table->decimal('max_price', 10, 2);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
