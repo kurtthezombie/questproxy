@@ -47,6 +47,7 @@
         <router-link v-if="role === 'game pilot'" to="/services-history" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Service</router-link>
         <router-link v-if="role === 'game pilot'" to="/myportfolios" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Portfolio</router-link>
         <router-link :to="{ name: 'userprofile', params: { id } }" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">My Profile</router-link>
+        <router-link to="/mypreference" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Preference</router-link>
         <router-link to="/leaderboards" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Leaderboard</router-link>
         <router-link to="/account-settings" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Settings</router-link>
         <router-link to="/payment-history" class="block text-white hover:text-green-400 w-full p-2 border-b border-gray-800">Payment History</router-link>

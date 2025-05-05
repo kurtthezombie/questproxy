@@ -35,6 +35,12 @@ const pilotReviews = ref([]);
 const isLoadingReviews = ref(false);
 const reviewsError = ref(null);
 
+// --- Preferences Refs ---
+const userPreferences = ref(null);
+
+// --- New refs ---
+const gameTitle = ref('');
+
 // --- Computed Properties ---
 // Keeping isOwnProfile computed for other potential uses, but using a direct check for the button
 const isOwnProfile = computed(() => {
@@ -251,6 +257,38 @@ const fetchPilotReviews = async (pilotId) => {
     }
 };
 
+// --- Fetch Game Title ---
+const fetchGameTitle = async (gameId) => {
+    if (!gameId) return;
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/games/${gameId}`);
+        gameTitle.value = response.data.game.title;
+    } catch (err) {
+        console.error(`Error fetching game title for ID ${gameId}:`, err);
+        gameTitle.value = 'Unknown Game';
+    }
+};
+
+// --- Fetch Preferences for User ---
+const fetchUserPreferences = async (fetchedUserId) => {
+    const authToken = localStorage.getItem('authToken');
+    if (!fetchedUserId || !authToken) return;
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/preferences/${fetchedUserId}`, {
+            headers: { Authorization: `Bearer ${authToken}` }
+        });
+        console.log('Preferences response:', response);
+        userPreferences.value = response.data?.preference || null;
+        
+        // Fetch game title if we have a game_id
+        if (userPreferences.value?.game_id) {
+            await fetchGameTitle(userPreferences.value.game_id);
+        }
+    } catch (err) {
+        console.error(`Error fetching preferences for user ID ${fetchedUserId}:`, err);
+        userPreferences.value = null;
+    }
+};
 
 // --- Main Data Fetching Function ---
 const fetchUserProfile = async () => {
@@ -284,6 +322,9 @@ const fetchUserProfile = async () => {
     const fetchedUserId = profileData.value.id;
 
     const promises = [];
+
+    // Add preferences fetch to promises
+    promises.push(fetchUserPreferences(fetchedUserId));
 
     if (role === 'pilot' || role === 'game pilot') {
         console.log("Profile is Pilot. Fetching points, details, services, portfolio, reviews...");
@@ -426,12 +467,12 @@ const goToPublicPortfolio = () => {
         </div>
       </section>
 
-      <section v-if="pilotDetails || gamerDetails"
+      <section v-if="pilotDetails || gamerDetails || userPreferences"
         class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
         <div class="border-b border-gray-700 p-4">
           <h2 class="text-2xl font-semibold">Details</h2>
         </div>
-        <div class="p-6">
+        <div class="p-6 space-y-6">
           <div v-if="pilotDetails" class="space-y-6">
             <div class="bg-gray-750 p-4 rounded-lg">
               <h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Skills</h3>
@@ -442,9 +483,38 @@ const goToPublicPortfolio = () => {
               <p class="text-gray-200 whitespace-pre-wrap">{{ pilotDetails.bio || 'No bio available.' }}</p>
             </div>
           </div>
-          <div v-else-if="gamerDetails" class="bg-gray-750 p-4 rounded-lg">
+          <div v-if="gamerDetails" class="bg-gray-750 p-4 rounded-lg">
             <h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Gamer Preference</h3>
             <p class="text-gray-200">{{ gamerDetails.gamer_preference || 'No preference specified.' }}</p>
+          </div>
+          <div v-if="userPreferences" class="bg-gray-750 p-4 rounded-lg">
+            <h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Service Preferences</h3>
+            <div class="space-y-2">
+              <div class="flex justify-between">
+                <span class="text-gray-400">Game:</span>
+                <span class="text-gray-200 capitalize">{{ userPreferences.category?.title || 'N/A' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">Service Type:</span>
+                <span class="text-gray-200 capitalize">{{ userPreferences.service }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">Preferred Points:</span>
+                <span class="text-gray-200">{{ userPreferences.points }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">Maximum Duration:</span>
+                <span class="text-gray-200">{{ userPreferences.duration }} days</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">Maximum Price:</span>
+                <span class="text-gray-200">PHP {{ userPreferences.max_price }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-else class="bg-gray-750 p-4 rounded-lg">
+            <h3 class="font-semibold text-gray-400 text-sm uppercase mb-2">Service Preferences</h3>
+            <p class="text-gray-200">No preferences set yet.</p>
           </div>
         </div>
       </section>

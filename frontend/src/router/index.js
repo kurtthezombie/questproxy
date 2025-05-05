@@ -33,6 +33,7 @@ import VerifyPaymentView from '@/views/VerifyPaymentView.vue'
 import ThankYouView from '@/views/ThankYouView.vue'
 import MyBookingsView from '@/views/MyBookingsView.vue'
 import ProgressView from '@/views/ProgressView.vue'
+import MyPreference from '@/views/MyPreference.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -225,6 +226,13 @@ const router = createRouter({
       path: '/progress/:bookingId',
       name: 'progress',
       component: ProgressView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/mypreference',
+      name: 'mypreference',
+      component: MyPreference,
+      meta: { requiresAuth: true }
     },
   ]
 });

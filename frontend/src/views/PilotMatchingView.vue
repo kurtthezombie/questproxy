@@ -49,21 +49,16 @@ const getCategories = async () => {
 };
 
 const handleSearchPilot = async () => {
-  if (formData.value.min_price !== null && formData.value.max_price !== null && formData.value.min_price > formData.value.max_price) {
-    toast.error('Minimum price cannot be greater than maximum price.');
-    return;
-  }
-
   loadingSearch.value = true;
 
   try {
     const dataToSend = {
-      game: formData.value.game,
-      service: formData.value.service,
-      points: formData.value.points !== null && formData.value.points !== '' ? parseInt(formData.value.points) : null,
-      duration: formData.value.duration !== '' ? formData.value.duration : null,
-      min_price: formData.value.min_price, 
-      max_price: formData.value.max_price, 
+      game: categories.value[0]?.id, // Default to first category
+      service: 'level', // Default service
+      points: 0, // Default points
+      duration: null,
+      min_price: 100,
+      max_price: 10000,
     };
 
     setTimeout(async () => {
@@ -79,18 +74,16 @@ const handleSearchPilot = async () => {
         message = "No pilot found for the selected criteria.";
       }
 
-      clearFields();
-
       toast.success(message);
       loadingSearch.value = false;
     }, 3000);
   } catch (error) {
     console.error('Search failed: ', error);
-     if (error.response && error.response.status === 422) {
-        toast.error('Validation failed: Please check your input.');
-      } else {
-        toast.error('Search failed');
-      }
+    if (error.response && error.response.status === 422) {
+      toast.error('Validation failed: Please check your input.');
+    } else {
+      toast.error('Search failed');
+    }
     loadingSearch.value = false;
   }
 };
@@ -136,68 +129,18 @@ onMounted(() => {
         <div class="card-title flex justify-center">
           <h2 class="font-semibold text-center text-green-400 text-2xl">Find A Pilot</h2>
         </div>
-        <form @submit.prevent="handleSearchPilot">
-          <div class="flex flex-col space-y-4 mt-4">
-
-            <div class="space-y-1">
-              <label for="game" class="text-green-400">Game</label>
-              <select name="game" id="game" class="select w-full bg-gray-900" v-model="formData.game" required>
-                <option value="" disabled>Select a game</option>
-                <option v-for="category in categories" :key="category.id" :value="category.id">
-                  {{ category.title }}
-                </option>
-              </select>
-            </div>
-
-            <div class="space-y-1">
-              <label for="service" class="text-green-400">Type of Service</label>
-              <select name="service" id="service" class="select w-full bg-gray-900" v-model="formData.service" required>
-                <option disabled value="">Select a service</option>
-                <option value="level">Leveling</option>
-                <option value="grind">Grinding</option>
-                <option value="farm">Farming</option>
-                <option value="quest">Quest Help</option>
-                </select>
-            </div>
-
-            <div class="space-y-1">
-              <label for="duration" class="text-green-400">Duration (Optional)</label>
-              <input type="text" id="duration" class="input bg-gray-900 w-full" placeholder="e.g. 2 hours"
-                v-model="formData.duration">
-            </div>
-
-            <div class="space-y-1">
-              <label class="text-green-400">Maximum Charge (Optional)</label>
-              <Slider
-                v-model="formData.max_price" 
-                :min="100"       
-                :max="10000"   
-                :step="100"   
-              />
-               <div class="flex justify-between text-gray-400 text-sm mt-1">
-                  <span>Min: {{ formData.min_price !== null ? formData.min_price : 'Any' }}</span>
-                  <span>Max: {{ formData.max_price !== null ? formData.max_price : 'Any' }}</span>
-               </div>
-            </div>
-
-
-            <div class="space-y-1">
-              <label for="points" class="text-green-400">Preferred Pilot Points</label>
-              <input type="number" id="points" class="input bg-gray-900 w-full" placeholder="e.g. 50"
-                v-model="formData.points" required>
-            </div>
-
-
-            <div>
-              <button type="submit"
-                class="w-full bg-green-600 hover:bg-green-500 transition rounded-lg py-2 font-semibold"
-                :disabled="loading || loadingSearch">
-                <span v-if="loading || loadingSearch" class="loading loading-spinner"></span>
-                <span v-if="!loading && !loadingSearch">Search</span>
-              </button>
-            </div>
-          </div>
-        </form>
+        <div class="flex flex-col space-y-4 mt-4">
+          <p class="text-gray-300 text-center">
+            Ready to find your perfect pilot? Click below to start your search!
+          </p>
+          <button 
+            @click="handleSearchPilot"
+            class="w-full bg-green-600 hover:bg-green-500 transition rounded-lg py-3 font-semibold text-lg"
+            :disabled="loading || loadingSearch">
+            <span v-if="loading || loadingSearch" class="loading loading-spinner"></span>
+            <span v-if="!loading && !loadingSearch">Find Pilots</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>

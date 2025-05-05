@@ -14,6 +14,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PilotController;
 use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\ReportController;
@@ -141,6 +142,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('progress/booking/{booking_id}', 'getProgressByBooking');
         Route::post('progress', 'create');
         Route::delete('progress/{id}', 'delete');
+    });
+
+    Route::prefix('preferences')->controller(PreferenceController::class)->group(function () {
+        Route::post('/', 'create');
+        Route::get('/{user_id}', 'getUserPreference');
+        Route::put('/', 'update');
     });
 
     Route::controller(PaymentController::class)->group(function() {

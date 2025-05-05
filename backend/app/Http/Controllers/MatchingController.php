@@ -17,16 +17,14 @@ class MatchingController extends Controller
     public function matchPilot(Request $request)
     {
         try {
-            $request->validate([
-                'game' => 'required|integer',
-                'service' => ['required', 'string', Rule::in(['level', 'grind', 'farm', 'quest'])],
-                'points' => 'required|int',
-                'duration' => 'nullable|string',
-                'min_price' => 'nullable|numeric',
-                'max_price' => 'nullable|numeric|gte:min_price',
-            ]);
+            // Get user's preferences
+            $userPreference = $request->user()->preference;
+            
+            if (!$userPreference) {
+                return $this->successResponse('Please set your preferences first.', 200);
+            }
 
-            $matchingPilot = $this->findMatchingPilot($request);
+            $matchingPilot = $this->findMatchingPilot($userPreference);
 
             if (!$matchingPilot) {
                 return $this->successResponse('No matching pilots found.', 200);
@@ -40,9 +38,9 @@ class MatchingController extends Controller
             $this->sendNotifToPilot($pilotUser, $loggedInUser);
             $this->sendNotifToGamer($loggedInUser, $matchingPilot);
 
-            $matchingServices = $this->filterMatchingServices($matchingPilot, $request);
+            $matchingServices = $this->filterMatchingServices($matchingPilot, $userPreference);
 
-            if ($matchingServices->isEmpty() && $this->hasSpecificCriteria($request)) {
+            if ($matchingServices->isEmpty() && $this->hasSpecificCriteria($userPreference)) {
                 $pilotDetails = $this->formatPilotDetails($matchingPilot, []);
                 return $this->successResponse('Pilot found, but no services matched the specific criteria.', 200, ['pilot_details' => $pilotDetails]);
             }
@@ -59,60 +57,52 @@ class MatchingController extends Controller
         }
     }
 
-    private function findMatchingPilot(Request $request)
+    private function findMatchingPilot($preference)
     {
-        return Pilot::with(['user', 'rank', 'services' => function($query) use ($request) {
-            $this->applyServiceFilters($query, $request);
+        return Pilot::with(['user', 'rank', 'services' => function($query) use ($preference) {
+            $this->applyServiceFilters($query, $preference);
         }])
-        ->whereHas('services', function($query) use ($request) {
-            $this->applyServiceFilters($query, $request);
+        ->whereHas('services', function($query) use ($preference) {
+            $this->applyServiceFilters($query, $preference);
         })
-        ->whereHas('rank', function($query) use ($request) {
-            $query->where('points', '>=', $request->points);
+        ->whereHas('rank', function($query) use ($preference) {
+            $query->where('points', '>=', $preference->points);
         })
-        ->where('user_id', '!=', $request->user()->id)
+        ->where('user_id', '!=', $preference->user_id)
         ->first();
     }
 
-    private function applyServiceFilters($query, Request $request)
+    private function applyServiceFilters($query, $preference)
     {
-        $query->where('category_id', $request->game)
-              ->whereRaw('LOWER(description) LIKE ?', ['%' . strtolower($request->service) . '%'])
+        $query->where('category_id', $preference->game_id)
+              ->whereRaw('LOWER(description) LIKE ?', ['%' . strtolower($preference->service) . '%'])
               ->where('availability', true);
 
-        if ($request->has('duration') && $request->duration !== null) {
-            $query->where('duration', $request->duration);
+        if ($preference->duration) {
+            $query->where('duration', $preference->duration);
         }
 
-        if ($request->has('min_price') && $request->min_price !== null && $request->has('max_price') && $request->max_price !== null) {
-            $query->whereBetween('price', [$request->min_price, $request->max_price]);
-        } elseif ($request->has('min_price') && $request->min_price !== null) {
-            $query->where('price', '>=', $request->min_price);
-        } elseif ($request->has('max_price') && $request->max_price !== null) {
-            $query->where('price', '<=', $request->max_price);
+        if ($preference->max_price) {
+            $query->where('price', '<=', $preference->max_price);
         }
     }
 
-    private function filterMatchingServices($pilot, Request $request)
+    private function filterMatchingServices($pilot, $preference)
     {
-        return $pilot->services->filter(function ($service) use ($request) {
+        return $pilot->services->filter(function ($service) use ($preference) {
             $matchesDuration = true;
-            if ($request->has('duration') && $request->duration !== null) {
-                $matchesDuration = ($service->duration == $request->duration);
+            if ($preference->duration) {
+                $matchesDuration = ($service->duration == $preference->duration);
             }
 
             $matchesPrice = true;
-            if ($request->has('min_price') && $request->min_price !== null && $request->has('max_price') && $request->max_price !== null) {
-                $matchesPrice = ($service->price >= $request->min_price && $service->price <= $request->max_price);
-            } elseif ($request->has('min_price') && $request->min_price !== null) {
-                $matchesPrice = ($service->price >= $request->min_price);
-            } elseif ($request->has('max_price') && $request->max_price !== null) {
-                $matchesPrice = ($service->price <= $request->max_price);
+            if ($preference->max_price) {
+                $matchesPrice = ($service->price <= $preference->max_price);
             }
 
             $matchesServiceType = true;
-            if ($request->has('service') && $request->service !== null) {
-                $matchesServiceType = (stripos($service->description, $request->service) !== false);
+            if ($preference->service) {
+                $matchesServiceType = (stripos($service->description, $preference->service) !== false);
             }
 
             return $matchesDuration && $matchesPrice && $matchesServiceType;
@@ -122,12 +112,9 @@ class MatchingController extends Controller
         });
     }
 
-    private function hasSpecificCriteria(Request $request)
+    private function hasSpecificCriteria($preference)
     {
-        return ($request->has('duration') && $request->duration !== null) ||
-               ($request->has('min_price') && $request->min_price !== null) ||
-               ($request->has('max_price') && $request->max_price !== null) ||
-               ($request->has('service') && $request->service !== null);
+        return $preference->duration || $preference->max_price || $preference->service;
     }
 
     private function formatPilotDetails($pilot, $services)
