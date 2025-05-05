@@ -41,6 +41,11 @@
             My Reports
           </router-link>
         </li>
+        <li>
+          <router-link to="/mypreference" @click="closeDropdown" class="block px-4 py-2 text-white hover:bg-gray-600 dark:hover:bg-gray-700">
+            My Preferences
+          </router-link>
+        </li>
          <li>
           <router-link to="/account-settings" @click="closeDropdown" class="block px-4 py-2 text-white hover:bg-gray-600 dark:hover:bg-gray-700">
             Settings
