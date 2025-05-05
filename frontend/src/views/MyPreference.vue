@@ -105,6 +105,14 @@ onMounted(async () => {
   <div class="min-h-screen bg-gray-900 flex flex-col justify-center items-center p-6">
     <div class="card text-white bg-gray-500 bg-opacity-20 w-full max-w-md p-5 rounded-xl shadow-md">
       <div class="card-body">
+        <button 
+          @click="$router.push('/home')" 
+          class="text-gray-400 hover:text-white transition-colors mb-4"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
         <div class="card-title flex justify-center">
           <h2 class="font-semibold text-center text-green-400 text-2xl">
             {{ hasExistingPreference ? 'Update Your Preferences' : 'Set Your Preferences' }}

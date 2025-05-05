@@ -226,11 +226,13 @@ const router = createRouter({
       path: '/progress/:bookingId',
       name: 'progress',
       component: ProgressView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/mypreference',
       name: 'mypreference',
       component: MyPreference,
+      meta: { requiresAuth: true }
     },
   ]
 });
