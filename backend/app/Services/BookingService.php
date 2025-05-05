@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Mail\ServiceCompletionMail;
 use App\Models\Booking;
+use App\Notifications\BookingCompletedNotification;
+use App\Notifications\ProgressUpdatedNotification;
 use Exception;
 use Mail;
 
@@ -42,7 +44,7 @@ class BookingService
     }
 
     public function markAsCompleted($booking_id){
-        $booking = $this->booking->findOrFail($booking_id);
+        $booking = Booking::findOrFail($booking_id);
 
         if (now()->toDateString() < $booking->instruction->start_date) {
             throw new Exception('You cannot mark this booking as completed before the start date.');
@@ -56,9 +58,19 @@ class BookingService
             'client', 
         ]);
         
-        $this->sendCompletionEmail($booking);
+        $this->sendCompletionNotification($booking);
+        //$this->sendCompletionEmail($booking);
 
         return $booking;
+    }
+
+    private function sendCompletionNotification($booking)
+    {
+        $booking->client->notify(new BookingCompletedNotification(
+            $booking->service->pilot->user,
+            $booking->service,
+            $booking
+        ));
     }
 
     public function getBookingServiceDetails($booking_id)
@@ -138,9 +150,19 @@ class BookingService
             'service.pilot.user',
             'client', 
         ]);
-        $this->sendCompletionEmail($booking);
+
+        $this->sendProgressNotification($booking, $progress);
 
         return $booking;
+    }
+
+    private function sendProgressNotification($booking, $progress)
+    {
+        $booking->client->notify(new ProgressUpdatedNotification(
+            $booking->service,
+            $progress,
+            $booking
+        ));
     }
 
     public function deleteBooking($booking_id)
@@ -166,12 +188,16 @@ class BookingService
 
     private function sendCompletionEmail($booking)
     {
+        if (!$booking->client) {
+            throw new Exception('Booking client not found.');
+        }
+
         $service = $booking->service;
         $client = $booking->client;
         $pilot = $service->pilot->user;
 
         $details = (object) [
-            'client_name' => $client->name,
+            'client_name' => $client->username,
             'description' => $service->description,
             'pilot_name' => $pilot->username,
             'id' => $service->id,

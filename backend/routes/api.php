@@ -166,9 +166,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::controller(NotificationController::class)->group(function() {
         Route::get('notifications', 'index');
-        Route::post('pilot/notifications/{id}/read', 'markasread');
-        Route::delete('pilot/notifications/{id}', 'destroy');
-        Route::post('pilot/notifications/read-all', 'markAllAsRead');
+        Route::post('notifications/{id}/mark-as-read', 'markAsRead');
+        Route::post('notifications/mark-all-as-read', 'markAllAsRead');
     });
 
     Route::controller(ReviewController::class)->group(function() {

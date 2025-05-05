@@ -4,6 +4,7 @@ import toast from '@/utils/toast';
 import { ref } from 'vue';
 
 const modal = ref(null);
+const isSubmitting = ref(false);
 
 const props = defineProps({
   bookingId: {
@@ -39,6 +40,7 @@ const handleFile = (e) => {
 const handleSubmit = async () => {
   if (!form.value.image) return;
 
+  isSubmitting.value = true;
   const originalFile = form.value.image;
   const cleanFileName = originalFile.name.replace(/\s+/g, '_');
   const renamedFile = new File([originalFile], cleanFileName, { type: originalFile.type });
@@ -55,8 +57,10 @@ const handleSubmit = async () => {
   } catch (error) {
     toast.error('Progress addition failed');
     console.error(error);
+  } finally {
+    isSubmitting.value = false;
+    close();
   }
-  close();
 };
 
 const resetFields = () => {
@@ -94,12 +98,15 @@ defineExpose({ open });
         <input type="file" @change="handleFile" class="file-input file-input-success w-full mb-4 bg-gray-700" accept="image/*"/>
         
         <input v-model="form.description" class="input input-bordered w-full mb-4 bg-gray-700" placeholder="Description" />
-        <button type="submit" class="btn btn-md btn-success w-full">Add Progress</button>
+        <button type="submit" class="btn btn-md btn-success w-full" :disabled="isSubmitting">
+          <span v-if="isSubmitting" class="loading loading-spinner"></span>
+          {{ isSubmitting ? 'Adding Progress...' : 'Add Progress' }}
+        </button>
       </form>
 
       <div class="modal-action">
-        <button class="btn" @click="close">Close</button>
+        <button class="btn" @click="close" :disabled="isSubmitting">Close</button>
       </div>
     </div>
   </dialog>
-</template>
+</template> 

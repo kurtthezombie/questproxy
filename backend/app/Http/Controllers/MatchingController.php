@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pilot;
 use App\Notifications\PilotMatchedNotification;
+use App\Notifications\UserMatchedNotification;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -33,8 +34,9 @@ class MatchingController extends Controller
             $loggedInUser = $request->user();
             $pilotUser = $matchingPilot->user;
             
-            // Send notification to pilot
+            // Send notifications to both pilot and gamer
             $this->sendNotifToPilot($pilotUser, $loggedInUser);
+            $this->sendNotifToGamer($loggedInUser, $matchingPilot);
 
             $matchingServices = $this->filterMatchingServices($matchingPilot, $userPreference);
 
@@ -129,5 +131,10 @@ class MatchingController extends Controller
     private function sendNotifToPilot($pilot, $gamer)
     {
         $pilot->notify(new PilotMatchedNotification($gamer));
+    }
+
+    private function sendNotifToGamer($gamer, $pilot)
+    {
+        $gamer->notify(new UserMatchedNotification($pilot->user));
     }
 }
