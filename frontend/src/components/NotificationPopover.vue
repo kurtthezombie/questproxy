@@ -69,6 +69,8 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { useUserStore } from '@/stores/userStore';
 import notificationService from '@/services/notification.service';
 import { useRouter } from 'vue-router';
+import toast from '@/utils/toast';
+import { createCheckoutSession } from '../services/payment-service';
 
 dayjs.extend(relativeTime);
 
@@ -138,7 +140,8 @@ const markAsRead = async (notificationId) => {
 };
 
 const handleNotificationClick = async (notification) => {
-  if (navigatingNotificationId.value) return; // Prevent multiple clicks
+  console.log('Notification clicked:', notification);
+  if (navigatingNotificationId.value) return;
   
   navigatingNotificationId.value = notification.id;
   try {
@@ -176,6 +179,16 @@ const handleNotificationClick = async (notification) => {
         if (notification.data.booking_id) {
           await router.push(`/progress/${notification.data.booking_id}`);
         }
+        break;
+      case 'negotiation_approved':
+        if (notification.data.booking_id) {
+          await handleNegotiationApproved(notification.data.booking_id);
+        } else {
+          toast.error('No booking ID found in notification.');
+        }
+        break;
+      case 'negotiation_declined':
+        toast.error('Your negotiation was declined by the pilot.');
         break;
       default:
         console.log('Unknown notification type:', notification.data.type);
@@ -220,6 +233,17 @@ const handleClickOutside = (event) => {
       !notifButton.contains(event.target) && 
       !notifPopover.contains(event.target)) {
     notifOpen.value = false;
+  }
+};
+
+const handleNegotiationApproved = async (bookingId) => {
+  try {
+    // Call your backend to create a Paymongo checkout session
+    const response = await createCheckoutSession(bookingId);
+    // Redirect to Paymongo
+    window.location.href = response.data.checkout_url;
+  } catch (error) {
+    toast.error('Failed to initiate payment.');
   }
 };
 

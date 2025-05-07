@@ -11,19 +11,19 @@ const bookings = ref([]);
 const filter = ref('all');
 
 const filteredBookings = computed(() => {
+  if (!Array.isArray(bookings.value)) return [];
   if (filter.value === 'all') return bookings.value;
   return bookings.value.filter(b => b.booking && b.booking.status === filter.value);
 });
 
 const handleFetchMyBookings = async () => {
   try {
-    bookings.value = await fetchMyBookings();
-    console.log('Bookings in My Bookings: ', bookings.value);
+    const result = await fetchMyBookings();
+    bookings.value = Array.isArray(result) ? result : [];
   } catch (error) {
-    console.error('Error fetching bookings: ', error);
-    toast.error('Failed to fetch bookings.');
+    bookings.value = [];
   }
-}
+};
 
 const redirectToHome = () => {
   router.push('/home');
@@ -55,7 +55,7 @@ onMounted(() => {
           :class="{ 'font-bold shadow-none': filter === 'completed', 'btn bg-green-500 bg-opacity-30 border border-none shadow-none text-green-300': true }">Completed</button>
       </div>
       <div class="w-fit sm:w-full flex flex-col items-start">
-        <div v-if="filteredBookings.length === 0" class="w-full flex justify-center">
+        <div v-if="(filteredBookings?.length ?? 0) === 0" class="w-full flex justify-center">
           <p class="text-center text-xl cursor-pointer hover:scale-105 duration-300 mt-20"
             @click="redirectToHome">
             <span v-if="filter === 'all'">You have not booked a service yet. Maybe try booking <span

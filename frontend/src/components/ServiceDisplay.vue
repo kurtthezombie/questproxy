@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-blue-900 bg-opacity-20 p-5 rounded-xl shadow-lg border border-gray-700 group hover:border-green-400 hover:-translate-y-2 transition-all duration-300 cursor-pointer w-[350px]"
+  <div class="bg-blue-900 bg-opacity-20 p-5 rounded-xl shadow-lg border border-gray-700 group hover:border-green-400 hover:-translate-y-2 transition-all duration-300 cursor-pointer max-w-sm w-full flex-grow"
     @click="handleServiceClick">
     <div class="flex justify-between items-center mb-2">
       <h3 class="text-2xl font-bold text-white">{{ getGameTitle }}</h3>
@@ -81,19 +81,10 @@ const normalizeGameName = (name) => {
 };
 
 const getGameTitle = computed(() => {
-  if (!props.service || !props.service.game || !props.categories) {
-    return props.service?.game || 'Unknown Game';
-  }
-
-  const normalizedServiceGame = normalizeGameName(props.service.game);
-
-  const category = props.categories.find(cat =>
-    normalizeGameName(cat.game) === normalizedServiceGame
-  );
-
-  return category ? category.title : props.service.game || 'Unknown Game';
+  if (!props.service || !props.categories) return 'Unknown Game';
+  const category = props.categories.find(cat => String(cat.id) === String(props.service.category_id));
+  return category ? category.title : (props.service.category_title || 'Unknown Game');
 });
-
 
 const formatPrice = (price) => {
   const num = Number(price || 0);
@@ -150,11 +141,9 @@ const handleConfirmDelete = async () => {
   }
 };
 
-
 const initial = computed(() => {
   if (!props.service.pilot_username) return '?';
   return props.service.pilot_username.charAt(0).toUpperCase();
 });
-
 
 </script>

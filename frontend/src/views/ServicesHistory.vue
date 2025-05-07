@@ -75,6 +75,20 @@
                 {{ serviceHistory.length || 0 }}
               </span>
             </button>
+            <button
+              v-if="role === 'game pilot'"
+              class="flex items-center w-full md:w-auto rounded transition-colors duration-200 px-4 py-3"
+              :class="activeTab === 'negotiations' ? 'text-green-400 bg-[#1e293b]' : 'text-gray-500 hover:text-white hover:bg-gray-600'"
+              @click="showNegotiations"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8M8 16h8M8 8h8" />
+              </svg>
+              Negotiated Services
+              <span class="bg-emerald-500 text-white rounded-full px-2 ml-2">
+                {{ negotiations?.length || 0 }}
+              </span>
+            </button>
           </div>
         </div>
 
@@ -196,10 +210,39 @@
               </div>
             </div>
           </div>
+
+          <div v-if="activeTab === 'negotiations'">
+            <div v-if="!negotiations || negotiations.length === 0" class="text-center text-gray-400 py-10">
+              No negotiated services found.
+            </div>
+            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <NegotiationDisplay
+                v-for="negotiation in negotiations"
+                :key="negotiation.id"
+                :negotiation="negotiation"
+                :isPilot="true"
+                @negotiationAccepted="handleNegotiationAccepted"
+                @negotiationDeclined="handleNegotiationDeclined"
+                class="w-full"
+              />
+            </div>
+          </div>
         </div>
       </template>
     </div>
+
     <ViewBookingDialog :selectedBooking="selectedBooking" :isModalOpen="isModalOpen" @close="closeModal" />
+
+     <!-- Temporary Debug 
+    <div>
+      <h2>Negotiations Debug:</h2>
+      <ul>
+        <li v-for="n in negotiations" :key="n.id">
+          {{ n.id }} - {{ n.booking?.service?.category?.title }} - {{ n.negotiable_price }}
+        </li>
+      </ul>
+    </div> -->
+
   </div>
 </template>
 
@@ -213,6 +256,8 @@ import ServiceDisplay from '@/components/ServiceDisplay.vue';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import ViewBookingDialog from '@/components/booking/ViewBookingDialog.vue';
+import NegotiationDisplay from '@/components/NegotiationDisplay.vue';
+import { fetchPilotNegotiations } from '@/services/negotiation.service';
 
 dayjs.extend(relativeTime)
 
@@ -240,12 +285,10 @@ const filteredBookings = computed(() => {
 });
 
 const filteredUserServices = computed(() => {
-  // More robust check for userStore.userData and pilot_id, and service and service.pilot_id
   if (!userStore.userData || !userStore.userData.pilot_id || !serviceStore.services) {
     return [];
   }
   const userId = userStore.userData.pilot_id;
-  // Ensure service and service.pilot_id exist before comparing
   return serviceStore.services.filter(service => service && service.pilot_id === userId);
 });
 
@@ -269,6 +312,7 @@ const filteredAndSearchedServices = computed(() => {
 // Methods
 const showBookings = async () => {
   activeTab.value = 'bookings';
+  negotiations.value = [];
   if (!serviceStore.myBookings?.length) {
     await serviceStore.fetchBookingsByPilot();
   }
@@ -295,7 +339,6 @@ const fetchData = async () => {
   const pilot_id = userStore.userData?.pilot_id;
   if (!pilot_id) {
     console.error("Pilot ID not found.");
-    // Optionally redirect or show an error message if pilot_id is crucial for this page
     return;
   }
 
@@ -318,14 +361,29 @@ const closeModal = () => {
   selectedBooking.value = null;
 };
 
+const negotiations = ref([]);
+
+const showNegotiations = async () => {
+  activeTab.value = 'negotiations';
+  const data = await fetchPilotNegotiations();
+  console.log('Negotiations API response:', data);
+  negotiations.value = Array.isArray(data) ? data : [];
+};
+
+const handleNegotiationAccepted = (negotiationId) => {
+  negotiations.value = negotiations.value.filter(n => n.id !== negotiationId);
+};
+
+const handleNegotiationDeclined = (negotiationId) => {
+  negotiations.value = negotiations.value.filter(n => n.id !== negotiationId);
+};
 
 onMounted(async () => {
   if (checkAuth()) {
-    // Ensure user data is loaded before fetching pilot-specific data
     if (!userStore.userData) {
-        await userStore.fetchUserData(); // Assuming you have a fetchUserData action in your user store
+        await userStore.fetchUserData(); 
     }
-    // Now that user data is likely loaded, call fetchData
+
     await fetchData();
   }
 });

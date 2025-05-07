@@ -76,6 +76,7 @@
               Find a Pilot
             </button>
           </router-link>
+          <ServiceCriteriaSearch />
         </div>
       </div>
 
@@ -115,6 +116,7 @@ import NavBar from '@/components/NavBar.vue';
 import { useUserStore } from '@/stores/userStore';
 import { useServiceStore } from '@/stores/serviceStore';
 import '@/assets/css/style.css'; 
+import ServiceCriteriaSearch from '@/components/ServiceCriteriaSearch.vue';
 
 const { loadShow, loadHide } = useLoader();
 const router = useRouter();

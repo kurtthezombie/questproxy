@@ -107,6 +107,7 @@ import BookingCard from '@/components/BookingCard.vue';
 import { useUserStore } from '@/stores/userStore';
 import Payment from '@/components/payment/Payment.vue'; // Import the Payment component
 import toast from '@/utils/toast';
+import { initiatePayment } from '@/services/payment-service';
 
 const route = useRoute();
 const router = useRouter();
@@ -116,6 +117,8 @@ const loading = ref(true);
 const isModalOpen = ref(false);
 const error = ref(null);
 const confirmedBooking = ref(null);
+const booking = ref(null);
+const negotiation = ref(null);
 
 const serviceId = computed(() => {
   return parseInt(route.params.serviceId);
@@ -167,7 +170,6 @@ const fetchServiceDetails = async () => {
 
     const response = await axios.get(`http://127.0.0.1:8000/api/services/${route.params.serviceId}`, {
       headers: { Authorization: `${tokenType} ${authToken}` },
-      headers: { Authorization: `${tokenType} ${authToken}` },
     });
 
     if (response.data?.service) {
@@ -215,7 +217,46 @@ const redirectToAgreementPage = async () => {
   }
 }
 
-onMounted(() => {
-  fetchServiceDetails();
+onMounted(async () => {
+  await fetchServiceDetails();
+
+  const bookingId = route.params.serviceId; // or bookingId if you change your route param
+  const authToken = localStorage.getItem('authToken');
+  try {
+    // 1. Fetch booking
+    const bookingRes = await axios.get(`/api/bookings/${bookingId}`, {
+      headers: { Authorization: `Bearer ${authToken}` }
+    });
+    const booking = bookingRes.data.booking || bookingRes.data.data;
+
+    // 2. Fetch negotiation for this booking
+    const negotiationRes = await axios.get(`/api/booking-negotiations?booking_id=${bookingId}`, {
+      headers: { Authorization: `Bearer ${authToken}` }
+    });
+    const negotiation = negotiationRes.data[0];
+
+    // 3. Use negotiated price if approved, else use service price
+    let price = booking.service.price;
+    if (negotiation && negotiation.pilot_status === 'approved') {
+      price = negotiation.final_price || negotiation.negotiable_price;
+    }
+
+    // 4. Initiate payment (your backend should use the correct price)
+    const checkoutUrl = await initiatePayment(
+      bookingId,
+      'http://localhost:5173/home', // Success URL
+      `http://localhost:5173/payment/${bookingId}`, // Cancel URL
+      authToken
+    );
+
+    if (!checkoutUrl) throw new Error('No payment URL received from server');
+
+    // 5. Redirect to Paymongo
+    window.location.href = checkoutUrl;
+  } catch (err) {
+    // Handle error (show a message, etc.)
+    console.error('Payment initiation failed:', err);
+    // Optionally, show a user-friendly error message here
+  }
 });
 </script>

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import api from '@/utils/api';
 
 const getPayments = async () => {
   try {
@@ -10,36 +11,9 @@ const getPayments = async () => {
   }
 };
 
-const initiatePayment = async (bookingId, successUrl, cancelUrl, authToken) => {
-  try {
-    console.log('Initiating payment for booking:', bookingId);
-    
-    const response = await axios.post(
-      `http://127.0.0.1:8000/api/payments/${bookingId}`,
-      {
-        success_url: successUrl,
-        cancel_url: cancelUrl
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    console.log('Payment initiation response:', response.data);
-    return response.data.checkout_url;
-
-  } catch (err) {
-    console.error('Payment initiation error details:', {
-      status: err.response?.status,
-      data: err.response?.data,
-      message: err.message
-    });
-    throw err;
-  }
-};
+export async function initiatePayment(bookingId) {
+  return api.post(`/payments/${bookingId}`);
+}
 
 const verifyPayment = async (transactionId) => {
   try {
@@ -61,10 +35,12 @@ const getUserPaidPayments = async (userId) => {
   }
 };
 
+export async function createCheckoutSession(bookingId) {
+  return api.post(`/payments/${bookingId}`);
+}
 
 export {
   getPayments,
-  initiatePayment,
   verifyPayment,
   getUserPaidPayments
 };

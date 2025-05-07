@@ -116,6 +116,12 @@ try {
       } else {
         alert(`Current payment status: ${booking.status || 'pending'}`);
       }
+
+      if (booking.value && booking.value.service) {
+        // safe to use booking.value.service
+      } else {
+        // show a loading spinner or error message
+      }
     } catch (err) {
       console.error('Error checking payment status:', err);
       error.value = err.response?.data?.message || err.message || 'Failed to check payment status.';

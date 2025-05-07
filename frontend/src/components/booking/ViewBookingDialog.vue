@@ -102,9 +102,9 @@ const generateContractPdf = () => {
     const serviceId = props.selectedBooking.service_id;
     const bookingId = props.selectedBooking.id;
     const form = {
-      commLink: props.selectedBooking.instruction.communication_link,  // Assuming communication link is in instruction
-      additional_notes: props.selectedBooking.instruction.additional_notes,  // Additional notes
-      start_date: dayjs(props.selectedBooking.instruction.start_date).format('MMMM D, YYYY'),  // Start date from instruction
+      commLink: props.selectedBooking.instruction?.communication_link,  // Assuming communication link is in instruction
+      additional_notes: props.selectedBooking.instruction?.additional_notes,  // Additional notes
+      start_date: dayjs(props.selectedBooking.instruction?.start_date).format('MMMM D, YYYY'),  // Start date from instruction
     };
 
     generatePDF(serviceId, bookingId, form);
@@ -175,13 +175,12 @@ watch(() => props.selectedBooking, (newVal) => {
         </div>
         <div class="space-y-2">
           <p class="text-sm text-gray-400">Communication Link</p>
-          <p class="text-sm font-medium bg-gray-700 p-2 rounded-lg">{{ selectedBooking.instruction.communication_link ||
-            'None' }}</p>
+          <p class="text-sm font-medium bg-gray-700 p-2 rounded-lg">{{ selectedBooking.instruction?.communication_link || 'N/A' }}</p>
         </div>
         <div class="space-y-2">
           <p class="text-sm text-gray-400">Start Date</p>
           <p class="text-sm font-medium bg-gray-700 p-2 rounded-lg"> {{
-            dayjs(selectedBooking.instruction.start_date).format('MMMM D, YYYY') || 'null'}}
+            dayjs(selectedBooking.instruction?.start_date).format('MMMM D, YYYY') || 'null'}}
           </p>
         </div>
         <div>
@@ -221,8 +220,8 @@ watch(() => props.selectedBooking, (newVal) => {
       <div class="mt-6 bg-gray-700 rounded-lg p-4">
         <p class="text-sm text-gray-300 mb-1 font-semibold">Instructions from user:</p>
         <!-- Ensure selectedBooking and instruction exist before displaying additional notes -->
-        <p v-if="props.selectedBooking?.instruction" class="text-sm text-gray-100 italic">
-          {{ props.selectedBooking.instruction.additional_notes || 'None' }}
+        <p v-if="selectedBooking && selectedBooking.instruction" class="text-sm text-gray-100 italic">
+          {{ selectedBooking.instruction.additional_notes || 'None' }}
         </p>
         <p v-else class="text-sm text-gray-100 italic">No additional notes available</p>
       </div>
