@@ -1,9 +1,8 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import DisplayField from "@/components/agreement/DisplayField.vue";
-import { createBooking, fetchData, fetchPaymentUrl, generatePDF } from "@/services/agreement.service"
+import { createBooking, fetchData, fetchPaymentUrl, generatePDFMakeAgreement } from "@/services/agreement.service"
 import toast from "@/utils/toast";
-import { jsPDF } from "jspdf"
 import dayjs from "dayjs";
 import { useRoute, useRouter } from 'vue-router';
 import { useLoader } from '@/services/loader-service';
@@ -161,7 +160,7 @@ const generateContractPDF = async () => {
     toast.error("Data not loaded yet!");
     return;
   }
-  await generatePDF(serviceId, bookingId.value, {
+  await generatePDFMakeAgreement(serviceId, bookingId.value, {
     commLink: form.commLink,
     additional_notes: form.additional_notes,
     start_date: form.startDate,

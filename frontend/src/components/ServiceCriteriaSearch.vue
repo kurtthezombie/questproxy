@@ -36,11 +36,14 @@
                   v-model="criteria.duration">
               </div>
               <div class="space-y-1">
-                <label class="text-green-400">Price Range</label>
-                <div class="flex items-center space-x-4">
-                  <input type="range" min="100" max="10000" step="100" v-model="criteria.max_price" class="w-full">
-                  <span class="text-gray-400 text-sm">{{ criteria.max_price }}</span>
-                </div>
+                <label class="text-green-400">Charge Range</label>
+                <Slider
+                  v-model="criteria.max_price"
+                  :min="100"
+                  :max="10000"
+                  :step="100"
+                  class="slider-green"
+                />
                 <div class="flex justify-between text-gray-400 text-sm mt-1">
                   <span>Min: {{ criteria.min_price }}</span>
                   <span>Max: {{ criteria.max_price }}</span>
@@ -90,6 +93,8 @@ import { getPreference } from '@/services/preference.service';
 import { useUserStore } from '@/stores/userStore';
 import { fetchCategories, findMatchingServices } from '@/services/match.service';
 import toast from '@/utils/toast';
+import Slider from '@vueform/slider';
+import '@vueform/slider/themes/default.css';
 
 const showServiceModal = ref(false);
 const loading = ref(false);
@@ -201,3 +206,17 @@ onMounted(() => {
   getCategories();
 });
 </script>
+
+<style>
+.slider-green .slider-connect {
+  background: #10b981;
+}
+
+.slider-green .slider-handle {
+  border-color: #10b981;
+}
+
+.slider-green .slider-handle:focus {
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+</style>
