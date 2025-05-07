@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import DisplayField from "@/components/agreement/DisplayField.vue";
-import { createBooking, fetchData, fetchPaymentUrl } from "@/services/agreement.service"
+import { createBooking, fetchData, fetchPaymentUrl, generatePDF } from "@/services/agreement.service"
 import toast from "@/utils/toast";
 import { jsPDF } from "jspdf"
 import dayjs from "dayjs";
@@ -156,152 +156,19 @@ const proceedToPayment = async () => {
   }
 }
 
-const generatePDF = () => {
+const generateContractPDF = async () => {
   if (!details.value || !bookingId.value) {
     toast.error("Data not loaded yet!");
     return;
   }
-
-  const doc = new jsPDF();
-  let yPos = 15;
-  const margin = 15;
-  const contentWidth = doc.internal.pageSize.getWidth() - 2 * margin;
-  const lineHeight = 7;
-  const pageHeight = doc.internal.pageSize.getHeight();
-  const bottomMargin = 15;
-
-  const checkPageBreak = (requiredSpace) => {
-    if (yPos + requiredSpace > pageHeight - bottomMargin) {
-      doc.addPage();
-      yPos = margin;
-    }
-  };
-
-  doc.setFont("Times", "Normal");
-  doc.setFontSize(12);
-
-  const logoBase64 = qpLogoBase64;
-  const logoWidth = 25;
-  const logoHeight = 25;
-  const logoX = (doc.internal.pageSize.getWidth() / 2) - (logoWidth / 2);
-  const logoY = margin;
-
-  if (logoBase64) {
-      try {
-          doc.addImage(logoBase64, 'PNG', logoX, logoY, logoWidth, logoHeight);
-          yPos = logoY + logoHeight + 15;
-      } catch (error) {
-          console.error("Error adding logo image:", error);
-          doc.text(" [Logo failed to load] ", margin, yPos);
-          yPos += 25;
-      }
-  } else {
-      doc.text(" [Your Logo Here - Paste Base64 string or check import] ", margin, yPos);
-      yPos += 25;
-  }
-
-  checkPageBreak(20);
-  doc.setFontSize(18);
-  doc.text("Game Service Agreement", doc.internal.pageSize.getWidth() / 2, yPos, { align: 'center' });
-  yPos += 20;
-
-  doc.setFontSize(12);
-
-  checkPageBreak(7 * lineHeight + 10);
-  doc.setFont("Times", "Bold");
-  doc.text("Key Details:", margin, yPos);
-  doc.setFont("Times", "Normal");
-  yPos += 8;
-  doc.text(`Service Title: ${details.value.description}`, margin, yPos);
-  yPos += 8;
-  doc.text(`Game: ${details.value.category_title}`, margin, yPos);
-  yPos += 8;
-  doc.text(`Pilot: ${details.value.pilot_username}`, margin, yPos);
-  yPos += 8;
-  doc.text(`Client: ${details.value.client_username}`, margin, yPos);
-  yPos += 8;
-  doc.text(`Booking ID: bk-${bookingId.value}`, margin, yPos);
-  yPos += 8;
-  doc.text(`Agreement Date: ${currentDate}`, margin, yPos);
-  yPos += 20;
-
-  checkPageBreak(3 * lineHeight + 10);
-  doc.setFont("Times", "Bold");
-  doc.text("1. Description of Service", margin, yPos);
-  doc.setFont("Times", "Normal");
-  yPos += 8;
-  const descriptionText = `The Pilot agrees to perform a ${details.value.description} for the client in ${details.value.category_title}.
-   The expected duration for completion is ${details.value.duration} day(s) from the agreed start date:
-    ${dayjs(form.startDate).format('MMMM D,YYYY')}.`;
-  const descriptionLines = doc.splitTextToSize(descriptionText, contentWidth);
-  checkPageBreak((descriptionLines.length * lineHeight) + 10);
-  doc.text(descriptionLines, margin, yPos);
-  yPos += (descriptionLines.length * lineHeight) + 20;
-
-  checkPageBreak(4 * lineHeight + 10);
-  doc.setFont("Times", "Bold");
-  doc.text("2. Communication & Coordination", margin, yPos);
-  doc.setFont("Times", "Normal");
-  yPos += 8;
-  const commText = `The client has provided the following communication link for coordination with the pilot:\n\nChat Link: ${form.commLink}\n\nThe pilot agrees to use this communication link solely for the purpose of fulfilling this service and to maintain professionalism throughout the communication process.`;
-  const commLines = doc.splitTextToSize(commText, contentWidth);
-  checkPageBreak((commLines.length * lineHeight) + 10);
-  doc.text(commLines, margin, yPos);
-  yPos += (commLines.length * lineHeight) + 20;
-
-  const notesText = form.additional_notes || 'None';
-  const notesLines = doc.splitTextToSize(notesText, contentWidth);
-  checkPageBreak((notesLines.length * lineHeight) + 8 + 10);
-  doc.setFont("Times", "Bold");
-  doc.text("3. Additional Instructions", margin, yPos);
-  doc.setFont("Times", "Normal");
-  yPos += 8;
-  doc.text(notesLines, margin, yPos);
-  yPos += (notesLines.length * lineHeight) + 20;
-
-  checkPageBreak(2 * lineHeight + 10);
-  doc.setFont("Times", "Bold");
-  doc.text("4. Payment Terms", margin, yPos);
-  doc.setFont("Times", "Normal");
-  yPos += 8;
-  const paymentText = `The client has agreed to pay ₱${form.negotiablePrice > 0 ? form.negotiablePrice : details.value.price} for the service, to be processed through the platform. (Negotiated Price: ${form.negotiablePrice > 0 ? form.negotiablePrice : 'N/A'})`;
-  const paymentLines = doc.splitTextToSize(paymentText, contentWidth);
-  checkPageBreak((paymentLines.length * lineHeight) + 10);
-  doc.text(paymentLines, margin, yPos);
-  yPos += (paymentLines.length * lineHeight) + 20;
-
-
-  checkPageBreak(3 * lineHeight + 10);
-  doc.setFont("Times", "Bold");
-  doc.text("5. Confidentiality & Security", margin, yPos);
-  doc.setFont("Times", "Normal");
-  yPos += 8;
-  const securityText = `The pilot shall not disclose or share any of the client's account information with any third party. The client understands and accepts the risks of account sharing as outlined in the platform's policy.`;
-  const securityLines = doc.splitTextToSize(securityText, contentWidth);
-  checkPageBreak((securityLines.length * lineHeight) + 10);
-  doc.text(securityLines, margin, yPos);
-  yPos += (securityLines.length * lineHeight) + 20;
-
-  checkPageBreak(3 * lineHeight + 10);
-  doc.setFont("Times", "Bold");
-  doc.text("6. Completion", margin, yPos);
-  doc.setFont("Times", "Normal");
-  yPos += 8;
-  const completionText = `The service is considered complete once the service is achieved or after the duration has passed with significant progress. Upon completion, this agreement will be archived.`;
-  const completionLines = doc.splitTextToSize(completionText, contentWidth);
-  checkPageBreak((completionLines.length * lineHeight) + 10);
-  doc.text(completionLines, margin, yPos);
-  yPos += (completionLines.length * lineHeight) + 20;
-
-  checkPageBreak(15);
-  doc.text(`Date Agreed: ${currentDate}`, margin, yPos);
-  yPos += 20;
-
-
-  doc.save(`client_bk-${bookingId.value}_service_agreement.pdf`);
-
+  await generatePDF(serviceId, bookingId.value, {
+    commLink: form.commLink,
+    additional_notes: form.additional_notes,
+    start_date: form.startDate,
+    negotiablePrice: form.negotiablePrice,
+  });
   downloadModal.close();
-}
+};
 
 onMounted(() => {
   fetchAgreementData();
@@ -423,7 +290,7 @@ onMounted(() => {
         <div class="modal-action">
           <form method="dialog" class="space-x-2">
             <button class="btn btn-error">Close</button>
-            <button class="btn btn-success" @click="generatePDF">Download</button>
+            <button class="btn btn-success" @click="generateContractPDF">Download</button>
           </form>
         </div>
       </div>

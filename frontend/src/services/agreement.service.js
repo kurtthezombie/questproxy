@@ -63,7 +63,15 @@ const generatePDF = async (serviceId, bookingId, form) => {
   if (logoBase64) {
     try {
       doc.addImage(logoBase64, 'PNG', logoX, logoY, logoWidth, logoHeight);
-      yPos = logoY + logoHeight + 15;
+      yPos = logoY + logoHeight + 2;
+      doc.setFontSize(20);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(34, 197, 94);
+      doc.text("QuestProxy", doc.internal.pageSize.getWidth() / 2, yPos, { align: 'center' });
+      yPos += 8;
+      doc.setFontSize(16);
+      doc.setFont("times", "normal");
+      doc.setTextColor(0, 0, 0);
     } catch (error) {
       console.error("Error adding logo image:", error);
       doc.text(" [Logo failed to load] ", margin, yPos);
@@ -105,7 +113,7 @@ const generatePDF = async (serviceId, bookingId, form) => {
   doc.setFont("Times", "Normal");
   yPos += 8;
   const descriptionText = `The Pilot agrees to perform a ${details.description} for the client in ${details.category_title}.
-   The expected duration for completion is ${details.duration} day(s) from the agreed start date:
+  The expected duration for completion is ${details.duration} day(s) from the agreed start date:
     ${dayjs(form.start_date).format('MMMM D,YYYY')}.`;
   const descriptionLines = doc.splitTextToSize(descriptionText, contentWidth);
   checkPageBreak((descriptionLines.length * lineHeight) + 10);
@@ -138,11 +146,11 @@ const generatePDF = async (serviceId, bookingId, form) => {
   doc.text("4. Payment Terms", margin, yPos);
   doc.setFont("Times", "Normal");
   yPos += 8;
-  const paymentText = `The client has agreed to pay ₱${form.negotiablePrice || details.price} 
-  for the service, to be processed through the platform. (Negotiated Price: ${form.negotiablePrice || 'N/A'})`;
+  let paymentText = `The client has agreed to pay ₱${form.negotiablePrice > 0 ? form.negotiablePrice : details.price} for the service,\nto be processed through the QuestProxy platform.`;
+  if (form.negotiablePrice > 0) {
+    paymentText += ` Negotiated Price: ₱${form.negotiablePrice}.`;
+  }
   const paymentLines = doc.splitTextToSize(paymentText, contentWidth);
-  doc.text(paymentLines, margin, yPos);
-  yPos += (paymentLines.length * lineHeight) + 20;
   doc.text(paymentLines, margin, yPos);
   yPos += (paymentLines.length * lineHeight) + 20;
 
@@ -219,7 +227,15 @@ const generatePdfForClient = async (serviceId, bookingId) => {
   if (logoBase64) {
     try {
       doc.addImage(logoBase64, 'PNG', logoX, logoY, logoWidth, logoHeight);
-      yPos = logoY + logoHeight + 15;
+      yPos = logoY + logoHeight + 2;
+      doc.setFontSize(20);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(34, 197, 94);
+      doc.text("QuestProxy", doc.internal.pageSize.getWidth() / 2, yPos, { align: 'center' });
+      yPos += 8;
+      doc.setFontSize(16);
+      doc.setFont("times", "normal");
+      doc.setTextColor(0, 0, 0);
     } catch (error) {
       console.error("Error adding logo image:", error);
       doc.text(" [Logo failed to load] ", margin, yPos);
@@ -294,9 +310,11 @@ const generatePdfForClient = async (serviceId, bookingId) => {
   doc.text("4. Payment Terms", margin, yPos);
   doc.setFont("Times", "Normal");
   yPos += 8;
-  const paymentText = `The client has agreed to pay ₱${form.negotiablePrice || details.price} for the service, to be processed through the platform. (Negotiated Price: ${form.negotiablePrice || 'N/A'})`;
+  let paymentText = `The client has agreed to pay ₱${form.negotiablePrice > 0 ? form.negotiablePrice : details.price} for the service,\nto be processed through the QuestProxy platform.`;
+  if (form.negotiablePrice > 0) {
+    paymentText += ` Negotiated Price: ₱${form.negotiablePrice}.`;
+  }
   const paymentLines = doc.splitTextToSize(paymentText, contentWidth);
-  checkPageBreak((paymentLines.length * lineHeight) + 10);
   doc.text(paymentLines, margin, yPos);
   yPos += (paymentLines.length * lineHeight) + 20;
 
