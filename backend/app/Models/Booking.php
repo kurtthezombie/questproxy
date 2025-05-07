@@ -41,6 +41,6 @@ class Booking extends Model
 
     public function negotiations()
     {
-        return $this->hasMany(BookingNegotiation::class);
+        return $this->hasMany(BookingNegotiation::class, 'booking_id');
     }
 }

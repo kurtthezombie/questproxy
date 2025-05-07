@@ -35,12 +35,28 @@ class PaymentController extends Controller
             return $this->failedResponse('No service retrieved.',404);
         }
 
+        // Check for an approved negotiation with a final price
+        $negotiation = $booking->negotiations()
+            ->where('pilot_status', 'approved')
+            ->orderByDesc('id')
+            ->first();
+
+        if ($negotiation && $negotiation->final_price) {
+            $amount_pesos = $negotiation->final_price;
+            $amount_centavos = $negotiation->final_price * 100;
+            $description = $service->description . " (Negotiated)";
+        } else {
+            $amount_pesos = $service->price;
+            $amount_centavos = $service->price * 100;
+            $description = $service->description;
+        }
+
         //payment initial creation
         DB::beginTransaction();
         try {
             $payment = Payment::create([
-                'amount' => $service->price,
-                'details' => $service->description,
+                'amount' => $amount_pesos,
+                'details' => $description,
                 'payer_id' => Auth::user()->id,
                 'booking_id' => $booking_id,
             ]);
@@ -54,9 +70,6 @@ class PaymentController extends Controller
         //set success url
         //$success_url = 'BUTNGI UG ROUTE sa page nato after payment nya i append ang id sa payment';
         $success_url = env('APP_FRONTEND_URL') . '/verify-payment/' . $payment->id;
-
-        //set amount to payment gateway format
-        $amount = $service->price * 100;
 
         //call <response></response>
         $secret_key = env('PAYMONGO_SECRET_KEY');
@@ -74,13 +87,13 @@ class PaymentController extends Controller
                             'send_email_receipt' => true,
                             'show_description' => true,
                             'show_line_items' => true,
-                            'description' => $service->description,
+                            'description' => $description,
                             'cancel_url' => $cancel_url,
                             'line_items' => [
                                 [
                                     'currency' => 'PHP',
-                                    'amount' => $amount,
-                                    'description' => $service->description,
+                                    'amount' => $amount_centavos,
+                                    'description' => $description,
                                     'name' => 'Service',
                                     'quantity' => 1
                                 ]
