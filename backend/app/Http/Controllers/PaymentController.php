@@ -176,6 +176,48 @@ class PaymentController extends Controller
 
         return $this->failedResponse('Payment not completed', 500);
     }
+
+    public function refund($payment_id)
+    {
+        $payment = Payment::findOrFail($payment_id);
+
+        // Only allow refund if not already refunded
+        if ($payment->status === 'refunded') {
+            return $this->failedResponse('Payment already refunded.', 400);
+        }
+
+        // Calculate refund amount (50%)
+        $refundAmount = $payment->amount * 0.5 * 100; // PayMongo expects centavos
+
+        // Get PayMongo payment id (transaction_id)
+        $transactionId = $payment->transaction_id;
+
+        $secret_key = env('PAYMONGO_SECRET_KEY');
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Authorization' => 'Basic ' . base64_encode($secret_key . ':'),
+            'Content-Type' => 'application/json'
+        ])
+        ->post("https://api.paymongo.com/v1/payments/{$transactionId}/refunds", [
+            'data' => [
+                'attributes' => [
+                    'amount' => intval($refundAmount)
+                ]
+            ]
+        ]);
+
+        $responseData = $response->json();
+
+        if (!$response->successful() || !isset($responseData['data'])) {
+            return $this->failedResponse('Refund failed: ' . json_encode($responseData), 500);
+        }
+
+        // Update payment status
+        $payment->status = 'refunded';
+        $payment->save();
+
+        return $this->successResponse('Refund successful.', 200, ['refund' => $responseData['data']]);
+    }
  
     public function paymentsPaid($user_id){
         $payments = Payment::where('payer_id',$user_id)
