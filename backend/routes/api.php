@@ -136,6 +136,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/pilot/bookings', 'getBookingByPilot');
         Route::put('bookings/{booking_id}/progress', 'updateProgress');
         Route::get('bookings/{booking_id}/with-relations', 'getBookingWithRelations');
+        Route::post('bookings/{booking_id}/approve-negotiation', [BookingController::class, 'approveNegotiation']);
+        Route::post('bookings/{booking_id}/decline-negotiation', [BookingController::class, 'declineNegotiation']);
+        Route::post('bookings/{booking_id}/negotiate', [BookingController::class, 'negotiate']);
+        Route::get('pilot/negotiations', [BookingController::class, 'getNegotiationsForPilot']);
+        Route::post('negotiations/{negotiation_id}/approve', [BookingController::class, 'approveNegotiation']);
+        Route::post('negotiations/{negotiation_id}/decline', [BookingController::class, 'declineNegotiation']);
     });
 
     Route::controller(ProgressController::class)->group(function() {
@@ -177,6 +183,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::post('match-pilot',[MatchingController::class,'matchPilot']);
+    Route::post('match-services',[MatchingController::class,'matchServices']);
 });
 
 //login

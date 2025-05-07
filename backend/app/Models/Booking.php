@@ -38,4 +38,9 @@ class Booking extends Model
     {
         return $this->hasMany(ProgressLog::class);
     }
+
+    public function negotiations()
+    {
+        return $this->hasMany(BookingNegotiation::class);
+    }
 }

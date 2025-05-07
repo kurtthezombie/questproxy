@@ -31,15 +31,22 @@ class BookingService
 
     public function create($data)
     {
-        //create booking
         $booking = new Booking();
         $booking->client_id = $data['client_id'];
         $booking->service_id = $data['service_id'];
-
+        if (isset($data['negotiable_price']) && $data['negotiable_price'] > 0) {
+            $booking->status = 'pending_negotiation';
+            $booking->negotiable_price = $data['negotiable_price'];
+        } else {
+            $booking->status = 'in_progress';
+        }
         if (!$booking->save()){
             throw new Exception('Failed to create booking.');
         }
-
+        if ($booking->status === 'pending_negotiation') {
+            $pilot = $booking->service->pilot->user;
+            $pilot->notify(new \App\Notifications\NegotiationRequestedNotification($booking));
+        }
         return $booking;
     }
 
@@ -204,5 +211,17 @@ class BookingService
         ];
 
         Mail::to($client->email)->send(new ServiceCompletionMail($details));
+    }
+
+    public function getNegotiationsByPilot()
+    {
+        $user = auth()->user();
+        if (!$user || !$user->pilot) {
+            throw new Exception("Pilot not found for the authenticated user.");
+        }
+        $pilotId = $user->pilot->id;
+        return Booking::whereHas('service', function ($query) use ($pilotId) {
+            $query->where('pilot_id', $pilotId);
+        })->where('status', 'pending_negotiation')->with(['service', 'client'])->get();
     }
 }

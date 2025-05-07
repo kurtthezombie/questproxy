@@ -11,6 +11,10 @@ use Crypt;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
+use App\Models\BookingNegotiation;
+use App\Notifications\NegotiationRequestedNotification;
+use App\Notifications\NegotiationApprovedNotification;
+use App\Notifications\NegotiationDeclinedNotification;
 
 class BookingController extends Controller
 {
@@ -217,5 +221,65 @@ class BookingController extends Controller
         } catch (Exception $e){
             $this->failedResponse($e->getMessage(), 500);
         }
+    }
+
+    public function approveNegotiation($negotiation_id)
+    {
+        $negotiation = BookingNegotiation::findOrFail($negotiation_id);
+        $negotiation->pilot_status = 'approved';
+        $negotiation->final_price = $negotiation->negotiable_price;
+        $negotiation->save();
+
+        // Notify gamer
+        $negotiation->booking->client->notify(new NegotiationApprovedNotification($negotiation->booking));
+
+        return response()->json(['message' => 'Negotiation approved.']);
+    }
+
+    public function declineNegotiation($negotiation_id)
+    {
+        $negotiation = BookingNegotiation::findOrFail($negotiation_id);
+        $negotiation->pilot_status = 'declined';
+        $negotiation->save();
+
+        // Notify gamer
+        $negotiation->booking->client->notify(new NegotiationDeclinedNotification($negotiation->booking));
+
+        return response()->json(['message' => 'Negotiation declined.']);
+    }
+
+    public function negotiate(Request $request, $booking_id)
+    {
+        $data = $request->validate([
+            'negotiable_price' => 'required|numeric|min:1',
+        ]);
+
+        $booking = Booking::findOrFail($booking_id);
+
+        // Create negotiation record
+        $negotiation = BookingNegotiation::create([
+            'booking_id' => $booking->id,
+            'negotiable_price' => $data['negotiable_price'],
+            'pilot_status' => 'pending',
+        ]);
+
+        // Notify the pilot
+        $pilot = $booking->service->pilot->user;
+        $pilot->notify(new NegotiationRequestedNotification($negotiation));
+
+        return response()->json(['message' => 'Negotiation sent to pilot.', 'negotiation' => $negotiation]);
+    }
+
+    public function getNegotiationsForPilot()
+    {
+        $pilotId = auth()->user()->pilot->id;
+        $negotiations = BookingNegotiation::whereHas('booking.service', function($q) use ($pilotId) {
+            $q->where('pilot_id', $pilotId);
+        })
+        ->where('pilot_status', 'pending')
+        ->with(['booking.service.category', 'booking.client'])
+        ->get();
+
+        return response()->json($negotiations);
     }
 }
