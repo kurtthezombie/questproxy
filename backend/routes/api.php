@@ -162,6 +162,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('payments/success/{id}', 'success');
         Route::get('users/{user_id}/payments/paid', 'paymentsPaid');
         Route::get('payments/paid/export', 'exportPaidPayments');
+        Route::post('payments/{payment_id}/refund', [PaymentController::class, 'refund']);
     });
 
     Route::controller(TransactionController::class)->group(function() {
