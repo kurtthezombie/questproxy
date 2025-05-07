@@ -36,7 +36,7 @@ const getUserPaidPayments = async (userId) => {
 };
 
 export async function createCheckoutSession(bookingId) {
-  return api.post(`/payments/${bookingId}`);
+  return await api.post(`/payments/${bookingId}`);
 }
 
 export {

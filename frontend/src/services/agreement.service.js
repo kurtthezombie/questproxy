@@ -356,8 +356,5 @@ const showNegotiations = async () => {
   }
 };
 
-export async function createCheckoutSession(bookingId) {
-  return api.post(`/payments/${bookingId}`);
-}
 
 export { fetchData, createBooking, fetchPaymentUrl, generatePDF, generatePdfForClient, fetchPilotDecision };

@@ -238,11 +238,15 @@ const handleClickOutside = (event) => {
 
 const handleNegotiationApproved = async (bookingId) => {
   try {
-    // Call your backend to create a Paymongo checkout session
     const response = await createCheckoutSession(bookingId);
-    // Redirect to Paymongo
-    window.location.href = response.data.checkout_url;
+    console.log('Payment API response:', response);
+    if (response && response.checkout_url) {
+      window.location.href = response.checkout_url;
+    } else {
+      toast.error('No payment link received. Please try again or contact support.');
+    }
   } catch (error) {
+    console.error('Payment error:', error);
     toast.error('Failed to initiate payment.');
   }
 };
