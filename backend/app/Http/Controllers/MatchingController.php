@@ -70,6 +70,7 @@ class MatchingController extends Controller
             $query->where('points', '>=', $preference->points);
         })
         ->where('user_id', '!=', $preference->user_id)
+        ->inRandomOrder()
         ->first();
     }
 
