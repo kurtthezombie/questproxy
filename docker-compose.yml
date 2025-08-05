@@ -1,0 +1,46 @@
+services:
+  #backend service
+  backend:
+    build:
+      context: ./backend
+    container_name: laravel-backend
+    ports: 
+      - "8000:8000"
+    volumes:
+      - ./backend:/var/www
+    working_dir: /var/www
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    depends_on:
+      - mysql
+  
+  #frontend service
+  frontend:
+    build:
+      context: ./frontend
+    container_name: vue-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run dev
+    stdin_open: true
+    tty: true
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    restart: unless-stopped
+    ports: 
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+    volumes:
+      - db_data:/var/lib/mysql
+    
+volumes:
+  db_data:
