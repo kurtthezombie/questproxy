@@ -86,6 +86,7 @@ const getGameTitle = computed(() => {
   return category ? category.title : (props.service.category_title || 'Unknown Game');
 });
 
+
 const formatPrice = (price) => {
   const num = Number(price || 0);
   return Number.isInteger(num) ? num.toLocaleString() : num.toFixed(2);
@@ -141,9 +142,11 @@ const handleConfirmDelete = async () => {
   }
 };
 
+
 const initial = computed(() => {
   if (!props.service.pilot_username) return '?';
   return props.service.pilot_username.charAt(0).toUpperCase();
 });
+
 
 </script>

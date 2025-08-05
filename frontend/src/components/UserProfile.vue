@@ -177,7 +177,6 @@ const fetchPoints = async () => {
   const authToken = localStorage.getItem('authToken');
   if (!profileUsername.value || !authToken || !isPilotProfile.value) {
        points.value = 0;
-       return;
   }
   try {
     const response = await axios.get(`http://127.0.0.1:8000/api/portfolios/user/points/${profileUsername.value}`, {

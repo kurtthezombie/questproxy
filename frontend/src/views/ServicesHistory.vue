@@ -339,6 +339,7 @@ const fetchData = async () => {
   const pilot_id = userStore.userData?.pilot_id;
   if (!pilot_id) {
     console.error("Pilot ID not found.");
+    // Optionally redirect or show an error message if pilot_id is crucial for this page
     return;
   }
 
