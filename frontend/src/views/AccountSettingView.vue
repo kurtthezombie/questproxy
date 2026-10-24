@@ -7,9 +7,9 @@
         <div class="flex flex-col md:flex-row gap-6 w-full">
 
           <div class="w-full md:w-[260px] space-y-6">
-            <div class="bg-blue-800 bg-opacity-5 rounded-lg p-6 text-center shadow border border-gray-700">
+            <div class="bg-blue-800 bg-opacity-5 rounded-lg p-6 text-center shadow-sm border border-gray-700">
               <div class="flex justify-center">
-                <div class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold text-5xl leading-[1]">
+                <div class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold text-5xl leading-none">
                   {{ initial }}
                 </div>
               </div>
@@ -73,7 +73,7 @@
             </div>
           </div>
 
-          <div class="flex-grow md:w-[calc(100%-260px)]">
+          <div class="grow md:w-[calc(100%-260px)]">
             <div class="bg-blue-800 bg-opacity-5 w-full max-w-full p-8 rounded-lg shadow-lg border border-gray-700">
               <div class="flex items-center mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -101,21 +101,21 @@
                     <label class="block text-sm mb-2 text-gray-300">First Name</label>
                     <input v-model="firstName"
                       type="text"
-                      class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
+                      class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-hidden"
                     />
                   </div>
                   <div>
                     <label class="block text-sm mb-2 text-gray-300">Last Name</label>
                     <input v-model="lastName"
                       type="text"
-                      class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
+                      class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-hidden"
                     />
                   </div>
                   <div>
                     <label class="block text-sm mb-2 text-gray-300">Email</label>
                     <input v-model="email"
                       type="email"
-                      class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
+                      class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-hidden"
                     />
                   </div>
                   <div>
@@ -126,7 +126,7 @@
                       inputmode="numeric"
                       maxlength="12"
                       @input="contactNumber = $event.target.value.replace(/[^0-9]/g, '').slice(0, 12)"
-                      class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-none"
+                      class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-red-500 focus:outline-hidden"
                     />
                   </div>
                 </div>
@@ -169,8 +169,8 @@
           <h3 class="text-lg font-semibold mb-4">Confirm Account Deletion</h3>
           <p class="text-sm mb-6">Are you sure you want to delete your account? This action cannot be undone.</p>
           <div class="flex justify-end gap-4">
-            <button @click="hideConfirmationModal" class="px-4 py-2 bg-gray-600 rounded hover:bg-gray-700">Cancel</button>
-            <button @click="handleDeleteAccount" class="px-4 py-2 bg-red-600 rounded hover:bg-red-700">Yes, Delete</button>
+            <button @click="hideConfirmationModal" class="px-4 py-2 bg-gray-600 rounded-sm hover:bg-gray-700">Cancel</button>
+            <button @click="handleDeleteAccount" class="px-4 py-2 bg-red-600 rounded-sm hover:bg-red-700">Yes, Delete</button>
           </div>
         </div>
       </div>

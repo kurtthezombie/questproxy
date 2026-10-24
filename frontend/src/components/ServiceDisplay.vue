@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-blue-900 bg-opacity-20 p-5 rounded-xl shadow-lg border border-gray-700 group hover:border-green-400 hover:-translate-y-2 transition-all duration-300 cursor-pointer max-w-sm w-full flex-grow"
+  <div class="bg-blue-900 bg-opacity-20 p-5 rounded-xl shadow-lg border border-gray-700 group hover:border-green-400 hover:-translate-y-2 transition-all duration-300 cursor-pointer max-w-sm w-full grow"
     @click="handleServiceClick">
     <div class="flex justify-between items-center mb-2">
       <h3 class="text-2xl font-bold text-white">{{ getGameTitle }}</h3>
@@ -34,11 +34,11 @@
     </div>
     <div class="mt-4 flex gap-2" v-if="isServiceHistory">
       <button @click.stop="$router.push(`/services/${service.id}/edit`)"
-              class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded text-sm">
+              class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-sm text-sm">
         Edit
       </button>
       <button @click.stop="openDeleteModal"
-              class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 rounded text-white text-sm">
+              class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-sm text-white text-sm">
         Delete
       </button>
     </div>
@@ -49,8 +49,8 @@
       <h3 class="text-lg font-semibold mb-4">Confirm Service Deletion</h3>
       <p class="text-sm mb-6">Are you sure you want to delete this service? This action cannot be undone.</p>
       <div class="flex justify-end gap-4">
-        <button @click="handleConfirmDelete" class="px-4 py-2 bg-red-600 rounded hover:bg-red-700">Yes</button>
-        <button @click="closeDeleteModal" class="px-3 py-2 bg-gray-600 rounded hover:bg-gray-700">Cancel</button>
+        <button @click="handleConfirmDelete" class="px-4 py-2 bg-red-600 rounded-sm hover:bg-red-700">Yes</button>
+        <button @click="closeDeleteModal" class="px-3 py-2 bg-gray-600 rounded-sm hover:bg-gray-700">Cancel</button>
       </div>
     </div>
   </div>

@@ -424,10 +424,10 @@ const goToPublicPortfolio = () => {
 
         <div class="p-6 md:p-8 flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
           <div
-            class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-green-600 flex items-center justify-center text-4xl md:text-5xl font-semibold text-white flex-shrink-0">
+            class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-green-600 flex items-center justify-center text-4xl md:text-5xl font-semibold text-white shrink-0">
             {{ initials }}
           </div>
-          <div class="flex-grow text-center md:text-left">
+          <div class="grow text-center md:text-left">
             <h1 class="text-3xl md:text-4xl font-bold">{{ profileData.username }}</h1>
             <p class="text-green-400 capitalize">{{ profileRole?.replace('game ', '') }}</p>
             <div class="mt-3 flex flex-wrap justify-center md:justify-start items-center gap-2 md:gap-4 text-sm">

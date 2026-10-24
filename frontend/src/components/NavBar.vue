@@ -13,7 +13,7 @@
       <!-- Mobile Nav Controls -->
       <div class="flex justify-center items-center gap-4 lg:hidden">
         <NotificationPopover />
-        <button @click="toggleMenu" class="text-white focus:outline-none">
+        <button @click="toggleMenu" class="text-white focus:outline-hidden">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>

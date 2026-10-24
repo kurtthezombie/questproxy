@@ -114,15 +114,15 @@ onMounted(() => {
           <div class="flex flex-col w-full">
 
             <div v-if="isLoading">
-              <div class="w-40 h-6 skeleton rounded mb-2"></div>
-              <div class="w-60 h-4 skeleton rounded mb-2"></div>
-              <div class="w-48 h-4 skeleton rounded"></div>
+              <div class="w-40 h-6 skeleton rounded-sm mb-2"></div>
+              <div class="w-60 h-4 skeleton rounded-sm mb-2"></div>
+              <div class="w-48 h-4 skeleton rounded-sm"></div>
             </div>
 
             <div v-else>
               <div class="bg-[#1e293b] w-full px-6 py-5 rounded-md flex flex-col items-start">
-                <h3 class="text-xl text-white font-bold break-words">{{ serviceData.serviceName }}</h3>
-                <p class="text-gray-400 leading-relaxed break-words">{{ serviceData.serviceDescription }}</p>
+                <h3 class="text-xl text-white font-bold wrap-break-word">{{ serviceData.serviceName }}</h3>
+                <p class="text-gray-400 leading-relaxed wrap-break-word">{{ serviceData.serviceDescription }}</p>
               </div>
 
               <div class="flex items-center space-x-2 mt-6">
@@ -149,7 +149,7 @@ onMounted(() => {
           <p class="text-white text-base font-medium">Rating</p>
           <div class="flex justify-center">
             <button v-for="star in [1, 2, 3, 4, 5]" :key="star" @click="setRating(star)"
-              @mouseenter="setHoveredRating(star)" @mouseleave="setHoveredRating(0)" class="focus:outline-none">
+              @mouseenter="setHoveredRating(star)" @mouseleave="setHoveredRating(0)" class="focus:outline-hidden">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                 class="w-10 h-10 transition-colors"
                 :class="star <= (review.hoveredRating || review.rating) ? 'text-green-500' : 'text-gray-700'">
@@ -174,7 +174,7 @@ onMounted(() => {
           <label for="comment" class="text-white text-base">Your Comments</label>
           <textarea
             v-model="review.comment"
-            class="bg-[#1e293b] border border-gray-700 text-base textarea w-full text-white focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
+            class="bg-[#1e293b] border border-gray-700 text-base textarea w-full text-white focus:outline-hidden focus:border-green-500 focus:ring-1 focus:ring-green-500"
             placeholder="Please share your experience with this service..."></textarea>
         </div>
         <p class="text-gray-400">Your feedback helps us improve our service and helps other players make informed decisions.</p>

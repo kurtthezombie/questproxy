@@ -51,10 +51,10 @@ const reviewerInitials = computed(() => {
 </script>
 
 <template>
-  <div class="bg-gray-800 border border-gray-700 rounded-lg shadow p-4 md:p-5 space-y-3 hover:bg-gray-750 transition-colors duration-200">
+  <div class="bg-gray-800 border border-gray-700 rounded-lg shadow-sm p-4 md:p-5 space-y-3 hover:bg-gray-750 transition-colors duration-200">
     <div class="flex items-center justify-between gap-4">
       <div class="flex items-center space-x-3 overflow-hidden">
-         <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0" :title="reviewerUsername">
+         <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-sm font-semibold text-white shrink-0" :title="reviewerUsername">
             {{ reviewerInitials }}
          </div>
          <div class="overflow-hidden">
@@ -66,7 +66,7 @@ const reviewerInitials = computed(() => {
             </p>
          </div>
       </div>
-      <div class="text-yellow-400 text-lg flex-shrink-0" :title="`Rating: ${review.rating || 0}/5`">
+      <div class="text-yellow-400 text-lg shrink-0" :title="`Rating: ${review.rating || 0}/5`">
         {{ ratingStars }}
       </div>
     </div>

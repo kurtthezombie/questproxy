@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:24-bookworm-slim
 
 #set working directory
 WORKDIR /app
@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Clean install
-RUN npm install --legacy-peer-deps
+RUN npm ci
 
 
 COPY . .

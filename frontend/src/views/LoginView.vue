@@ -133,7 +133,7 @@ const handleBack = async () => {
         <div v-if="message"
           class="flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-300 dark:border-green-800"
           role="alert">
-          <svg class="flex-shrink-0 inline w-4 h-4 me-3" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+          <svg class="shrink-0 inline w-4 h-4 me-3" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
             viewBox="0 0 20 20">
             <path
               d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
@@ -148,7 +148,7 @@ const handleBack = async () => {
         <div v-if="errorMessage"
           class="flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
           role="alert">
-          <svg class="flex-shrink-0 inline w-4 h-4 me-3" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+          <svg class="shrink-0 inline w-4 h-4 me-3" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
             viewBox="0 0 20 20">
             <path
               d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
@@ -163,11 +163,11 @@ const handleBack = async () => {
       <form @submit.prevent="submitForm" class="space-y-4 pt-5">
         <div class="form-group">
           <input type="text" v-model="username" placeholder="Username" required
-            class="w-full p-3 bg-[#1e293b] text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+            class="w-full p-3 bg-[#1e293b] text-white border border-gray-700 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-green-500">
         </div>
         <div class="form-group">
           <input type="password" v-model="password" placeholder="Password" required
-            class="w-full p-3 bg-[#1e293b] text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+            class="w-full p-3 bg-[#1e293b] text-white border border-gray-700 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-green-500">
         </div>
         <button type="submit"
           class="font-bold w-full p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">

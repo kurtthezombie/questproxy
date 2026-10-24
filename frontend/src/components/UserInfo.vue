@@ -6,19 +6,19 @@
       <div v-if="role === 'game pilot'" class="space-y-4">
         <div>
           <label class="block text-sm mb-2 text-gray-300">Skills</label>
-          <textarea v-model="form.skills" class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-green-400 focus:outline-none" rows="3" />
+          <textarea v-model="form.skills" class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-green-400 focus:outline-hidden" rows="3" />
         </div>
 
         <div>
           <label class="block text-sm mb-2 text-gray-300">Bio</label>
-          <textarea v-model="form.bio" class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-green-400 focus:outline-none" rows="5" />
+          <textarea v-model="form.bio" class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-green-400 focus:outline-hidden" rows="5" />
         </div>
       </div>
 
       <div v-else-if="role === 'gamer'" class="space-y-4">
         <div>
           <label class="block text-sm mb-2 text-gray-300">Gamer Preference</label>
-          <input v-model="form.gamer_preference" type="text" class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-green-400 focus:outline-none" />
+          <input v-model="form.gamer_preference" type="text" class="w-full p-2.5 text-sm text-white bg-[#1e293b] border border-gray-700 rounded-md focus:ring-2 focus:ring-green-400 focus:outline-hidden" />
         </div>
       </div>
 

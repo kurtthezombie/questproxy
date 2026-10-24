@@ -86,7 +86,7 @@ const goBackToProfile = () => {
 <template>
   <NavBar />
   <div class="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-6 -mt-5 relative">
-    <div class="w-full max-w-lg border border-gray-700 rounded-lg shadow-lg overflow-hidden bg-gray-800 bg-opacity-60 backdrop-blur-sm relative">
+    <div class="w-full max-w-lg border border-gray-700 rounded-lg shadow-lg overflow-hidden bg-gray-800 bg-opacity-60 backdrop-blur-xs relative">
       <div class="bg-gray-800 bg-opacity-50 p-4 pt-6 border-b border-gray-700">
         <h1 class="text-3xl font-bold text-white ml-4">Report User</h1>
       </div>
@@ -94,7 +94,7 @@ const goBackToProfile = () => {
       <div class="p-8">
         <div class="mb-8">
           <p class="text-sm font-medium text-gray-400 mb-2">Reporting user:</p>
-          <p class="text-lg font-semibold p-3 bg-blue-900 bg-opacity-30 border border-gray-700 text-white rounded-md shadow-sm">{{ usernameToReport || 'Loading...' }}</p>
+          <p class="text-lg font-semibold p-3 bg-blue-900 bg-opacity-30 border border-gray-700 text-white rounded-md shadow-xs">{{ usernameToReport || 'Loading...' }}</p>
         </div>
 
         <form @submit.prevent="handleSubmitReport" class="space-y-6">
@@ -110,7 +110,7 @@ const goBackToProfile = () => {
                   :name="reasonOpt.toLowerCase().replace(/[^a-z0-9]/g, '')"
                   :value="reasonOpt"
                   v-model="selectedReasons"
-                  class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-500 rounded bg-gray-700 cursor-pointer" />
+                  class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-500 rounded-sm bg-gray-700 cursor-pointer" />
                 <label :for="reasonOpt.toLowerCase().replace(/[^a-z0-9]/g, '')" class="text-white ml-3 block text-sm font-medium cursor-pointer">
                   {{ reasonOpt }}
                 </label>
@@ -122,7 +122,7 @@ const goBackToProfile = () => {
               <textarea
                 id="otherReason"
                 v-model="otherReasonText"
-                class="w-full px-4 py-3 border border-gray-600 bg-[#1e293b] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 shadow-inner"
+                class="w-full px-4 py-3 border border-gray-600 bg-[#1e293b] text-white rounded-md focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:border-red-500 shadow-inner"
                 rows="4"
                 placeholder="Explain the reason for reporting..."
                 :required="selectedReasons.includes('Other')">

@@ -62,7 +62,7 @@ onBeforeUnmount(() => {
 
 <template>
   <!-- Progress card -->
-  <div class="bg-gray-800 shadow rounded-2xl overflow-hidden relative">
+  <div class="bg-gray-800 shadow-sm rounded-2xl overflow-hidden relative">
     <!-- Trash Icon -->
     <button v-if="isPilot" 
       @click="handleDeleteProgress(props.progressLog.id)" 

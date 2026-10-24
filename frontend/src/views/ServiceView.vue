@@ -72,7 +72,7 @@
               type="text"
               @keydown.enter="applySearch"
               placeholder="Search by game, description, pilot, days, or price..."
-              class="bg-[#1e293b] text-gray-300 border border-gray-700 rounded-full pl-16 pr-4 py-4 h-13 shadow-md w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300 placeholder-gray-500"
+              class="bg-[#1e293b] text-gray-300 border border-gray-700 rounded-full pl-16 pr-4 py-4 h-13 shadow-md w-full focus:outline-hidden focus:border-4 focus:border-green-600 focus:text-gray-300 placeholder-gray-500"
           />
           <svg class="absolute left-4 top-1/2 -translate-y-1/2 opacity-70 ml-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width: 1.5em;">
               <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">

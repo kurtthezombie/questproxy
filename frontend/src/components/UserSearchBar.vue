@@ -11,12 +11,12 @@
 
       <input type="text" v-model="searchQuery" @input="handleSearchInput" @keydown.enter="handleEnterKey"
         placeholder="Search username"
-        class="w-full px-0 py-2 bg-transparent text-white placeholder-gray-400 focus:outline-none"
+        class="w-full px-0 py-2 bg-transparent text-white placeholder-gray-400 focus:outline-hidden"
         aria-label="Search users" />
 
       <div class="relative">
         <button @click="toggleFilterDropdown"
-          class="px-4 py-2 bg-gray-700 text-white rounded-r-lg border-l border-gray-600 focus:outline-none hover:bg-gray-600 transition-colors duration-200 text-sm"
+          class="px-4 py-2 bg-gray-700 text-white rounded-r-lg border-l border-gray-600 focus:outline-hidden hover:bg-gray-600 transition-colors duration-200 text-sm"
           aria-haspopup="true" :aria-expanded="showFilterDropdown">
           {{ selectedFilter || 'Filter' }}
           <svg class="w-4 h-4 inline-block ml-1 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"

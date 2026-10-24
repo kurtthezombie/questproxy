@@ -53,7 +53,7 @@
               type="text"
               placeholder="Search game.."
               class="bg-[#1e293b] text-gray-300 border border-gray-700 rounded-full pl-16 pr-4 py-4 h-13 shadow-md 
-                    w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300"
+                    w-full focus:outline-hidden focus:border-4 focus:border-green-600 focus:text-gray-300"
             />
           </div>
 

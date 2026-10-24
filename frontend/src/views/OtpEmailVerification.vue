@@ -166,25 +166,25 @@ onUnmounted(() => {
                             Resend in {{ countdown }}s
                         </p>
                         <button v-else @click="handleResendOtp"
-                            class="text-sm font-medium text-green-900 hover:text-green-400 focus:outline-none transition duration-100 ease-in-out"
+                            class="text-sm font-medium text-green-900 hover:text-green-400 focus:outline-hidden transition duration-100 ease-in-out"
                             type="button">
                             Resend Code
                         </button>
                     </div>
                 </div>
                 <!-- Show success message if OTP is resent -->
-                <div v-if="resendSuccess" class="bg-green-100 text-green-800 p-2 text-center rounded">
+                <div v-if="resendSuccess" class="bg-green-100 text-green-800 p-2 text-center rounded-sm">
                     OTP has been resent successfully!
                 </div>
                 <!-- ACTION BUTTONS -->
                 <div class="space-y-3">
                     <button @click="handleSubmitOtp" :disabled="!isOtpValid"
-                        class="w-full py-3 px-4 bg-green-700 text-white font-medium rounded-md shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-full py-3 px-4 bg-green-700 text-white font-medium rounded-md shadow-xs hover:bg-primary/90 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         type="button">
                         Verify
                     </button>
                     <button @click="handleShowCancelModal"
-                        class="w-full py-3 px-4 bg-white text-gray-700 font-medium rounded-md border border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                        class="w-full py-3 px-4 bg-white text-gray-700 font-medium rounded-md border border-gray-300 shadow-xs hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                         type="button">
                         Cancel
                     </button>
@@ -203,12 +203,12 @@ onUnmounted(() => {
                 </p>
                 <div class="flex justify-end space-x-3">
                     <button @click="showCancelModal = false"
-                        class="px-4 py-2 bg-white text-gray-700 font-medium rounded-md border border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                        class="px-4 py-2 bg-white text-gray-700 font-medium rounded-md border border-gray-300 shadow-xs hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                         type="button">
                         Stay Here
                     </button>
                     <button @click="handleCancelVerification"
-                        class="px-4 py-2 bg-red-600 text-white font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        class="px-4 py-2 bg-red-600 text-white font-medium rounded-md shadow-xs hover:bg-red-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                         type="button">
                         Yes, Cancel
                     </button>

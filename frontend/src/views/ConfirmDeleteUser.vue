@@ -11,7 +11,7 @@
             <form @submit.prevent="confirmDeletion">
                 <div class="flex justify-center">
                     <button type="submit"
-                        class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition duration-200">
+                        class="bg-red-500 text-white font-semibold py-2 px-4 rounded-sm hover:bg-red-600 transition duration-200">
                         Delete My Account
                     </button>
                 </div>

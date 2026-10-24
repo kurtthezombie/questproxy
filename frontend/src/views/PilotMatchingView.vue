@@ -173,7 +173,7 @@ height: 5rem;"></span>
         </div>
         <div class="px-6 py-4">
           <div class="flex justify-center mb-4">
-            <div class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold text-5xl leading-[1]">
+            <div class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold text-5xl leading-none">
               {{ pilotInitial }}
             </div>
           </div>

@@ -76,7 +76,7 @@ onUnmounted(() => {
 <template>
     <div class="flex justify-center">
         <div
-            class="mt-3 w-full bg-gray-900 bg-opacity-5  rounded-sm border border-gray-700 hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer rounded-xl flex flex-col justify-between">
+            class="mt-3 w-full bg-gray-900 bg-opacity-5  rounded-xs border border-gray-700 hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer rounded-xl flex flex-col justify-between">
             <div class="flex justify-center rounded-md relative">
                 <div v-if="isOwner && !hideActions" class="absolute top-2 right-2 flex space-x-2">
                     <button

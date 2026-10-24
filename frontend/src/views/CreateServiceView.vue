@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-900 flex flex-col text-white">
     <NavBar :username="username" :email="email" :role="role" :callLogout="callLogout" />
     <div class="mt-20 flex justify-center items-center">
-      <h2 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-blue-400 leading-normal">
+      <h2 class="text-5xl font-bold bg-clip-text text-transparent bg-linear-to-r from-green-500 to-blue-400 leading-normal">
         Gaming Services
       </h2>
     </div>

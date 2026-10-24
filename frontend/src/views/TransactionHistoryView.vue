@@ -91,7 +91,7 @@ onMounted(() => {
         <div class="overflow-x-auto border border-gray-700 shadow-md rounded-lg p-5 mt-7">
           <!--search bar-->
           <div class="flex flex-wrap items-center gap-3">
-            <label class="input flex items-center bg-[#1e293b] text-white border border-gray-700 shadow-none focus-within:ring-2 focus-within:ring-green-400 focus-within:border-green-600 rounded">
+            <label class="input flex items-center bg-[#1e293b] text-white border border-gray-700 shadow-none focus-within:ring-2 focus-within:ring-green-400 focus-within:border-green-600 rounded-sm">
               <svg class="h-[1.2em] opacity-70 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
                   <circle cx="11" cy="11" r="8"></circle>
@@ -104,7 +104,7 @@ onMounted(() => {
                 @keyup.enter="handleSearch"
                 required 
                 placeholder="Search transactions..."
-                class="placeholder-gray-300 bg-transparent text-white focus:outline-none flex-1"
+                class="placeholder-gray-300 bg-transparent text-white focus:outline-hidden flex-1"
             />
             </label>
 

@@ -44,7 +44,7 @@
               </span>
             </button>
 
-            <button class="flex items-center w-full md:w-auto rounded transition-colors duration-200 px-4 py-3"
+            <button class="flex items-center w-full md:w-auto rounded-sm transition-colors duration-200 px-4 py-3"
               :class="activeTab === 'bookings' ? 'text-green-400 bg-[#1e293b]' : 'text-gray-500 hover:text-white hover:bg-gray-600'"
               @click="showBookings">
 
@@ -77,7 +77,7 @@
             </button>
             <button
               v-if="role === 'game pilot'"
-              class="flex items-center w-full md:w-auto rounded transition-colors duration-200 px-4 py-3"
+              class="flex items-center w-full md:w-auto rounded-sm transition-colors duration-200 px-4 py-3"
               :class="activeTab === 'negotiations' ? 'text-green-400 bg-[#1e293b]' : 'text-gray-500 hover:text-white hover:bg-gray-600'"
               @click="showNegotiations"
             >

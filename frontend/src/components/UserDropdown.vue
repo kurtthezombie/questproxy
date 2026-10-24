@@ -14,7 +14,7 @@
       class="z-50 absolute right-0 mt-2 w-60 bg-[#1e293b] text-gray-200 divide-y divide-gray-800 rounded-lg shadow-lg border border-gray-700"> 
 
       <div class="px-4 py-3 flex items-center space-x-4">
-        <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white text-lg font-semibold flex-shrink-0"> 
+        <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white text-lg font-semibold shrink-0">
           {{ initial }}
         </div>
         <div class="overflow-hidden"> 

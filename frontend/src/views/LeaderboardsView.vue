@@ -47,7 +47,7 @@ const getMemberSince = (createdAt) => {
   <div class="min-h-screen bg-gray-900 flex flex-col">
     <!-- Title -->
     <div class="mt-20 flex justify-center items-center">
-      <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-blue-400">
+      <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-linear-to-r from-green-500 to-blue-400">
         LEADERBOARD
       </h2>
     </div>
@@ -95,7 +95,7 @@ const getMemberSince = (createdAt) => {
           </div>
 
           <!-- Points -->
-          <div class="w-1/4 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500 font-bold text-center">
+          <div class="w-1/4 bg-clip-text text-transparent bg-linear-to-r from-green-400 to-blue-500 font-bold text-center">
             {{ record.points }}
           </div>
         </div>

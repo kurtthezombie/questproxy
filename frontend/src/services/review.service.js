@@ -1,5 +1,4 @@
 import api from "@/utils/api";
-import { data } from "autoprefixer";
 
 const fetchServiceData = async (id) => {
   const response = await api.get(`reviews/${id}/info`);

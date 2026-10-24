@@ -18,7 +18,7 @@
           <div class="button-container relative inline-flex space-x-1">
             <RouterLink to="/signup" class="flex justify-center items-center border- border-green-500 text-white hover:bg-green-500 hover:text-white py-2 px-4 text-sm transition-all block rounded-md">Register</RouterLink>
             <div class="divider"></div>
-            <RouterLink to="/login" class="flex justify-center items-center border-1 border-green-500 text-white hover:bg-green-500 hover:text-white py-2 px-4 text-sm transition-all block rounded-md">Login</RouterLink>
+            <RouterLink to="/login" class="flex justify-center items-center border border-green-500 text-white hover:bg-green-500 hover:text-white py-2 px-4 text-sm transition-all block rounded-md">Login</RouterLink>
           </div>
         </nav>
       </div>
@@ -148,7 +148,7 @@
           <!-- Stat 1 -->
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-full bg-green-900 flex items-center justify-center">
-              <svg class="w-8 h-8 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <svg class="w-8 h-8 text-green-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 21h8M12 17v4m0-4a4 4 0 100-8 4 4 0 000 8zM12 3v4m0 0a4 4 0 010 8V7z" />
               </svg>
             </div>
@@ -175,7 +175,7 @@
           <!-- Stat 3 -->
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-full bg-green-900 flex items-center justify-center">
-              <svg class="w-8 h-8 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <svg class="w-8 h-8 text-green-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-1a3 3 0 00-3-3H5a3 3 0 00-3 3v1m0 0v1a3 3 0 003 3h1a3 3 0 003-3v-1m10 0v-1a3 3 0 00-3-3h-1a3 3 0 00-3 3v1m0 0v1a3 3 0 003 3h1a3 3 0 003-3v-1" />
               </svg>
             </div>

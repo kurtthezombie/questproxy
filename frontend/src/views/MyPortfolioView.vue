@@ -162,7 +162,7 @@ const generateParticleStyle = (index) => {
                     <p class="text-gray-400">Showcase of achievements</p>
                 </div>
                 <div class="text-right">
-                    <button class="bg-emerald-600 text-white mb-5 p-2 pb-2 rounded"
+                    <button class="bg-emerald-600 text-white mb-5 p-2 pb-2 rounded-sm"
                         @click="isModalOpen = true">
                         + Add portfolio item
                     </button>

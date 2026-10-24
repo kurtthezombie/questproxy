@@ -102,13 +102,13 @@ const filteredReports = computed(() => {
                 v-model="searchQuery"
                 type="text"
                 placeholder="Search reports.."
-                class="bg-[#1e293b] text-gray-300 text-sm border border-gray-700 rounded-md pl-12 pr-2 py-3 h-15 shadow-md w-full focus:outline-none focus:border-4 focus:border-green-600 focus:text-gray-300"
+                class="bg-[#1e293b] text-gray-300 text-sm border border-gray-700 rounded-md pl-12 pr-2 py-3 h-15 shadow-md w-full focus:outline-hidden focus:border-4 focus:border-green-600 focus:text-gray-300"
               />
             </div>
           </div>
         </div>
 
-        <div class="flex mb-5 bg-gray-900 p-1 rounded-sm shadow-md">
+        <div class="flex mb-5 bg-gray-900 p-1 rounded-xs shadow-md">
           <button
             v-for="status in ['all', 'pending', 'resolved', 'rejected']"
             :key="status"
@@ -140,7 +140,7 @@ const filteredReports = computed(() => {
         <!-- Cards in Single Column -->
         <div v-else class="space-y-4">
           <div v-for="report in filteredReports" :key="report.id"
-            class="border border-gray-700 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            class="border border-gray-700 rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-shadow">
             <div class="flex justify-between items-center">
               <!-- Left side: Report Info -->
               <div class="p-4">
